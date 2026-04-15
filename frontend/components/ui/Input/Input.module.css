@@ -1,7 +1,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
@@ -9,7 +9,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text);
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
 .inputWrap {
@@ -25,7 +25,7 @@
 .inputWrap:focus-within {
   border-color: var(--color-primary);
   background: var(--color-bg);
-  box-shadow: 0 0 0 3px var(--color-primary-glow);
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
 }
 
 .inputWrap.hasError {
@@ -33,7 +33,7 @@
 }
 
 .inputWrap.hasError:focus-within {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
 }
 
 .input {
@@ -42,7 +42,7 @@
   background: transparent;
   border: none;
   outline: none;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: var(--color-text);
   width: 100%;
 }

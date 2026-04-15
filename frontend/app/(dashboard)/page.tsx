@@ -84,42 +84,52 @@ export default function DashboardPage() {
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ color: '#3b82f6' }}>
-            <Users size={28} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIcon} style={{ color: '#6366f1' }}>
+              <Users size={20} />
+            </div>
+            <TrendingUp size={16} className={styles.itemDetail} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>{data.students.length}</span>
             <span className={styles.statLabel}>Students Enrolled</span>
+            <span className={styles.statValue}>{data.students.length}</span>
           </div>
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ color: '#10b981' }}>
-            <BusIcon size={28} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIcon} style={{ color: '#10b981' }}>
+              <BusIcon size={20} />
+            </div>
+            <Activity size={16} className={styles.itemDetail} />
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>{activeBusesCount}/{data.buses.length}</span>
             <span className={styles.statLabel}>Buses on Route</span>
+            <span className={styles.statValue}>{activeBusesCount}/{data.buses.length}</span>
           </div>
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ color: '#f59e0b' }}>
-            <UserSquare2 size={28} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIcon} style={{ color: '#f59e0b' }}>
+              <UserSquare2 size={20} />
+            </div>
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>{data.drivers.length}</span>
             <span className={styles.statLabel}>Active Drivers</span>
+            <span className={styles.statValue}>{data.drivers.length}</span>
           </div>
         </div>
 
         <div className={styles.statCard}>
-          <div className={styles.statIcon} style={{ color: '#ef4444' }}>
-            <IndianRupee size={28} />
+          <div className={styles.statHeader}>
+            <div className={styles.statIcon} style={{ color: '#ef4444' }}>
+              <IndianRupee size={20} />
+            </div>
           </div>
           <div className={styles.statInfo}>
-            <span className={styles.statValue}>₹{totalExpenses.toLocaleString()}</span>
             <span className={styles.statLabel}>Monthly Expenses</span>
+            <span className={styles.statValue}>₹{totalExpenses.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -129,7 +139,7 @@ export default function DashboardPage() {
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              <Activity size={18} />
+              <Activity size={16} />
               Fleet Deployment
             </h2>
             <Link href="/buses" className={styles.viewAll}>View Full Fleet</Link>
@@ -140,13 +150,13 @@ export default function DashboardPage() {
                 <div key={bus._id} className={styles.listItem}>
                   <div 
                     className={styles.statusIndicator} 
-                    style={{ '--status-color': bus.status === 'running' ? '#10b981' : bus.status === 'maintenance' ? '#f59e0b' : '#64748b' } as any} 
+                    style={{ '--status-color': bus.status === 'running' ? '#10b981' : bus.status === 'maintenance' ? '#f59e0b' : '#334155' } as any} 
                   />
                   <div className={styles.itemInfo}>
                     <p className={styles.itemName}>{bus.busNumber}</p>
                     <p className={styles.itemDetail}>{bus.plateNumber}</p>
                   </div>
-                  <div className={styles.itemDetail}>{bus.status.toUpperCase()}</div>
+                  <div className={styles.itemStatus}>{bus.status}</div>
                 </div>
               ))}
               {data.buses.length === 0 && <p className={styles.itemDetail}>No buses registered.</p>}
@@ -158,7 +168,7 @@ export default function DashboardPage() {
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              <AlertTriangle size={18} style={{ color: '#ef4444' }} />
+              <AlertTriangle size={16} style={{ color: '#ef4444' }} />
               Expiring Soon
             </h2>
             <Link href="/students" className={styles.viewAll}>Manage All</Link>
@@ -172,7 +182,7 @@ export default function DashboardPage() {
                     <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
                   </div>
                   <div className={styles.itemValue} style={{ color: '#ef4444' }}>
-                    {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} Days
+                    {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d left
                   </div>
                 </div>
               ))}

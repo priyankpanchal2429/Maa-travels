@@ -1,6 +1,6 @@
 .container {
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 2.5rem;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -13,19 +13,23 @@
 
 .subtitle {
   color: var(--color-text-muted);
-  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 .loader {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
+  min-height: 400px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 1.5rem;
 }
 
@@ -35,14 +39,13 @@
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   transition: var(--transition);
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   border-color: var(--color-border-hover);
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  background: var(--color-bg-hover);
 }
 
 .cardHeader {
@@ -55,17 +58,18 @@
 .iconBox {
   width: 44px;
   height: 44px;
-  background: var(--color-primary-glow);
-  color: var(--color-primary);
+  background: rgba(255,255,255,0.03);
+  color: var(--color-text);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--color-border);
 }
 
 .cardActions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .actionBtn, .actionBtnDelete {
@@ -74,7 +78,7 @@
   color: var(--color-text-muted);
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,31 +87,32 @@
 }
 
 .actionBtn:hover {
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
 }
 
 .actionBtnDelete:hover {
   color: var(--color-error);
   border-color: var(--color-error);
-  background: rgba(239, 68, 68, 0.1);
 }
 
 .routeName {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 800;
   color: var(--color-text);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.025em;
 }
 
 .stopsInfo {
   border-top: 1px solid var(--color-border);
   padding-top: 1.25rem;
+  flex: 1;
 }
 
 .stopsLabel {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 700;
   text-transform: uppercase;
   color: var(--color-text-muted);
   letter-spacing: 0.05em;
@@ -117,26 +122,30 @@
 .stopsList {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
 .stopItem {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
   color: var(--color-text);
 }
 
 .pinIcon {
   color: var(--color-text-muted);
+  opacity: 0.5;
 }
 
 .moreStops {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--color-primary);
-  font-weight: 500;
-  margin-top: 0.25rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .empty {
@@ -145,26 +154,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5rem 2rem;
+  padding: 8rem 2rem;
   text-align: center;
   background: var(--color-bg-alt);
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-lg);
+  gap: 1rem;
 }
 
 .emptyIcon {
   color: var(--color-text-muted);
-  margin-bottom: 1.5rem;
-  opacity: 0.5;
-}
-
-.empty h3 {
-  margin-bottom: 0.5rem;
-}
-
-.empty p {
-  color: var(--color-text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 @media (max-width: 640px) {
