@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UIProvider } from '@/context/UIContext';
 import DrawerHost from '@/components/ui/Drawer/DrawerHost';
