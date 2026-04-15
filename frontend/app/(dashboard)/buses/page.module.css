@@ -214,6 +214,15 @@
   margin-bottom: 1rem;
 }
 
+.statusHint {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
 @media (max-width: 640px) {
   .header {
     flex-direction: column;

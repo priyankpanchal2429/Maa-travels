@@ -1,40 +1,38 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding-top: 1rem;
+  gap: 2rem;
+  padding-top: 0.5rem;
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--color-text);
-  line-height: +1.1;
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
 .subtitle {
   color: var(--color-text-muted);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
-/* Bento Grid System */
+/* ── Bento Grid System ── */
 .bentoGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: auto auto;
+  grid-auto-rows: auto;
   gap: 1rem;
 }
 
-/* Base Bento Card from globals.css is used, modifying specific layout properties */
+/* Primary Hero Card – spans 2 cols */
 .cardPrimary {
   grid-column: span 2;
   display: flex;
@@ -43,86 +41,97 @@
   background: linear-gradient(145deg, #ccff00 0%, #a3cc00 100%);
   color: #000;
   border: none;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  min-height: 220px;
 }
 
 .cardPrimary .statLabel {
-  color: rgba(0,0,0,0.7);
+  color: rgba(0,0,0,0.6);
 }
 
 .cardPrimary .statValue {
   color: #000;
-  font-size: 4.5rem;
-  letter-spacing: -0.05em;
-  line-height: +1;
+  font-size: 5rem;
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.cardPrimary .statSub {
+  font-size: 2.5rem;
+  color: rgba(0,0,0,0.35);
 }
 
 .cardPrimary .iconBox {
   background: rgba(0,0,0,0.1);
   color: #000;
+  border-color: transparent;
 }
 
+/* Metric Cards */
 .cardMetric {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   grid-column: span 1;
+  min-height: 220px;
 }
 
-.cardListLeft {
+/* Wide list cards – bottom row */
+.cardList {
   grid-column: span 2;
-  grid-row: span 2;
   display: flex;
   flex-direction: column;
 }
 
-.cardListRight {
-  grid-column: span 2;
-  grid-row: span 2;
-  display: flex;
-  flex-direction: column;
-}
-
+/* ── Shared Stats ── */
 .statHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
 }
 
 .iconBox {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text);
+  flex-shrink: 0;
+}
+
+.trendIcon {
+  color: var(--color-text-muted);
 }
 
 .statInfo {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  margin-top: auto;
 }
 
 .statValue {
-  font-size: 2.5rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.05em;
   color: var(--color-text);
+  line-height: 1;
 }
 
 .statLabel {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.6875rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--color-text-muted);
 }
 
-/* List section within Bento */
+/* ── List Sections within Bento ── */
 .sectionHeader {
   display: flex;
   justify-content: space-between;
@@ -132,23 +141,27 @@
 
 .sectionTitle {
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
 .viewAll {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.6875rem;
+  font-weight: 800;
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   transition: var(--transition);
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
 }
 
 .viewAll:hover {
   color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .list {
@@ -162,7 +175,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border-radius: var(--radius-md);
   background: var(--color-bg);
   border: 1px solid var(--color-border);
@@ -171,6 +184,7 @@
 
 .listItem:hover {
   border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
 }
 
 .statusIndicator {
@@ -178,7 +192,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--status-color);
-  box-shadow: 0 0 10px var(--status-color);
+  box-shadow: 0 0 12px var(--status-color);
   flex-shrink: 0;
 }
 
@@ -197,14 +211,26 @@
 .itemDetail {
   font-size: 0.75rem;
   color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .itemStatus {
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--color-text-muted);
+  background: var(--color-bg-hover);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.emptyList {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
 .loader {
@@ -224,7 +250,10 @@
   .bentoGrid {
     grid-template-columns: 1fr;
   }
-  .cardPrimary, .cardListLeft, .cardListRight {
+  .cardPrimary, .cardList {
     grid-column: span 1;
+  }
+  .header h1 {
+    font-size: 1.75rem;
   }
 }

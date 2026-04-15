@@ -4,13 +4,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { 
   Users, 
   Bus as BusIcon, 
-  Map as MapIcon, 
   IndianRupee, 
   AlertTriangle,
-  ArrowRight,
   TrendingUp,
   Activity,
-  UserSquare2
+  UserSquare2,
+  Map as MapIcon
 } from 'lucide-react';
 import Link from 'next/link';
 import studentService, { Student } from '@/services/studentService';
@@ -72,39 +71,42 @@ export default function DashboardPage() {
   const activeBusesCount = data.buses.filter(b => b.status === 'running').length;
   const expirations = data.students.filter(s => {
     const diff = new Date(s.expiryDate).getTime() - new Date().getTime();
-    return diff > 0 && diff <= (7 * 24 * 60 * 60 * 1000); // 1 week
+    return diff > 0 && diff <= (7 * 24 * 60 * 60 * 1000);
   });
 
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className="text-gradient">Control Center</h1>
-        <p className={styles.subtitle}>Welcome back, here's what's happening today.</p>
+        <p className={styles.subtitle}>Welcome back. Here is what is happening today.</p>
       </header>
 
       <div className={styles.bentoGrid}>
         
-        {/* Primary massive card */}
-        <div className={`${styles.bentoCard} ${styles.cardPrimary}`}>
+        {/* Primary Hero Card: Buses on Route */}
+        <div className={styles.cardPrimary}>
           <div className={styles.statHeader}>
             <div className={styles.iconBox}>
               <BusIcon size={24} />
             </div>
-            <Activity size={20} style={{ color: 'rgba(0,0,0,0.5)' }} />
+            <Activity size={20} style={{ color: 'rgba(0,0,0,0.4)' }} />
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Buses on Route</span>
-            <span className={styles.statValue}>{activeBusesCount} <span style={{fontSize: '2rem', color: 'rgba(0,0,0,0.4)'}}>/ {data.buses.length}</span></span>
+            <span className={styles.statValue}>
+              {activeBusesCount}
+              <span className={styles.statSub}> / {data.buses.length}</span>
+            </span>
           </div>
         </div>
 
-        {/* Smaller Metric Cards */}
+        {/* Students Enrolled */}
         <div className={`bento-card ${styles.cardMetric}`}>
           <div className={styles.statHeader}>
             <div className={styles.iconBox} style={{ color: 'var(--color-primary)' }}>
-              <Users size={20} />
+              <Users size={22} />
             </div>
-            <TrendingUp size={16} className={styles.itemDetail} />
+            <TrendingUp size={16} className={styles.trendIcon} />
           </div>
           <div className={styles.statInfo}>
             <span className={styles.statLabel}>Students Enrolled</span>
@@ -112,10 +114,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Active Drivers */}
         <div className={`bento-card ${styles.cardMetric}`}>
           <div className={styles.statHeader}>
             <div className={styles.iconBox}>
-              <UserSquare2 size={20} />
+              <UserSquare2 size={22} />
             </div>
           </div>
           <div className={styles.statInfo}>
@@ -124,13 +127,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Lists taking up bottom spans */}
-        <div className={`bento-card ${styles.cardListLeft}`}>
+        {/* Fleet Status List */}
+        <div className={`bento-card ${styles.cardList}`}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>
-              Fleet Status
-            </h2>
-            <Link href="/buses" className={styles.viewAll}>View Fleet →</Link>
+            <h2 className={styles.sectionTitle}>Fleet Status</h2>
+            <Link href="/buses" className={styles.viewAll}>View Fleet</Link>
           </div>
           <div className={styles.list}>
             {data.buses.slice(0, 5).map(bus => (
@@ -146,16 +147,18 @@ export default function DashboardPage() {
                 <div className={styles.itemStatus}>{bus.status}</div>
               </div>
             ))}
-            {data.buses.length === 0 && <p className={styles.itemDetail}>No buses registered.</p>}
+            {data.buses.length === 0 && <p className={styles.emptyList}>No buses registered yet.</p>}
           </div>
         </div>
 
-        <div className={`bento-card ${styles.cardListRight}`}>
+        {/* Impending Expirations List */}
+        <div className={`bento-card ${styles.cardList}`}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              Impending Expirations
+              <AlertTriangle size={16} style={{ color: 'var(--color-error)' }} />
+              Expiring Soon
             </h2>
-            <Link href="/students" className={styles.viewAll}>View All →</Link>
+            <Link href="/students" className={styles.viewAll}>View All</Link>
           </div>
           <div className={styles.list}>
             {expirations.slice(0, 5).map(student => (
@@ -164,12 +167,12 @@ export default function DashboardPage() {
                   <p className={styles.itemName}>{student.name}</p>
                   <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
                 </div>
-                <div className={styles.itemStatus} style={{ color: 'var(--color-error)' }}>
+                <div className={styles.itemStatus} style={{ color: 'var(--color-error)', background: 'rgba(239, 68, 68, 0.1)' }}>
                   {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d left
                 </div>
               </div>
             ))}
-            {expirations.length === 0 && <p className={styles.itemDetail}>No upcoming expiries this week.</p>}
+            {expirations.length === 0 && <p className={styles.emptyList}>No upcoming expiries this week.</p>}
           </div>
         </div>
       </div>
