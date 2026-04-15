@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import { corsMiddleware } from './config/cors';
 import { errorHandler } from './middlewares/errorHandler';
 import { generalRateLimiter } from './middlewares/rateLimiter';
-import authRoutes from './routes/authRoutes';
 import { env } from './config/env';
 
 const app = express();
@@ -34,8 +33,7 @@ app.get('/api/health', (_req, res) => {
   res.json({ success: true, message: 'Bus Management API is running', timestamp: new Date().toISOString() });
 });
 
-// ─── Routes ──────────────────────────────────
-app.use('/api/auth', authRoutes);
+
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {
