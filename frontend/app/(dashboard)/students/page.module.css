@@ -1,23 +1,29 @@
 .container {
-  padding: 2.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 1rem;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2.5rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  line-height: +1.1;
 }
 
 .subtitle {
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   margin-top: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
 }
 
 .tableContainer {
@@ -34,18 +40,18 @@
 }
 
 .table th {
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
   border-bottom: 1px solid var(--color-border);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .table td {
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem;
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
 }
@@ -55,7 +61,7 @@
 }
 
 .table tr:hover td {
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--color-bg-hover);
 }
 
 .studentCell {
@@ -65,9 +71,9 @@
 }
 
 .avatarWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   overflow: hidden;
   background: var(--color-bg-hover);
   border: 1px solid var(--color-border);
@@ -92,14 +98,15 @@
 }
 
 .name {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 700;
   color: var(--color-text);
 }
 
 .id {
   font-size: 0.75rem;
-  color: var(--color-text-muted);
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .routeCell {
@@ -112,7 +119,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text);
 }
@@ -129,8 +136,8 @@
 }
 
 .subType {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 700;
   color: var(--color-text);
 }
 
@@ -151,18 +158,18 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
   font-size: 0.6875rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.05em;
 }
 
-.paid { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
-.unpaid { background: rgba(239, 68, 68, 0.1); color: var(--color-error); }
-.bypassed { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
-.expired { background: rgba(100, 116, 139, 0.1); color: var(--color-text-muted); }
+.paid { background: rgba(34, 197, 94, 0.1); color: var(--color-success); border: 1px solid rgba(34, 197, 94, 0.2); }
+.unpaid { background: rgba(239, 68, 68, 0.1); color: var(--color-error); border: 1px solid rgba(239, 68, 68, 0.2); }
+.bypassed { background: rgba(204, 255, 0, 0.1); color: var(--color-primary); border: 1px solid rgba(204, 255, 0, 0.2); }
+.expired { background: rgba(161, 161, 170, 0.1); color: var(--color-text-muted); border: 1px solid rgba(161, 161, 170, 0.2); }
 
 .actions {
   display: flex;
@@ -170,22 +177,22 @@
 }
 
 .printBtn, .actionBtn, .actionBtnDelete {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg-hover);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-muted);
   cursor: pointer;
   transition: var(--transition);
 }
 
-.printBtn:hover:not(:disabled) { color: var(--color-primary); border-color: var(--color-primary); }
-.actionBtn:hover { color: var(--color-text); border-color: var(--color-text-muted); }
-.actionBtnDelete:hover { color: var(--color-error); border-color: var(--color-error); }
+.printBtn:hover:not(:disabled) { background: var(--color-primary-glow); color: var(--color-primary); border-color: var(--color-primary); }
+.actionBtn:hover { background: var(--color-bg-hover); color: var(--color-text); border-color: var(--color-text-muted); }
+.actionBtnDelete:hover { background: rgba(239, 68, 68, 0.1); color: var(--color-error); border-color: var(--color-error); }
 .printBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 .empty {

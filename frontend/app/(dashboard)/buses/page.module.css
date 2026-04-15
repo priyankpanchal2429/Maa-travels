@@ -1,23 +1,29 @@
 .container {
-  padding: 2.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 1rem;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2.5rem;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  line-height: +1.1;
 }
 
 .subtitle {
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   margin-top: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
 }
 
 .loader {
@@ -30,7 +36,7 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .card {
@@ -45,22 +51,21 @@
 
 .card:hover {
   border-color: var(--color-border-hover);
-  background: var(--color-bg-hover);
 }
 
 .cardHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .iconBox {
-  width: 44px;
-  height: 44px;
-  background: rgba(255,255,255,0.03);
+  width: 48px;
+  height: 48px;
+  background: var(--color-bg);
   color: var(--color-text);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,12 +78,12 @@
 }
 
 .actionBtn, .actionBtnDelete {
-  background: var(--color-bg-hover);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   color: var(--color-text-muted);
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,26 +99,27 @@
 .actionBtnDelete:hover {
   color: var(--color-error);
   border-color: var(--color-error);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .busInfo {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .busNumber {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--color-text);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.04em;
 }
 
 .plateNumber {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 0.8125rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .detailsRow {
@@ -134,19 +140,19 @@
 .detailLabel {
   font-size: 0.6875rem;
   color: var(--color-text-muted);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.025em;
+  letter-spacing: 0.05em;
 }
 
 .detailValue {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--color-text);
 }
 
 .unassigned {
-  color: var(--color-warning);
+  color: var(--color-error);
 }
 
 .statusSection {
@@ -158,17 +164,17 @@
 
 .statusBadge {
   width: 100%;
-  padding: 0.75rem;
-  border-radius: var(--radius-md);
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--color-border);
+  padding: 0.875rem;
+  border-radius: var(--radius-sm);
+  background: var(--status-color-bg, var(--color-bg));
+  border: 1px solid var(--status-color);
   color: var(--status-color);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
@@ -176,17 +182,8 @@
 }
 
 .statusBadge:hover {
-  border-color: var(--status-color);
-  background: rgba(var(--status-color), 0.05);
-}
-
-.statusHint {
-  font-size: 0.625rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-  text-align: center;
+  background: var(--status-color);
+  color: #000; /* High contrast text on hover */
 }
 
 @keyframes spin {
@@ -207,7 +204,7 @@
   padding: 8rem 2rem;
   text-align: center;
   background: var(--color-bg-alt);
-  border: 2px dashed var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   gap: 1rem;
 }

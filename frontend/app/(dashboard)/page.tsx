@@ -82,10 +82,26 @@ export default function DashboardPage() {
         <p className={styles.subtitle}>Welcome back, here's what's happening today.</p>
       </header>
 
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
+      <div className={styles.bentoGrid}>
+        
+        {/* Primary massive card */}
+        <div className={`${styles.bentoCard} ${styles.cardPrimary}`}>
           <div className={styles.statHeader}>
-            <div className={styles.statIcon} style={{ color: '#6366f1' }}>
+            <div className={styles.iconBox}>
+              <BusIcon size={24} />
+            </div>
+            <Activity size={20} style={{ color: 'rgba(0,0,0,0.5)' }} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statLabel}>Buses on Route</span>
+            <span className={styles.statValue}>{activeBusesCount} <span style={{fontSize: '2rem', color: 'rgba(0,0,0,0.4)'}}>/ {data.buses.length}</span></span>
+          </div>
+        </div>
+
+        {/* Smaller Metric Cards */}
+        <div className={`bento-card ${styles.cardMetric}`}>
+          <div className={styles.statHeader}>
+            <div className={styles.iconBox} style={{ color: 'var(--color-primary)' }}>
               <Users size={20} />
             </div>
             <TrendingUp size={16} className={styles.itemDetail} />
@@ -96,22 +112,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className={styles.statCard}>
+        <div className={`bento-card ${styles.cardMetric}`}>
           <div className={styles.statHeader}>
-            <div className={styles.statIcon} style={{ color: '#10b981' }}>
-              <BusIcon size={20} />
-            </div>
-            <Activity size={16} className={styles.itemDetail} />
-          </div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Buses on Route</span>
-            <span className={styles.statValue}>{activeBusesCount}/{data.buses.length}</span>
-          </div>
-        </div>
-
-        <div className={styles.statCard}>
-          <div className={styles.statHeader}>
-            <div className={styles.statIcon} style={{ color: '#f59e0b' }}>
+            <div className={styles.iconBox}>
               <UserSquare2 size={20} />
             </div>
           </div>
@@ -121,73 +124,52 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className={styles.statCard}>
-          <div className={styles.statHeader}>
-            <div className={styles.statIcon} style={{ color: '#ef4444' }}>
-              <IndianRupee size={20} />
-            </div>
-          </div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Monthly Expenses</span>
-            <span className={styles.statValue}>₹{totalExpenses.toLocaleString()}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.mainGrid}>
-        {/* Left: Alerts & Fleet Status */}
-        <div className={styles.section}>
+        {/* Lists taking up bottom spans */}
+        <div className={`bento-card ${styles.cardListLeft}`}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              <Activity size={16} />
-              Fleet Deployment
+              Fleet Status
             </h2>
-            <Link href="/buses" className={styles.viewAll}>View Full Fleet</Link>
+            <Link href="/buses" className={styles.viewAll}>View Fleet →</Link>
           </div>
-          <div className={styles.sectionContent}>
-            <div className={styles.list}>
-              {data.buses.slice(0, 5).map(bus => (
-                <div key={bus._id} className={styles.listItem}>
-                  <div 
-                    className={styles.statusIndicator} 
-                    style={{ '--status-color': bus.status === 'running' ? '#10b981' : bus.status === 'maintenance' ? '#f59e0b' : '#334155' } as any} 
-                  />
-                  <div className={styles.itemInfo}>
-                    <p className={styles.itemName}>{bus.busNumber}</p>
-                    <p className={styles.itemDetail}>{bus.plateNumber}</p>
-                  </div>
-                  <div className={styles.itemStatus}>{bus.status}</div>
+          <div className={styles.list}>
+            {data.buses.slice(0, 5).map(bus => (
+              <div key={bus._id} className={styles.listItem}>
+                <div 
+                  className={styles.statusIndicator} 
+                  style={{ '--status-color': bus.status === 'running' ? 'var(--color-primary)' : bus.status === 'maintenance' ? 'var(--color-warning)' : 'var(--color-border-hover)' } as any} 
+                />
+                <div className={styles.itemInfo}>
+                  <p className={styles.itemName}>{bus.busNumber}</p>
+                  <p className={styles.itemDetail}>{bus.plateNumber}</p>
                 </div>
-              ))}
-              {data.buses.length === 0 && <p className={styles.itemDetail}>No buses registered.</p>}
-            </div>
+                <div className={styles.itemStatus}>{bus.status}</div>
+              </div>
+            ))}
+            {data.buses.length === 0 && <p className={styles.itemDetail}>No buses registered.</p>}
           </div>
         </div>
 
-        {/* Right: Upcoming Expiries */}
-        <div className={styles.section}>
+        <div className={`bento-card ${styles.cardListRight}`}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              <AlertTriangle size={16} style={{ color: '#ef4444' }} />
-              Expiring Soon
+              Impending Expirations
             </h2>
-            <Link href="/students" className={styles.viewAll}>Manage All</Link>
+            <Link href="/students" className={styles.viewAll}>View All →</Link>
           </div>
-          <div className={styles.sectionContent}>
-            <div className={styles.list}>
-              {expirations.slice(0, 5).map(student => (
-                <div key={student._id} className={styles.listItem}>
-                  <div className={styles.itemInfo}>
-                    <p className={styles.itemName}>{student.name}</p>
-                    <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
-                  </div>
-                  <div className={styles.itemValue} style={{ color: '#ef4444' }}>
-                    {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d left
-                  </div>
+          <div className={styles.list}>
+            {expirations.slice(0, 5).map(student => (
+              <div key={student._id} className={styles.listItem}>
+                <div className={styles.itemInfo}>
+                  <p className={styles.itemName}>{student.name}</p>
+                  <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
                 </div>
-              ))}
-              {expirations.length === 0 && <p className={styles.itemDetail}>No upcoming expiries this week.</p>}
-            </div>
+                <div className={styles.itemStatus} style={{ color: 'var(--color-error)' }}>
+                  {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d left
+                </div>
+              </div>
+            ))}
+            {expirations.length === 0 && <p className={styles.itemDetail}>No upcoming expiries this week.</p>}
           </div>
         </div>
       </div>
