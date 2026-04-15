@@ -1,0 +1,167 @@
+/* ─── Full viewport layout ─── */
+.background {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg);
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* Floating gradient orbs */
+.orb1,
+.orb2,
+.orb3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.orb1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.18) 0%, transparent 70%);
+  top: -120px;
+  left: -80px;
+  animation: orbFloat 18s ease-in-out infinite;
+}
+
+.orb2 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.14) 0%, transparent 70%);
+  bottom: -100px;
+  right: -60px;
+  animation: orbFloat 22s ease-in-out infinite reverse;
+}
+
+.orb3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.10) 0%, transparent 70%);
+  top: 50%;
+  left: 55%;
+  animation: orbFloat 26s ease-in-out infinite 4s;
+}
+
+[data-theme="dark"] .orb1 {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.22) 0%, transparent 70%);
+}
+[data-theme="dark"] .orb2 {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+}
+
+/* ─── Top bar ─── */
+.topBar {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+}
+
+/* ─── Center layout ─── */
+.main {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 16px 40px;
+}
+
+/* ─── Glass card ─── */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1.5px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px;
+  box-shadow: var(--shadow-xl);
+  animation: pageFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.card.shake {
+  animation: shake 0.45s ease both;
+}
+
+/* ─── Header ─── */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background: var(--color-primary-light);
+  border: 1.5px solid var(--color-primary-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-primary);
+  margin-bottom: 16px;
+}
+
+.appName {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.tagline {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ─── Form ─── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ─── Footer ─── */
+.footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.footerNote {
+  color: var(--color-text-subtle);
+  font-style: italic;
+}
+
+/* ─── Keyframes ─── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+@keyframes orbFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(40px, -30px) scale(1.06); }
+  66%  { transform: translate(-20px, 35px) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .card { padding: 28px 20px; }
+}

@@ -1,0 +1,191 @@
+.page { display: flex; flex-direction: column; gap: 24px; }
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+/* ── Table ── */
+.tableWrap {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--color-bg-secondary);
+  border-bottom: 1.5px solid var(--color-border);
+}
+
+.table td {
+  padding: 14px 16px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+.table tr:hover td {
+  background: var(--color-bg-secondary);
+}
+
+.inactiveRow td { opacity: 0.55; }
+
+.userId {
+  font-family: 'Courier New', monospace;
+  font-size: var(--font-size-xs);
+  background: var(--color-bg-secondary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+}
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.smallAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+/* Role pill */
+.rolePill {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.admin  { background: var(--color-primary-light); color: var(--color-primary); }
+.driver { background: var(--color-accent-light);  color: var(--color-accent); }
+.staff  { background: var(--color-success-bg);     color: var(--color-success); }
+
+/* Status dot */
+.statusDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+.statusDot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.active::before  { background: var(--color-success); }
+.inactive::before { background: var(--color-text-subtle); }
+.active  { color: var(--color-success); }
+.inactive { color: var(--color-text-subtle); }
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: all var(--transition-fast);
+  background: none;
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+}
+.actionBtn:hover { color: var(--color-text); background: var(--color-bg-secondary); }
+.actionBtn:disabled { opacity: 0.3; cursor: not-allowed; }
+.delete:hover { color: var(--color-error); border-color: var(--color-error-border); background: var(--color-error-bg); }
+.deactivate:hover { color: var(--color-warning); border-color: rgba(217,119,6,0.3); background: var(--color-warning-bg); }
+.activate:hover { color: var(--color-success); border-color: var(--color-success-border); background: var(--color-success-bg); }
+
+.empty {
+  padding: 48px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.select {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+.select:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
