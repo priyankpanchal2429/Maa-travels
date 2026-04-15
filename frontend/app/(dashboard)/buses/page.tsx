@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Bus as BusIcon, Edit, Trash2, Power, Tool, AlertCircle } from 'lucide-react';
+import { Plus, Bus as BusIcon, Edit, Trash2, Power, Wrench, AlertCircle } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import busService, { Bus, BusStatus } from '@/services/busService';
 import Button from '@/components/ui/Button/Button';
@@ -12,7 +12,7 @@ import styles from './page.module.css';
 const statusConfig = {
   idle: { label: 'Idle', color: '#64748b', icon: <Power size={14} /> },
   running: { label: 'Running', color: '#10b981', icon: <Power size={14} className={styles.spin} /> },
-  maintenance: { label: 'Maintenance', color: '#f59e0b', icon: <Tool size={14} /> },
+  maintenance: { label: 'Maintenance', color: '#f59e0b', icon: <Wrench size={14} /> },
 };
 
 export default function BusesPage() {
