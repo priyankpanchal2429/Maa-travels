@@ -8,7 +8,7 @@ export const api = axios.create({
   baseURL: `${API_URL}/api`,
   withCredentials: true, // sends httpOnly refresh token cookie automatically
   headers: { 'Content-Type': 'application/json' },
-  timeout: 10000,
+  timeout: 60000, // 60s — Render free tier needs 30-60s to wake from sleep
 });
 
 // ─── Request interceptor ─────────────────────
