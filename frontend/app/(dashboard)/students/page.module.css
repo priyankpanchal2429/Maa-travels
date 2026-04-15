@@ -1,0 +1,253 @@
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.tableContainer {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.studentCell {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatarWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholderAvatar {
+  width: 100%;
+  height: 100%;
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.nameInfo .name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.15rem;
+}
+
+.nameInfo .id {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-family: monospace;
+}
+
+.routeCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.routeItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.stopItem {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  padding-left: 1.25rem;
+}
+
+.subCell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.subType {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.expiry {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.expiry.alert {
+  color: var(--color-warning);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.paid {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.unpaid {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.bypassed {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.expired {
+  background: rgba(161, 161, 170, 0.1);
+  color: #a1a1aa;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn, .actionBtnDelete, .printBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  transition: var(--transition);
+}
+
+.printBtn:hover:not(:disabled) {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.printBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.actionBtn:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+}
+
+.actionBtnDelete:hover {
+  color: var(--color-error);
+  border-color: var(--color-error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: var(--color-text-muted);
+  opacity: 0.4;
+  margin-bottom: 1.5rem;
+}
+
+.empty h3 {
+  margin-bottom: 0.5rem;
+}
+
+.empty p {
+  color: var(--color-text-muted);
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .tableContainer {
+    overflow-x: auto;
+  }
+}

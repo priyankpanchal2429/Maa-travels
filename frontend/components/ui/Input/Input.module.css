@@ -1,12 +1,12 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
 }
 
 .label {
-  font-size: var(--font-size-sm);
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-text);
   letter-spacing: 0.01em;
@@ -16,17 +16,16 @@
   position: relative;
   display: flex;
   align-items: center;
-  border: 1.5px solid var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
+  background: var(--color-bg-alt);
+  transition: var(--transition);
 }
 
 .inputWrap:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  background: var(--color-bg);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
 }
 
 .inputWrap.hasError {
@@ -34,23 +33,22 @@
 }
 
 .inputWrap.hasError:focus-within {
-  box-shadow: 0 0 0 3px var(--color-error-bg);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .input {
   flex: 1;
-  padding: 11px 14px;
+  padding: 10px 14px;
   background: transparent;
   border: none;
   outline: none;
-  font-size: var(--font-size-base);
+  font-size: 0.9375rem;
   color: var(--color-text);
   width: 100%;
-  line-height: 1.5;
 }
 
 .input::placeholder {
-  color: var(--color-text-subtle);
+  color: var(--color-text-muted);
 }
 
 .input.withLeftIcon {
@@ -59,10 +57,10 @@
 
 .leftIcon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   display: flex;
   align-items: center;
-  color: var(--color-text-subtle);
+  color: var(--color-text-muted);
   pointer-events: none;
 }
 
@@ -71,10 +69,10 @@
   right: 12px;
   display: flex;
   align-items: center;
-  color: var(--color-text-subtle);
+  color: var(--color-text-muted);
   padding: 4px;
   border-radius: var(--radius-sm);
-  transition: color var(--transition-fast);
+  transition: var(--transition);
   background: none;
   border: none;
   cursor: pointer;
@@ -82,18 +80,21 @@
 
 .togglePassword:hover {
   color: var(--color-text);
+  background: var(--color-bg-hover);
 }
 
 .error {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: var(--font-size-xs);
+  gap: 6px;
+  font-size: 0.75rem;
   color: var(--color-error);
   font-weight: 500;
+  margin-top: 4px;
 }
 
 .hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-subtle);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-top: 4px;
 }

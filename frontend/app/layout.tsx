@@ -1,7 +1,8 @@
-import type { Metadata } from 'next';
-import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { UIProvider } from '@/context/UIContext';
+import DrawerHost from '@/components/ui/Drawer/DrawerHost';
+import ToastHost from '@/components/ui/Toast/ToastHost';
 
 export const metadata: Metadata = {
   title: 'Bus Management System',
@@ -14,7 +15,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <AuthProvider>
-            {children}
+            <UIProvider>
+              {children}
+              <DrawerHost />
+              <ToastHost />
+            </UIProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

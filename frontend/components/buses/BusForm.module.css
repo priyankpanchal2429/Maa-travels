@@ -1,0 +1,106 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.iconBox {
+  width: 56px;
+  height: 56px;
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.header h2 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.header p {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.statusGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.radioGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.radioLabel {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.radioLabel:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.radioLabel.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-glow);
+  color: var(--color-primary);
+}
+
+.hiddenRadio {
+  display: none;
+}
+
+.radioText {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: 1rem;
+}
+
+.submitBtn {
+  width: 100%;
+  justify-content: center;
+}
+
+.errorText {
+  color: var(--color-error);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  text-align: center;
+}

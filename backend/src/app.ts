@@ -6,6 +6,11 @@ import { corsMiddleware } from './config/cors';
 import { errorHandler } from './middlewares/errorHandler';
 import { generalRateLimiter } from './middlewares/rateLimiter';
 import { env } from './config/env';
+import studentRoutes from './routes/studentRoutes';
+import driverRoutes from './routes/driverRoutes';
+import busRoutes from './routes/busRoutes';
+import routeRoutes from './routes/routeRoutes';
+import expenseRoutes from './routes/expenseRoutes';
 
 const app = express();
 
@@ -33,7 +38,12 @@ app.get('/api/health', (_req, res) => {
   res.json({ success: true, message: 'Bus Management API is running', timestamp: new Date().toISOString() });
 });
 
-
+// ─── Routes ──────────────────────────────────
+app.use('/api/students', studentRoutes);
+app.use('/api/drivers', driverRoutes);
+app.use('/api/buses', busRoutes);
+app.use('/api/routes', routeRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {

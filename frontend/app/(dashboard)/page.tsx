@@ -1,63 +1,185 @@
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = { title: 'Dashboard | Bus Management' };
+import { useEffect, useState, useCallback } from 'react';
+import { 
+  Users, 
+  Bus as BusIcon, 
+  Map as MapIcon, 
+  IndianRupee, 
+  AlertTriangle,
+  ArrowRight,
+  TrendingUp,
+  Activity,
+  UserSquare2
+} from 'lucide-react';
+import Link from 'next/link';
+import studentService, { Student } from '@/services/studentService';
+import driverService, { Driver } from '@/services/driverService';
+import busService, { Bus } from '@/services/busService';
+import routeService, { Route } from '@/services/routeService';
+import expenseService, { Expense } from '@/services/expenseService';
+import Spinner from '@/components/ui/Spinner/Spinner';
+import styles from './page.module.css';
 
 export default function DashboardPage() {
+  const [data, setData] = useState({
+    students: [] as Student[],
+    drivers: [] as Driver[],
+    buses: [] as Bus[],
+    routes: [] as Route[],
+    expenses: [] as Expense[],
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const [studentsRes, driversRes, busesRes, routesRes, expensesRes] = await Promise.all([
+        studentService.getAll(),
+        driverService.getAll(),
+        busService.getAll(),
+        routeService.getAll(),
+        expenseService.getAll(),
+      ]);
+
+      setData({
+        students: studentsRes.data.data,
+        drivers: driversRes.data.data,
+        buses: busesRes.data.data,
+        routes: routesRes.data.data,
+        expenses: expensesRes.data.data,
+      });
+    } catch (err) {
+      console.error('Failed to load dashboard data');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.loader}>
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  // Aggregations
+  const totalExpenses = data.expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  const activeBusesCount = data.buses.filter(b => b.status === 'running').length;
+  const expirations = data.students.filter(s => {
+    const diff = new Date(s.expiryDate).getTime() - new Date().getTime();
+    return diff > 0 && diff <= (7 * 24 * 60 * 60 * 1000); // 1 week
+  });
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Page header */}
-      <div>
-        <h1 style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 800, color: 'var(--color-text)', letterSpacing: '-0.02em' }}>
-          Dashboard
-        </h1>
-        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-          Overview of your bus management system
-        </p>
-      </div>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className="text-gradient">Control Center</h1>
+        <p className={styles.subtitle}>Welcome back, here's what's happening today.</p>
+      </header>
 
-      {/* Stats grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-        {[
-          { label: 'Total Buses',   value: '—', icon: '🚌', color: 'var(--color-primary)' },
-          { label: 'Active Drivers', value: '—', icon: '👤', color: 'var(--color-accent)' },
-          { label: 'Routes',         value: '—', icon: '🗺️', color: 'var(--color-success)' },
-          { label: 'Staff Members',  value: '—', icon: '🏢', color: 'var(--color-warning)' },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            style={{
-              background: 'var(--color-surface)',
-              border: '1.5px solid var(--color-border)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '24px',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
-            <div style={{ fontSize: '28px', marginBottom: '12px' }}>{stat.icon}</div>
-            <p style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 800, color: stat.color }}>
-              {stat.value}
-            </p>
-            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-              {stat.label}
-            </p>
+      <div className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <div className={styles.statIcon} style={{ color: '#3b82f6' }}>
+            <Users size={28} />
           </div>
-        ))}
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{data.students.length}</span>
+            <span className={styles.statLabel}>Students Enrolled</span>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={styles.statIcon} style={{ color: '#10b981' }}>
+            <BusIcon size={28} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{activeBusesCount}/{data.buses.length}</span>
+            <span className={styles.statLabel}>Buses on Route</span>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={styles.statIcon} style={{ color: '#f59e0b' }}>
+            <UserSquare2 size={28} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>{data.drivers.length}</span>
+            <span className={styles.statLabel}>Active Drivers</span>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={styles.statIcon} style={{ color: '#ef4444' }}>
+            <IndianRupee size={28} />
+          </div>
+          <div className={styles.statInfo}>
+            <span className={styles.statValue}>₹{totalExpenses.toLocaleString()}</span>
+            <span className={styles.statLabel}>Monthly Expenses</span>
+          </div>
+        </div>
       </div>
 
-      {/* Coming soon banner */}
-      <div style={{
-        background: 'var(--color-primary-light)',
-        border: '1.5px solid var(--color-primary-border)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '24px',
-        textAlign: 'center',
-      }}>
-        <p style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, color: 'var(--color-primary)' }}>
-          🚌 More features coming soon
-        </p>
-        <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-muted)', marginTop: '8px' }}>
-          Bus routes, driver management, pass tracking and more will be added here.
-        </p>
+      <div className={styles.mainGrid}>
+        {/* Left: Alerts & Fleet Status */}
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              <Activity size={18} />
+              Fleet Deployment
+            </h2>
+            <Link href="/buses" className={styles.viewAll}>View Full Fleet</Link>
+          </div>
+          <div className={styles.sectionContent}>
+            <div className={styles.list}>
+              {data.buses.slice(0, 5).map(bus => (
+                <div key={bus._id} className={styles.listItem}>
+                  <div 
+                    className={styles.statusIndicator} 
+                    style={{ '--status-color': bus.status === 'running' ? '#10b981' : bus.status === 'maintenance' ? '#f59e0b' : '#64748b' } as any} 
+                  />
+                  <div className={styles.itemInfo}>
+                    <p className={styles.itemName}>{bus.busNumber}</p>
+                    <p className={styles.itemDetail}>{bus.plateNumber}</p>
+                  </div>
+                  <div className={styles.itemDetail}>{bus.status.toUpperCase()}</div>
+                </div>
+              ))}
+              {data.buses.length === 0 && <p className={styles.itemDetail}>No buses registered.</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Upcoming Expiries */}
+        <div className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              <AlertTriangle size={18} style={{ color: '#ef4444' }} />
+              Expiring Soon
+            </h2>
+            <Link href="/students" className={styles.viewAll}>Manage All</Link>
+          </div>
+          <div className={styles.sectionContent}>
+            <div className={styles.list}>
+              {expirations.slice(0, 5).map(student => (
+                <div key={student._id} className={styles.listItem}>
+                  <div className={styles.itemInfo}>
+                    <p className={styles.itemName}>{student.name}</p>
+                    <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
+                  </div>
+                  <div className={styles.itemValue} style={{ color: '#ef4444' }}>
+                    {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} Days
+                  </div>
+                </div>
+              ))}
+              {expirations.length === 0 && <p className={styles.itemDetail}>No upcoming expiries this week.</p>}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
