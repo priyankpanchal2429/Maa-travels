@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
 import ThemeToggle from '@/components/ui/ThemeToggle/ThemeToggle';
 import { 
   LayoutDashboard, 
@@ -11,7 +10,6 @@ import {
   Bus as BusIcon, 
   Map as MapIcon, 
   IndianRupee, 
-  UserCircle 
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
@@ -52,15 +50,9 @@ const NAV_ITEMS: NavItem[] = [
     href: '/expenses',
     icon: <IndianRupee size={18} />,
   },
-  {
-    label: 'Profile',
-    href: '/profile',
-    icon: <UserCircle size={18} />,
-  },
 ];
 
 export default function Sidebar() {
-  const { user } = useAuth();
   const pathname = usePathname();
 
   return (
@@ -94,14 +86,12 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom — user info + theme */}
+      {/* Bottom — system status + theme */}
       <div className={styles.bottom}>
         <div className={styles.userCard}>
-          <div className={styles.avatar}>
-            {user?.name?.charAt(0).toUpperCase() ?? 'A'}
-          </div>
+          <div className={styles.avatar}>A</div>
           <div className={styles.userInfo}>
-            <p className={styles.userName}>{user?.name ?? 'Admin User'}</p>
+            <p className={styles.userName}>Administrator</p>
             <p className={styles.userRole}>System Control</p>
           </div>
         </div>

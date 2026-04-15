@@ -140,7 +140,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ initialData, onSuccess }) => 
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           error={errors.description}
           required
-          icon={<FileText size={16} />}
+          leftIcon={<FileText size={16} />}
         />
       </div>
 

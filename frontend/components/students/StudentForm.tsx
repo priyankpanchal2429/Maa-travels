@@ -166,7 +166,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
         onChange={(e) => setFormData({ ...formData, parentPhone: e.target.value })}
         error={errors.parentPhone}
         required
-        icon={<Phone size={16} />}
+        leftIcon={<Phone size={16} />}
       />
 
       <div className={styles.grid}>
