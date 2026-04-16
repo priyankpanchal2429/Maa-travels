@@ -47,16 +47,24 @@
 }
 
 [data-theme='light'] {
-  --color-bg: #f4f4f5;
+  --color-bg: #f8fafc;        /* Slate 50 */
   --color-bg-alt: #ffffff;
-  --color-bg-hover: #e4e4e7;
-  --color-border: #d4d4d8;
-  --color-border-hover: #a1a1aa;
-  --color-text: #09090b;
-  --color-text-muted: #52525b;
-  --color-primary: #000000;
-  --color-primary-hover: #27272a;
-  --color-primary-glow: rgba(0, 0, 0, 0.05);
+  --color-bg-hover: #f1f5f9;  /* Slate 100 */
+  --color-border: #e2e8f0;    /* Slate 200 */
+  --color-border-hover: #cbd5e1; 
+  --color-text: #0f172a;      /* Slate 900 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  --color-primary: #ff3333;   
+  --color-primary-hover: #cc0000; 
+  --color-primary-glow: rgba(255, 51, 51, 0.08);
+
+  --glass-bg: rgba(0, 0, 0, 0.04);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-glow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
 * {

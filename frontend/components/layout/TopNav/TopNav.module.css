@@ -14,16 +14,16 @@
 
 .capsule {
   pointer-events: auto;
-  background: rgba(24, 24, 27, 0.7);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-full);
   padding: 0.375rem 0.375rem 0.375rem 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glass-glow), 0 20px 40px -10px rgba(0, 0, 0, 0.1);
   min-width: 1000px;
   max-width: 1200px;
 }
@@ -122,7 +122,7 @@
   background: var(--color-primary);
   border-radius: var(--radius-full);
   z-index: 1;
-  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+  box-shadow: 0 4px 12px var(--color-primary-glow);
 }
 
 .right {

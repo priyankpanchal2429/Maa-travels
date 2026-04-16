@@ -5,7 +5,7 @@ import { Camera, LogOut, Settings, Bell, ShieldCheck, Mail } from 'lucide-react'
 import adminService, { AdminProfile } from '@/services/adminService';
 import CrystalCard from '@/components/ui/CrystalCard/CrystalCard';
 import Spinner from '@/components/ui/Spinner/Spinner';
-import { useRouter } from 'next/navigation';
+import { useTheme } from '@/context/ThemeContext';
 import styles from './page.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
@@ -16,6 +16,7 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     loadProfile();
@@ -132,8 +133,18 @@ export default function ProfilePage() {
 
         <CrystalCard title="Theme & Display" icon={<Settings size={18} />} className={styles.themeCard}>
            <div className={styles.themeOptions}>
-             <div className={styles.themeBoxActive}>Dark Mode</div>
-             <div className={styles.themeBox}>Light Mode</div>
+             <div 
+               className={theme === 'dark' ? styles.themeBoxActive : styles.themeBox}
+               onClick={() => theme === 'light' && toggleTheme()}
+             >
+               Dark Mode
+             </div>
+             <div 
+               className={theme === 'light' ? styles.themeBoxActive : styles.themeBox}
+               onClick={() => theme === 'dark' && toggleTheme()}
+             >
+               Light Mode
+             </div>
            </div>
         </CrystalCard>
 
