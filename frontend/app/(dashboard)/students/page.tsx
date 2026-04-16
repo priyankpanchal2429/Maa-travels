@@ -180,19 +180,19 @@ export default function StudentsPage() {
                     </td>
                     <td>
                       <div className={styles.actions}>
+                        <button onClick={() => handleEdit(student)} className={styles.actionBtn}>
+                          <Edit size={16} /> Edit
+                        </button>
                         <button 
                           className={styles.printBtn} 
                           disabled={student.paymentStatus === 'unpaid'}
                           onClick={() => handlePrint(student)}
                           title="Print ID Card"
                         >
-                          <Printer size={16} />
-                        </button>
-                        <button onClick={() => handleEdit(student)} className={styles.actionBtn}>
-                          <Edit size={16} />
+                          <Printer size={16} /> Print
                         </button>
                         <button onClick={() => handleDelete(student._id)} className={styles.actionBtnDelete}>
-                          <Trash2 size={16} />
+                          <Trash2 size={16} /> Delete
                         </button>
                       </div>
                     </td>
