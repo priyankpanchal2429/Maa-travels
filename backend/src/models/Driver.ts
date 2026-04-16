@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IDriver extends Document {
+  collegeId: mongoose.Types.ObjectId;
   driverId: string;
   name: string;
   phone: string;
@@ -15,6 +16,7 @@ export interface IDriver extends Document {
 
 const driverSchema = new Schema<IDriver>(
   {
+    collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
     driverId: { type: String, required: true, unique: true, trim: true },
     name: { type: String, required: true, trim: true },
     phone: { type: String, required: true, trim: true },

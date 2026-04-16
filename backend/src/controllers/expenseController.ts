@@ -12,8 +12,10 @@ export const createExpense = async (req: Request, res: Response, next: NextFunct
 
 export const getAllExpenses = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { busId, type, startDate, endDate } = req.query;
+    const { collegeId, busId, type, startDate, endDate } = req.query;
     const filter: any = {};
+    
+    if (collegeId) filter.collegeId = collegeId;
     
     if (busId) filter.busId = busId;
     if (type) filter.type = type;

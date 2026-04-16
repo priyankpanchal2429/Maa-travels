@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert } from 'lucide-react';
+import CollegeSwitcher from '../CollegeSwitcher/CollegeSwitcher';
 import styles from './TopNav.module.css';
 
 const NAV_LINKS = [
@@ -25,6 +26,7 @@ export default function TopNav() {
             <span>M</span>
           </div>
           <span className={styles.brandName}>Maa Travels</span>
+          <CollegeSwitcher />
         </div>
 
         <div className={styles.center}>

@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export type BusStatus = 'idle' | 'running' | 'maintenance';
 
 export interface IBus extends Document {
+  collegeId: mongoose.Types.ObjectId;
   busNumber: string;
   plateNumber: string;
   capacity: number;
@@ -14,6 +15,7 @@ export interface IBus extends Document {
 
 const busSchema = new Schema<IBus>(
   {
+    collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
     busNumber: { type: String, required: true, unique: true, trim: true },
     plateNumber: { type: String, required: true, unique: true, trim: true },
     capacity: { type: Number, required: true },

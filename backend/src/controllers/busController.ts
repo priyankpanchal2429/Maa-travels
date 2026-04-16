@@ -10,9 +10,12 @@ export const createBus = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export const getAllBuses = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllBuses = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const buses = await Bus.find().populate('currentDriverId');
+    const { collegeId } = req.query;
+    const filter: any = {};
+    if (collegeId) filter.collegeId = collegeId;
+    const buses = await Bus.find(filter).populate('currentDriverId');
     res.json({ success: true, count: buses.length, data: buses });
   } catch (error) {
     next(error);

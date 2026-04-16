@@ -6,6 +6,7 @@ export interface IStop {
 }
 
 export interface IRoute extends Document {
+  collegeId: mongoose.Types.ObjectId;
   routeName: string;
   stops: IStop[];
   assignedBusId?: mongoose.Types.ObjectId;
@@ -15,6 +16,7 @@ export interface IRoute extends Document {
 
 const routeSchema = new Schema<IRoute>(
   {
+    collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
     routeName: { type: String, required: true, unique: true, trim: true },
     stops: [
       {

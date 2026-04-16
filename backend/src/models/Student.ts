@@ -4,6 +4,7 @@ export type SubscriptionDuration = '6m' | '1y';
 export type PaymentStatus = 'paid' | 'unpaid' | 'bypassed';
 
 export interface IStudent extends Document {
+  collegeId: mongoose.Types.ObjectId;
   studentId: string;
   name: string;
   parentPhone: string;
@@ -20,6 +21,7 @@ export interface IStudent extends Document {
 
 const studentSchema = new Schema<IStudent>(
   {
+    collegeId: { type: Schema.Types.ObjectId, ref: 'College', required: true },
     studentId: { type: String, required: true, unique: true, trim: true },
     name: { type: String, required: true, trim: true },
     parentPhone: { type: String, required: true, trim: true },

@@ -10,9 +10,12 @@ export const createRoute = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const getAllRoutes = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllRoutes = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const routes = await Route.find().populate('assignedBusId');
+    const { collegeId } = req.query;
+    const filter: any = {};
+    if (collegeId) filter.collegeId = collegeId;
+    const routes = await Route.find(filter).populate('assignedBusId');
     res.json({ success: true, count: routes.length, data: routes });
   } catch (error) {
     next(error);

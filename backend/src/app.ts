@@ -11,6 +11,7 @@ import driverRoutes from './routes/driverRoutes';
 import busRoutes from './routes/busRoutes';
 import routeRoutes from './routes/routeRoutes';
 import expenseRoutes from './routes/expenseRoutes';
+import collegeRoutes from './routes/collegeRoutes';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use('/api/drivers', driverRoutes);
 app.use('/api/buses', busRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/colleges', collegeRoutes);
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {

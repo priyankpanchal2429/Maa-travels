@@ -10,9 +10,12 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const getAllStudents = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const students = await Student.find().populate('routeId');
+    const { collegeId } = req.query;
+    const filter: any = {};
+    if (collegeId) filter.collegeId = collegeId;
+    const students = await Student.find(filter).populate('routeId');
     res.json({ success: true, count: students.length, data: students });
   } catch (error) {
     next(error);

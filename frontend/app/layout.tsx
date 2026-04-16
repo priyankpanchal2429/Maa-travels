@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UIProvider } from '@/context/UIContext';
+import { CollegeProvider } from '@/context/CollegeContext';
 import DrawerHost from '@/components/ui/Drawer/DrawerHost';
 import ToastHost from '@/components/ui/Toast/ToastHost';
 
@@ -15,11 +16,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <UIProvider>
-            {children}
-            <DrawerHost />
-            <ToastHost />
-          </UIProvider>
+          <CollegeProvider>
+            <UIProvider>
+              {children}
+              <DrawerHost />
+              <ToastHost />
+            </UIProvider>
+          </CollegeProvider>
         </ThemeProvider>
       </body>
     </html>
