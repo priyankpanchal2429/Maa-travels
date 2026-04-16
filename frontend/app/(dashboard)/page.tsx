@@ -42,14 +42,7 @@ export default function DashboardPage() {
 
     setIsLoading(true);
     try {
-      const [
-        studentsRes,
-        busesRes,
-        driversRes,
-        routesRes,
-        insightsRes,
-        expensesRes
-      ] = await Promise.all([
+      const results = await Promise.allSettled([
         studentService.getAll(),
         busService.getAll(),
         driverService.getAll(),
@@ -58,31 +51,48 @@ export default function DashboardPage() {
         expenseService.getAll({ limit: 5 })
       ]);
 
-      const buses = Array.isArray(busesRes.data.data) ? busesRes.data.data : [];
-      const students = Array.isArray(studentsRes.data.data) ? studentsRes.data.data : [];
-      const expenses = Array.isArray(expensesRes.data.data) ? expensesRes.data.data : [];
-      const insights = insightsRes.data.data || { unpaid: { count: 0, students: [] }, expiring: { count: 0, students: [] }, expired: { count: 0, students: [] } };
+      // Helper to check if a result was successful
+      const isOk = (result: any) => result.status === 'fulfilled';
+      const getData = (result: any) => result.value.data.data;
 
-      const totalExpenses = expenses.reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
+      // Log errors for debugging
+      results.forEach((res, idx) => {
+        if (res.status === 'rejected') {
+          console.error(`Service ${idx} failed:`, res.reason);
+        }
+      });
+
+      const studentsData = isOk(results[0]) ? (results[0] as any).value.data : { count: 0, data: [] };
+      const buses = isOk(results[1]) ? getData(results[1]) : [];
+      const drivers = isOk(results[2]) ? getData(results[2]) : [];
+      const routes = isOk(results[3]) ? getData(results[3]) : [];
+      const insights = isOk(results[4]) ? getData(results[4]) : { unpaid: { count: 0, students: [] }, expired: { count: 0, students: [] } };
+      const expenses = isOk(results[5]) ? getData(results[5]) : [];
+
+      const totalExpenses = Array.isArray(expenses) ? expenses.reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0) : 0;
 
       setData({
-        students: studentsRes.data.count || students.length,
+        students: studentsData.count || (Array.isArray(studentsData.data) ? studentsData.data.length : 0),
         buses: {
           total: buses.length,
           active: buses.filter((b: any) => b.status === 'running').length,
           maintenance: buses.filter((b: any) => b.status === 'maintenance').length,
         },
-        drivers: Array.isArray(driversRes.data.data) ? driversRes.data.data.length : 0,
-        routes: Array.isArray(routesRes.data.data) ? routesRes.data.data.length : 0,
+        drivers: drivers.length,
+        routes: routes.length,
         insights,
         expenses: {
           total: totalExpenses,
           recent: expenses
         }
       });
+
+      if (results.some(r => r.status === 'rejected')) {
+        showToast('Nexus synced with partial service outages', 'warning');
+      }
     } catch (err) {
-      console.error('Nexus Data Fetch Failed', err);
-      showToast('Failed to sync Nexus data', 'error');
+      console.error('Critical Dashboard Failure', err);
+      showToast('Deep Nexus Sync Failure', 'error');
     } finally {
       setIsLoading(false);
     }

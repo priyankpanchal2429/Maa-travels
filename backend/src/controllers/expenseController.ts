@@ -17,9 +17,13 @@ export const createExpense = async (req: Request, res: Response, next: NextFunct
 
 export const getAllExpenses = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { collegeId, busId, type, startDate, endDate } = req.query;
-    const filter: any = {};
+    let { collegeId, busId, type, startDate, endDate } = req.query;
     
+    if (!collegeId) {
+      collegeId = (await getDefaultCollegeId()) as string;
+    }
+
+    const filter: any = {};
     if (collegeId) filter.collegeId = collegeId;
     
     if (busId) filter.busId = busId;
