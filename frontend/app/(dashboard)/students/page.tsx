@@ -53,7 +53,7 @@ export default function StudentsPage() {
       const matchesSearch = 
         student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.phone?.includes(searchQuery);
+        student.parentPhone?.includes(searchQuery);
 
       const isExpired = new Date(student.expiryDate) < new Date();
       let matchesStatus = true;
