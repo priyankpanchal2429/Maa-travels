@@ -25,7 +25,11 @@ export default function TopNav() {
           <div className={styles.logo}>
             <span>M</span>
           </div>
-          <span className={styles.brandName}>Maa Travels</span>
+          <div className={styles.brandContainer}>
+            <span className={styles.brandMaa}>Maa</span>
+            <span className={styles.brandTravels}>Travels</span>
+          </div>
+          <div className={styles.divider} />
           <CollegeSwitcher />
         </div>
 
