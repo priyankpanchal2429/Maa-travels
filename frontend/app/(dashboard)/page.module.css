@@ -102,8 +102,8 @@
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent 70%);
-  border: 2px solid rgba(6, 182, 212, 0.3);
+  background: radial-gradient(circle, var(--color-primary-glow), transparent 70%);
+  border: 2px solid var(--glass-border);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -118,7 +118,7 @@
   width: 120%;
   height: 120%;
   border-radius: 50%;
-  border: 1px solid rgba(6, 182, 212, 0.1);
+  border: 1px solid var(--glass-border);
   animation: ripple 3s infinite;
 }
 

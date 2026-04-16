@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.02);
+  background: var(--glass-bg);
   cursor: pointer;
   transition: var(--transition);
 }
@@ -117,7 +117,7 @@
 .segmentedControl {
   display: flex;
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--glass-bg);
   padding: 4px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--glass-border);

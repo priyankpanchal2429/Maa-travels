@@ -58,7 +58,7 @@
 .iconCircle {
   width: 48px;
   height: 48px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -134,18 +134,18 @@
 }
 
 .editBtn {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   color: var(--color-text);
 }
 
 .editBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-hover);
   border-color: var(--color-primary);
 }
 
 .deleteBtn {
-  background: rgba(239, 68, 68, 0.05);
+  background: var(--color-primary-glow);
   border: 1px solid rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
