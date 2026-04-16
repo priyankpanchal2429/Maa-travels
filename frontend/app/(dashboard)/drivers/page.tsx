@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, UserSquare2, Phone, MapPin, Edit, Trash2, IndianRupee } from 'lucide-react';
+import { Plus, UserSquare2, Phone, MapPin, Edit, Trash2, IndianRupee, Search, Filter } from 'lucide-react';
+import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import driverService, { Driver } from '@/services/driverService';
 import Button from '@/components/ui/Button/Button';
@@ -12,6 +13,8 @@ import styles from './page.module.css';
 export default function DriversPage() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchDrivers = useCallback(async () => {
@@ -28,6 +31,21 @@ export default function DriversPage() {
   useEffect(() => {
     fetchDrivers();
   }, [fetchDrivers]);
+
+  const filteredDrivers = useMemo(() => {
+    return drivers.filter((driver) => {
+      const matchesSearch = 
+        driver.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        driver.driverId.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'active' && driver.isActive) || 
+        (statusFilter === 'inactive' && !driver.isActive);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [drivers, searchQuery, statusFilter]);
 
   const handleCreate = () => {
     openDrawer(
@@ -71,7 +89,7 @@ export default function DriversPage() {
       <header className={styles.header}>
         <div>
           <h1 className="text-gradient">Driver Registry</h1>
-          <p className={styles.subtitle}>Manage your transport workforce and payroll</p>
+          <p className={styles.subtitle}>{filteredDrivers.length} {filteredDrivers.length === 1 ? 'member' : 'members'} found</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
@@ -79,13 +97,44 @@ export default function DriversPage() {
         </Button>
       </header>
 
+      <div className={styles.toolbar}>
+        <div className={styles.searchSection}>
+          <div className={styles.searchWrap}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search by name, phone or ID..." 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.filterSection}>
+          <div className={styles.filterWrap}>
+            <Filter size={16} className={styles.filterIcon} />
+            <span className={styles.filterLabel}>Status</span>
+            <select 
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Drivers</option>
+              <option value="active">Active Only</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {isLoading ? (
         <div className={styles.loader}>
           <Spinner size="lg" />
         </div>
       ) : (
         <div className={styles.grid}>
-          {drivers.map((driver) => (
+          {filteredDrivers.map((driver) => (
             <div key={driver._id} className={styles.card}>
               <div className={styles.cardTop}>
                 <div className={styles.avatarWrap}>
@@ -136,12 +185,18 @@ export default function DriversPage() {
             </div>
           ))}
 
-          {drivers.length === 0 && (
+          {filteredDrivers.length === 0 && (
             <div className={styles.empty}>
               <UserSquare2 size={48} className={styles.emptyIcon} />
-              <h3>No drivers registered</h3>
-              <p>Add your first driver to start assigning routes.</p>
-              <Button variant="secondary" onClick={handleCreate}>Add Driver</Button>
+              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches found' : 'No drivers registered'}</h3>
+              <p>
+                {searchQuery || statusFilter !== 'all' 
+                  ? 'Try adjusting your search or status filter to find team members.' 
+                  : 'Add your first driver to start assigning routes.'}
+              </p>
+              {!searchQuery && statusFilter === 'all' && (
+                <Button variant="secondary" onClick={handleCreate}>Add Driver</Button>
+              )}
             </div>
           )}
         </div>
