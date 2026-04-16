@@ -63,12 +63,13 @@ export const getDashboardInsights = async (req: Request, res: Response, next: Ne
   try {
     let { collegeId } = req.query;
 
-    if (!collegeId) {
+    if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
 
     const defaultId = await getDefaultCollegeId();
-    let baseFilter: any = { collegeId };
+    let baseFilter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
+    
     if (collegeId === defaultId) {
       baseFilter = { $or: [{ collegeId }, { collegeId: null }] };
     }

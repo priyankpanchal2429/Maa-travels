@@ -18,10 +18,10 @@ export const createRoute = async (req: Request, res: Response, next: NextFunctio
 export const getAllRoutes = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { collegeId } = req.query;
-    if (!collegeId) {
+    if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
-    const filter: any = collegeId ? { collegeId } : {};
+    const filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
     const routes = await Route.find(filter).populate('assignedBusId');
     res.json({ success: true, count: routes.length, data: routes });
   } catch (error) {

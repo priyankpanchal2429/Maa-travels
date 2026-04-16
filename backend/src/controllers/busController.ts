@@ -18,10 +18,10 @@ export const createBus = async (req: Request, res: Response, next: NextFunction)
 export const getAllBuses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { collegeId } = req.query;
-    if (!collegeId) {
+    if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
-    const filter: any = collegeId ? { collegeId } : {};
+    const filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
     const buses = await Bus.find(filter).populate('currentDriverId');
     res.json({ success: true, count: buses.length, data: buses });
   } catch (error) {

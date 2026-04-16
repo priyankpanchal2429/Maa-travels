@@ -20,14 +20,12 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
 export const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { collegeId } = req.query;
-    
-    // Graceful fallback: Isolation for old frontend versions
-    if (!collegeId) {
+    if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
 
     // Build filter: If searching for default college, also include students with null collegeId
-    let filter: any = { collegeId };
+    let filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
     const defaultId = await getDefaultCollegeId();
     if (collegeId === defaultId) {
       filter = { $or: [{ collegeId }, { collegeId: null }] };
