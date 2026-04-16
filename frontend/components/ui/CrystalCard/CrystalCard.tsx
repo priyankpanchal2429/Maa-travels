@@ -9,6 +9,7 @@ interface CrystalCardProps {
   subtitle?: string;
   icon?: React.ReactNode;
   pulse?: boolean;
+  interactive?: boolean;
 }
 
 const CrystalCard: React.FC<CrystalCardProps> = ({ 
@@ -18,10 +19,11 @@ const CrystalCard: React.FC<CrystalCardProps> = ({
   title, 
   subtitle,
   icon,
-  pulse = false
+  pulse = false,
+  interactive = false
 }) => {
   return (
-    <div className={`bento-card ${styles.card} ${styles[variant]} ${pulse ? 'pulse-' + variant : ''} ${className}`}>
+    <div className={`bento-card ${styles.card} ${styles[variant]} ${pulse ? 'pulse-' + variant : ''} ${interactive ? styles.interactive : ''} ${className}`}>
       <div className={styles.glow} />
       <div className={styles.content}>
         {(title || icon) && (

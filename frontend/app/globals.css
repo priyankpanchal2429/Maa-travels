@@ -122,7 +122,7 @@ h1, h2, h3, h4, h5, h6 {
   display: inline-block;
 }
 
-/* Glassmorphism Containers */
+/* Glassmorphism Containers - Base Only */
 .bento-card {
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
@@ -134,12 +134,6 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   overflow: hidden;
   box-shadow: var(--glass-glow), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-}
-
-.bento-card:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
 }
 
 /* Pulse Animations */
