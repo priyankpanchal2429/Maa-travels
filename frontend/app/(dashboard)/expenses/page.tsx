@@ -11,8 +11,10 @@ import {
   Trash2, 
   Edit,
   TrendingUp,
-  Filter
+  Filter,
+  Search
 } from 'lucide-react';
+import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import expenseService, { Expense, ExpenseType } from '@/services/expenseService';
 import Button from '@/components/ui/Button/Button';
@@ -31,6 +33,7 @@ export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchExpenses = useCallback(async () => {
@@ -85,7 +88,20 @@ export default function ExpensesPage() {
     }
   };
 
-  const totalAmount = expenses.reduce((acc, curr) => acc + curr.amount, 0);
+  const filteredExpenses = useMemo(() => {
+    return expenses.filter((expense) => {
+      const busNumber = typeof expense.busId === 'object' ? expense.busId.busNumber : expense.busId;
+      const term = searchQuery.toLowerCase();
+      
+      return (
+        expense.description.toLowerCase().includes(term) ||
+        (busNumber && busNumber.toLowerCase().includes(term)) ||
+        expense.type.toLowerCase().includes(term)
+      );
+    });
+  }, [expenses, searchQuery]);
+
+  const totalAmount = filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className={styles.container}>
@@ -94,9 +110,30 @@ export default function ExpensesPage() {
           <h1 className="text-gradient">Financial Ledger</h1>
           <p className={styles.subtitle}>Track daily costs and maintenance expenses</p>
         </div>
-        <div className={styles.headerActions}>
+        <Button onClick={handleCreate}>
+          <Plus size={18} />
+          Record Expense
+        </Button>
+      </header>
+
+      <div className={styles.toolbar}>
+        <div className={styles.searchSection}>
+          <div className={styles.searchWrap}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search by description or bus..." 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.filterSection}>
           <div className={styles.filterWrap}>
             <Filter size={16} className={styles.filterIcon} />
+            <span className={styles.filterLabel}>Type</span>
             <select 
               className={styles.filterSelect}
               value={filterType}
@@ -109,12 +146,8 @@ export default function ExpensesPage() {
               <option value="other">Other</option>
             </select>
           </div>
-          <Button onClick={handleCreate}>
-            <Plus size={18} />
-            Record Expense
-          </Button>
         </div>
-      </header>
+      </div>
 
       <div className={styles.statsBar}>
         <div className={styles.statCard}>
@@ -134,7 +167,7 @@ export default function ExpensesPage() {
         </div>
       ) : (
         <div className={styles.list}>
-          {expenses.map((expense) => {
+          {filteredExpenses.map((expense) => {
             const config = typeConfig[expense.type];
             return (
               <div key={expense._id} className={styles.item}>
@@ -172,12 +205,18 @@ export default function ExpensesPage() {
             );
           })}
 
-          {expenses.length === 0 && (
+          {filteredExpenses.length === 0 && (
             <div className={styles.empty}>
               <IndianRupee size={48} className={styles.emptyIcon} />
-              <h3>No expense logs found</h3>
-              <p>Start tracking your business overheads here.</p>
-              <Button variant="secondary" onClick={handleCreate}>Record First Expense</Button>
+              <h3>{searchQuery || filterType ? 'No matches found' : 'No expense logs found'}</h3>
+              <p>
+                {searchQuery || filterType 
+                  ? 'Try adjusting your search or filters to find specific entries.' 
+                  : 'Start tracking your business overheads here.'}
+              </p>
+              {!searchQuery && !filterType && (
+                <Button variant="secondary" onClick={handleCreate}>Record First Expense</Button>
+              )}
             </div>
           )}
         </div>
