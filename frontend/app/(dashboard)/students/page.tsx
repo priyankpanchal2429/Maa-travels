@@ -13,8 +13,11 @@ import {
   CheckCircle2, 
   Clock, 
   AlertCircle,
-  Printer
+  Printer,
+  Search,
+  Filter
 } from 'lucide-react';
+import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import studentService, { Student } from '@/services/studentService';
 import Button from '@/components/ui/Button/Button';
@@ -26,6 +29,8 @@ import styles from './page.module.css';
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchStudents = useCallback(async () => {
@@ -42,6 +47,24 @@ export default function StudentsPage() {
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
+
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
+      const matchesSearch = 
+        student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.phone?.includes(searchQuery);
+
+      const isExpired = new Date(student.expiryDate) < new Date();
+      let matchesStatus = true;
+      if (statusFilter === 'expired') matchesStatus = isExpired;
+      else if (statusFilter === 'paid') matchesStatus = student.paymentStatus === 'paid' && !isExpired;
+      else if (statusFilter === 'unpaid') matchesStatus = student.paymentStatus === 'unpaid' && !isExpired;
+      else if (statusFilter === 'bypassed') matchesStatus = student.paymentStatus === 'bypassed' && !isExpired;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [students, searchQuery, statusFilter]);
 
   const handleCreate = () => {
     openDrawer(
@@ -106,13 +129,44 @@ export default function StudentsPage() {
       <header className={styles.header}>
         <div>
           <h1 className="text-gradient">Student Subscriptions</h1>
-          <p className={styles.subtitle}>{students.length} active service users</p>
+          <p className={styles.subtitle}>
+            {filteredStudents.length} {filteredStudents.length === 1 ? 'user' : 'users'} found
+          </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
           Enroll Student
         </Button>
       </header>
+
+      <div className={styles.toolbar}>
+        <div className={styles.searchWrap}>
+          <Search size={18} className={styles.searchIcon} />
+          <input 
+            type="text" 
+            placeholder="Search by name, ID or phone..." 
+            className={styles.searchInput}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.filterWrap}>
+          <Filter size={16} className={styles.searchIcon} />
+          <span className={styles.filterLabel}>Status:</span>
+          <select 
+            className={styles.filterSelect}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="all">All Subscriptions</option>
+            <option value="paid">Active & Paid</option>
+            <option value="unpaid">Unpaid Records</option>
+            <option value="bypassed">Bypassed</option>
+            <option value="expired">Expired</option>
+          </select>
+        </div>
+      </div>
 
       {isLoading ? (
         <div className={styles.loader}>
@@ -131,7 +185,7 @@ export default function StudentsPage() {
               </tr>
             </thead>
             <tbody>
-              {students.map((student) => {
+              {filteredStudents.map((student) => {
                 const status = getStatusConfig(student.paymentStatus, student.expiryDate);
                 const expiringSoon = isExpiringSoon(student.expiryDate);
                 
@@ -202,12 +256,18 @@ export default function StudentsPage() {
             </tbody>
           </table>
           
-          {students.length === 0 && (
+          {filteredStudents.length === 0 && (
             <div className={styles.empty}>
               <Users size={48} className={styles.emptyIcon} />
-              <h3>No students enrolled</h3>
-              <p>Register students to manage their transport passes.</p>
-              <Button variant="secondary" onClick={handleCreate}>Enroll Now</Button>
+              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches found' : 'No students enrolled'}</h3>
+              <p>
+                {searchQuery || statusFilter !== 'all' 
+                  ? 'Try adjusting your search or filters to find what you are looking for.' 
+                  : 'Register students to manage their transport passes.'}
+              </p>
+              {!searchQuery && statusFilter === 'all' && (
+                <Button variant="secondary" onClick={handleCreate}>Enroll Now</Button>
+              )}
             </div>
           )}
         </div>
