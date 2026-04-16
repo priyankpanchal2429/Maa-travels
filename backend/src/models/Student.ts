@@ -26,7 +26,7 @@ const studentSchema = new Schema<IStudent>(
     studentId: { type: String, required: true, unique: true, trim: true },
     name: { type: String, required: true, trim: true },
     parentPhone: { type: String, required: true, trim: true },
-    address: { type: String, trim: true },
+    address: { type: String, required: true, trim: true },
     duration: { type: String, enum: ['6m', '1y'], required: true },
     routeId: { type: Schema.Types.ObjectId, ref: 'Route', required: true },
     stopId: { type: String, required: true }, // Name of the stop

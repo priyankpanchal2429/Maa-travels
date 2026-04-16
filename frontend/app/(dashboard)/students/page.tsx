@@ -244,7 +244,7 @@ export default function StudentsPage() {
                     </td>
                     <td>
                       <div className={styles.addressCell}>
-                        <span className={styles.addressText}>{student.address}</span>
+                        <span className={styles.addressText}>{student.address || 'Not Provided'}</span>
                       </div>
                     </td>
                     <td>
