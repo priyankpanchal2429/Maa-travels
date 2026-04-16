@@ -8,7 +8,7 @@ import ToastHost from '@/components/ui/Toast/ToastHost';
 
 export const metadata: Metadata = {
   title: 'Bus Management System',
-  description: 'Manage your bus fleet, drivers, staff and routes from one place.',
+  description: 'Manage your buses, drivers, staff and routes from one place.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

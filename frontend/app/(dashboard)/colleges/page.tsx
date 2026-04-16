@@ -66,7 +66,7 @@ export default function CollegesPage() {
       <header className={styles.header}>
         <div className={styles.titleInfo}>
           <h1>Institutions Hub</h1>
-          <p className={styles.subtitle}>Active fleet colleges and campus management</p>
+          <p className={styles.subtitle}>Active institution networks and campus management</p>
         </div>
         <button className={styles.addBtn} disabled>
           Register New <Plus size={14} />

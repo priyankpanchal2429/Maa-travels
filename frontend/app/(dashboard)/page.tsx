@@ -85,7 +85,7 @@ export default function DashboardPage() {
       <main className={styles.grid}>
         {/* LARGE: Fleet Vitality Pulse */}
         <CrystalCard 
-          title="Fleet Vitality" 
+          title="Bus Vitality" 
           subtitle="Real-time operational health" 
           variant="cyan"
           className={styles.vitality}

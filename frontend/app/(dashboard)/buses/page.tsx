@@ -92,7 +92,7 @@ export default function BusesPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className="text-gradient">Fleet Management</h1>
+          <h1 className="text-gradient">Bus Management</h1>
           <p className={styles.subtitle}>Manage your buses and live deployment status</p>
         </div>
         <Button onClick={handleCreate}>
@@ -160,7 +160,7 @@ export default function BusesPage() {
             <div className={styles.empty}>
               <BusIcon size={48} className={styles.emptyIcon} />
               <h3>No buses registered</h3>
-              <p>Add your first vehicle to the fleet.</p>
+              <p>Add your first vehicle to the bus network.</p>
               <Button variant="secondary" onClick={handleCreate}>Add Bus</Button>
             </div>
           )}

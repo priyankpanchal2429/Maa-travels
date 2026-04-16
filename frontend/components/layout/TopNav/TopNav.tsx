@@ -15,7 +15,7 @@ const NAV_LINKS = [
   { href: '/', label: 'Overview', icon: LayoutDashboard },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/drivers', label: 'Drivers', icon: ShieldAlert },
-  { href: '/buses', label: 'Fleet', icon: Bus },
+  { href: '/buses', label: 'Bus', icon: Bus },
   { href: '/routes', label: 'Routes', icon: Map },
   { href: '/expenses', label: 'Ledger', icon: ReceiptText },
   { href: '/colleges', label: 'Institutions', icon: Building2 },
