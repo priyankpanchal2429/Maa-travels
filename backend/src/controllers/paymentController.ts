@@ -67,7 +67,11 @@ export const getDashboardInsights = async (req: Request, res: Response, next: Ne
       collegeId = (await getDefaultCollegeId()) as string;
     }
 
-    const baseFilter: any = collegeId ? { collegeId } : {};
+    const defaultId = await getDefaultCollegeId();
+    let baseFilter: any = { collegeId };
+    if (collegeId === defaultId) {
+      baseFilter = { $or: [{ collegeId }, { collegeId: null }] };
+    }
     const now = new Date();
     const in7Days = new Date();
     in7Days.setDate(in7Days.getDate() + 7);

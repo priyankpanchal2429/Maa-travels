@@ -9,6 +9,7 @@ import Link from 'next/link';
 import studentService, { Student } from '@/services/studentService';
 import paymentService from '@/services/paymentService';
 import Spinner from '@/components/ui/Spinner/Spinner';
+import { useCollege } from '@/context/CollegeContext';
 import styles from './page.module.css';
 
 interface InsightStudent {
@@ -27,11 +28,15 @@ interface DashboardInsights {
 }
 
 export default function DashboardPage() {
+  const { activeCollegeId, isLoading: isCollegeLoading } = useCollege();
   const [studentCount, setStudentCount] = useState(0);
   const [insights, setInsights] = useState<DashboardInsights | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
+    // Wait until college context is ready and we have an ID
+    if (isCollegeLoading || !activeCollegeId) return;
+
     setIsLoading(true);
     try {
       const [studentsRes, insightsRes] = await Promise.all([
@@ -39,14 +44,14 @@ export default function DashboardPage() {
         paymentService.getInsights(),
       ]);
 
-      setStudentCount(studentsRes.data.data.length);
+      setStudentCount(studentsRes.data.count || studentsRes.data.data.length);
       setInsights(insightsRes.data.data);
     } catch (err) {
       console.error('Failed to load dashboard data');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [activeCollegeId, isCollegeLoading]);
 
   useEffect(() => {
     fetchData();

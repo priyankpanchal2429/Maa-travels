@@ -26,7 +26,13 @@ export const getAllStudents = async (req: Request, res: Response, next: NextFunc
       collegeId = (await getDefaultCollegeId()) as string;
     }
 
-    const filter: any = collegeId ? { collegeId } : {};
+    // Build filter: If searching for default college, also include students with null collegeId
+    let filter: any = { collegeId };
+    const defaultId = await getDefaultCollegeId();
+    if (collegeId === defaultId) {
+      filter = { $or: [{ collegeId }, { collegeId: null }] };
+    }
+
     const students = await Student.find(filter).populate('routeId');
     res.json({ success: true, count: students.length, data: students });
   } catch (error) {

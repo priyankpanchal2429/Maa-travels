@@ -73,3 +73,30 @@ export const updatePhoto = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
+
+/**
+ * Migration: Finds all students with null collegeId and assigns them the first available college.
+ */
+import { Student } from '../models/Student';
+import { College } from '../models/College';
+
+export const fixLegacyStudents = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const defaultCollege = await College.findOne({ code: 'DEFAULT' }) || await College.findOne();
+    if (!defaultCollege) {
+      return res.status(404).json({ success: false, message: 'No colleges found to assign students to' });
+    }
+
+    const result = await Student.updateMany(
+      { collegeId: null },
+      { $set: { collegeId: defaultCollege._id } }
+    );
+
+    res.json({ 
+      success: true, 
+      message: `Migrated ${result.modifiedCount} legacy students to college: ${defaultCollege.name}` 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
