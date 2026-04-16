@@ -2,46 +2,32 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Plus, ChevronDown, Bell, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert } from 'lucide-react';
 import styles from './TopNav.module.css';
 
 const NAV_LINKS = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/', label: 'Overview', icon: LayoutDashboard },
   { href: '/students', label: 'Students', icon: Users },
   { href: '/drivers', label: 'Drivers', icon: ShieldAlert },
   { href: '/buses', label: 'Fleet', icon: Bus },
   { href: '/routes', label: 'Routes', icon: Map },
-  { href: '/expenses', label: 'Expenses', icon: ReceiptText },
+  { href: '/expenses', label: 'Ledger', icon: ReceiptText },
 ];
 
 export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <div className={styles.navWrapper}>
-      {/* 1. Top Header */}
-      <header className={styles.headerTop}>
-        <div className={styles.brand}>
-          <span className={styles.brandTitle}>Maa Travels</span>
-        </div>
-        <div className={styles.headerActions}>
-          <button className={styles.createBtn}>
-            <Plus size={14} /> Create <ChevronDown size={14} />
-          </button>
-          <div className={styles.periodSelect}>
-            F.Y. 2026-2027 <ChevronDown size={14} />
+    <div className={styles.capsuleWrapper}>
+      <nav className={styles.capsule}>
+        <div className={styles.left}>
+          <div className={styles.logo}>
+            <span>M</span>
           </div>
-          <button className={styles.actionIcon}><LayoutDashboard size={14} /></button>
-          <button className={styles.actionIcon}><Bell size={14} /></button>
-          <div className={styles.avatar}>
-            <UserIcon size={14} />
-          </div>
+          <span className={styles.brandName}>Maa Travels</span>
         </div>
-      </header>
 
-      {/* 2. Tab Bar */}
-      <nav className={styles.tabBar}>
-        <div className={styles.tabContainer}>
+        <div className={styles.center}>
           {NAV_LINKS.map((link) => {
             const isActive = pathname === link.href;
             const Icon = link.icon;
@@ -49,23 +35,22 @@ export default function TopNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`${styles.tab} ${isActive ? styles.activeTab : ''}`}
+                className={`${styles.navItem} ${isActive ? styles.active : ''}`}
               >
-                <Icon size={18} className={styles.tabIcon} />
-                <span className={styles.tabLabel}>{link.label}</span>
+                <Icon size={16} className={styles.icon} />
+                <span className={styles.label}>{link.label}</span>
+                {isActive && <div className={styles.activePill} />}
               </Link>
             );
           })}
         </div>
-      </nav>
 
-      {/* 3. Pill Strip */}
-      <div className={styles.pillStrip}>
-        <div className={styles.pillContainer}>
-          <button className={`${styles.pill} ${styles.activePill}`}>Analytics</button>
-          <button className={styles.pill}>Quick Links</button>
+        <div className={styles.right}>
+          <div className={styles.avatar}>
+            AD
+          </div>
         </div>
-      </div>
+      </nav>
     </div>
   );
 }
