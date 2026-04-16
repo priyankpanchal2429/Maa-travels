@@ -8,14 +8,14 @@
 .main {
   flex: 1;
   min-width: 0;
-  background: var(--color-bg);
+  padding-top: calc(var(--top-nav-height) + 24px); /* Space for the floating top nav */
 }
 
 .content {
-  padding: 24px;
+  padding: 0 32px 32px; /* Top padding is handled by .main */
   max-width: 1600px;
   margin: 0 auto;
-  min-height: 100%;
+  min-height: calc(100vh - var(--top-nav-height) - 24px);
   animation: pageFadeIn 0.3s ease;
 }
 
