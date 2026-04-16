@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, Bus as BusIcon, Edit, Trash2, Power, Wrench, AlertCircle } from 'lucide-react';
+import { Plus, Bus as BusIcon, Edit, Trash2, Power, Wrench, AlertCircle, Search, Filter } from 'lucide-react';
+import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import busService, { Bus, BusStatus } from '@/services/busService';
 import Button from '@/components/ui/Button/Button';
@@ -18,6 +19,8 @@ const statusConfig = {
 export default function BusesPage() {
   const [buses, setBuses] = useState<Bus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchBuses = useCallback(async () => {
@@ -34,6 +37,18 @@ export default function BusesPage() {
   useEffect(() => {
     fetchBuses();
   }, [fetchBuses]);
+
+  const filteredBuses = useMemo(() => {
+    return buses.filter((bus) => {
+      const matchesSearch = 
+        bus.busNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bus.plateNumber.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesStatus = statusFilter === 'all' || bus.status === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [buses, searchQuery, statusFilter]);
 
   const handleCreate = () => {
     openDrawer(
@@ -93,7 +108,7 @@ export default function BusesPage() {
       <header className={styles.header}>
         <div>
           <h1 className="text-gradient">Bus Management</h1>
-          <p className={styles.subtitle}>Manage your buses and live deployment status</p>
+          <p className={styles.subtitle}>{filteredBuses.length} {filteredBuses.length === 1 ? 'vehicle' : 'vehicles'} tracked</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
@@ -101,13 +116,45 @@ export default function BusesPage() {
         </Button>
       </header>
 
+      <div className={styles.toolbar}>
+        <div className={styles.searchSection}>
+          <div className={styles.searchWrap}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search by bus number or plate..." 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.filterSection}>
+          <div className={styles.filterWrap}>
+            <Filter size={16} className={styles.filterIcon} />
+            <span className={styles.filterLabel}>Status</span>
+            <select 
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">Any Status</option>
+              <option value="running">Running</option>
+              <option value="idle">Idle</option>
+              <option value="maintenance">Maintenance</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {isLoading ? (
         <div className={styles.loader}>
           <Spinner size="lg" />
         </div>
       ) : (
         <div className={styles.grid}>
-          {buses.map((bus) => (
+          {filteredBuses.map((bus) => (
             <div key={bus._id} className={styles.card}>
               <div className={styles.cardHeader}>
                 <div className={styles.iconBox}>
@@ -156,12 +203,18 @@ export default function BusesPage() {
             </div>
           ))}
 
-          {buses.length === 0 && (
+          {filteredBuses.length === 0 && (
             <div className={styles.empty}>
               <BusIcon size={48} className={styles.emptyIcon} />
-              <h3>No buses registered</h3>
-              <p>Add your first vehicle to the bus network.</p>
-              <Button variant="secondary" onClick={handleCreate}>Add Bus</Button>
+              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches found' : 'No buses registered'}</h3>
+              <p>
+                {searchQuery || statusFilter !== 'all'
+                  ? 'Try adjusting your search or deployment status to find vehicles.'
+                  : 'Add your first vehicle to the bus network.'}
+              </p>
+              {!searchQuery && statusFilter === 'all' && (
+                <Button variant="secondary" onClick={handleCreate}>Add Bus</Button>
+              )}
             </div>
           )}
         </div>
