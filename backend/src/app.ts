@@ -12,6 +12,8 @@ import busRoutes from './routes/busRoutes';
 import routeRoutes from './routes/routeRoutes';
 import expenseRoutes from './routes/expenseRoutes';
 import collegeRoutes from './routes/collegeRoutes';
+import adminRoutes from './routes/adminRoutes';
+import path from 'path';
 
 const app = express();
 
@@ -31,6 +33,9 @@ if (env.NODE_ENV !== 'test') {
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 }
 
+// ─── Static Files ───────────────────────────
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // ─── Rate limiting ───────────────────────────
 app.use('/api', generalRateLimiter);
 
@@ -46,6 +51,7 @@ app.use('/api/buses', busRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/colleges', collegeRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {

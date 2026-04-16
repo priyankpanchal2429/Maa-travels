@@ -2,7 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert } from 'lucide-react';
+import { 
+  LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Building2 
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import adminService, { AdminProfile } from '@/services/adminService';
 import CollegeSwitcher from '../CollegeSwitcher/CollegeSwitcher';
 import styles from './TopNav.module.css';
 
@@ -13,10 +17,32 @@ const NAV_LINKS = [
   { href: '/buses', label: 'Fleet', icon: Bus },
   { href: '/routes', label: 'Routes', icon: Map },
   { href: '/expenses', label: 'Ledger', icon: ReceiptText },
+  { href: '/colleges', label: 'Institutions', icon: Building2 },
 ];
 
 export default function TopNav() {
   const pathname = usePathname();
+  const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+
+  const loadProfile = async () => {
+    try {
+      const { data } = await adminService.getProfile();
+      setProfile(data.data);
+    } catch (err) {
+      console.error('Failed to load nav profile');
+    }
+  };
+
+  useEffect(() => {
+    loadProfile();
+    window.addEventListener('profileUpdated', loadProfile);
+    return () => window.removeEventListener('profileUpdated', loadProfile);
+  }, []);
+
+  const photoUrl = profile?.profilePhoto 
+    ? (profile.profilePhoto.startsWith('http') ? profile.profilePhoto : `${API_URL}${profile.profilePhoto}`)
+    : null;
 
   return (
     <div className={styles.capsuleWrapper}>
@@ -52,9 +78,13 @@ export default function TopNav() {
         </div>
 
         <div className={styles.right}>
-          <div className={styles.avatar}>
-            AD
-          </div>
+          <Link href="/profile" className={styles.avatar}>
+            {photoUrl ? (
+              <img src={photoUrl} alt="User" className={styles.avatarImg} />
+            ) : (
+              <span>AD</span>
+            )}
+          </Link>
         </div>
       </nav>
     </div>
