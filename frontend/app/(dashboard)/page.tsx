@@ -60,7 +60,7 @@ export default function DashboardPage() {
   // Fleet Status
   const runningBuses = data.buses.filter(b => b.status === 'running').length;
   const maintenanceBuses = data.buses.filter(b => b.status === 'maintenance').length;
-  const outOfServiceBuses = data.buses.filter(b => b.status === 'out_of_service').length;
+  const outOfServiceBuses = data.buses.filter(b => b.status === 'idle').length;
   const totalBuses = data.buses.length || 1; // avoid division by zero
   
   const pctRunning = (runningBuses / totalBuses) * 100;
