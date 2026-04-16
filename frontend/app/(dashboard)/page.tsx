@@ -157,7 +157,7 @@ export default function DashboardPage() {
               </defs>
               <path 
                 className={styles.sparklinePath} 
-                d="M 0 100 Q 50 10, 100 80 T 200 40 T 300 90 T 400 20" 
+                d="M 0 80 Q 50 30, 100 60 T 200 50 T 300 70 T 400 40" 
               />
             </svg>
           </div>
