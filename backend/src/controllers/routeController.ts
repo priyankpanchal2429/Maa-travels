@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { Route } from '../models/Route';
 
+import { getDefaultCollegeId } from '../utils/collegeUtils';
+
 export const createRoute = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.body.collegeId) {
+      req.body.collegeId = await getDefaultCollegeId();
+    }
     const route = await Route.create(req.body);
     res.status(201).json({ success: true, data: route });
   } catch (error) {
@@ -12,9 +17,11 @@ export const createRoute = async (req: Request, res: Response, next: NextFunctio
 
 export const getAllRoutes = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { collegeId } = req.query;
-    const filter: any = {};
-    if (collegeId) filter.collegeId = collegeId;
+    let { collegeId } = req.query;
+    if (!collegeId) {
+      collegeId = (await getDefaultCollegeId()) as string;
+    }
+    const filter: any = collegeId ? { collegeId } : {};
     const routes = await Route.find(filter).populate('assignedBusId');
     res.json({ success: true, count: routes.length, data: routes });
   } catch (error) {

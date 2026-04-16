@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { Bus } from '../models/Bus';
 
+import { getDefaultCollegeId } from '../utils/collegeUtils';
+
 export const createBus = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.body.collegeId) {
+      req.body.collegeId = await getDefaultCollegeId();
+    }
     const bus = await Bus.create(req.body);
     res.status(201).json({ success: true, data: bus });
   } catch (error) {
@@ -12,9 +17,11 @@ export const createBus = async (req: Request, res: Response, next: NextFunction)
 
 export const getAllBuses = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { collegeId } = req.query;
-    const filter: any = {};
-    if (collegeId) filter.collegeId = collegeId;
+    let { collegeId } = req.query;
+    if (!collegeId) {
+      collegeId = (await getDefaultCollegeId()) as string;
+    }
+    const filter: any = collegeId ? { collegeId } : {};
     const buses = await Bus.find(filter).populate('currentDriverId');
     res.json({ success: true, count: buses.length, data: buses });
   } catch (error) {

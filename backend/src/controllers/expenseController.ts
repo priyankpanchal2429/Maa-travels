@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { Expense } from '../models/Expense';
 
+import { getDefaultCollegeId } from '../utils/collegeUtils';
+
 export const createExpense = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.body.collegeId) {
+      req.body.collegeId = await getDefaultCollegeId();
+    }
     const expense = await Expense.create(req.body);
     res.status(201).json({ success: true, data: expense });
   } catch (error) {

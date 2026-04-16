@@ -1,8 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { Driver } from '../models/Driver';
 
+import { getDefaultCollegeId } from '../utils/collegeUtils';
+
 export const createDriver = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    if (!req.body.collegeId) {
+      req.body.collegeId = await getDefaultCollegeId();
+    }
     const driver = await Driver.create(req.body);
     res.status(201).json({ success: true, data: driver });
   } catch (error) {
@@ -12,9 +17,11 @@ export const createDriver = async (req: Request, res: Response, next: NextFuncti
 
 export const getAllDrivers = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { collegeId } = req.query;
-    const filter: any = {};
-    if (collegeId) filter.collegeId = collegeId;
+    let { collegeId } = req.query;
+    if (!collegeId) {
+      collegeId = (await getDefaultCollegeId()) as string;
+    }
+    const filter: any = collegeId ? { collegeId } : {};
     const drivers = await Driver.find(filter).populate('assignedBusId');
     res.json({ success: true, count: drivers.length, data: drivers });
   } catch (error) {

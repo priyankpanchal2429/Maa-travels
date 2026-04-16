@@ -1,8 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { Student } from '../models/Student';
 
+import { getDefaultCollegeId } from '../utils/collegeUtils';
+
 export const createStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Graceful fallback: Default to 'Default College' if no collegeId provided
+    if (!req.body.collegeId) {
+      req.body.collegeId = await getDefaultCollegeId();
+    }
     const student = await Student.create(req.body);
     res.status(201).json({ success: true, data: student });
   } catch (error) {
@@ -12,9 +18,14 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
 
 export const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { collegeId } = req.query;
-    const filter: any = {};
-    if (collegeId) filter.collegeId = collegeId;
+    let { collegeId } = req.query;
+    
+    // Graceful fallback: Isolation for old frontend versions
+    if (!collegeId) {
+      collegeId = (await getDefaultCollegeId()) as string;
+    }
+
+    const filter: any = collegeId ? { collegeId } : {};
     const students = await Student.find(filter).populate('routeId');
     res.json({ success: true, count: students.length, data: students });
   } catch (error) {
