@@ -180,13 +180,13 @@ export default function DashboardPage() {
               className={`${styles.tabBtn} ${threatTab === 'unpaid' ? styles.active : ''}`}
               onClick={() => setThreatTab('unpaid')}
             >
-              Unpaid ({data?.insights.unpaid.count})
+              Unpaid ({data?.insights.unpaid.count ?? 0})
             </button>
             <button 
               className={`${styles.tabBtn} ${threatTab === 'expired' ? styles.active : ''}`}
               onClick={() => setThreatTab('expired')}
             >
-              Expired ({data?.insights.expired.count})
+              Expired ({data?.insights.expired.count ?? 0})
             </button>
           </div>
 
@@ -205,7 +205,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
-            {((threatTab === 'unpaid' ? data?.insights.unpaid.count : data?.insights.expired.count) === 0) && (
+            {((threatTab === 'unpaid' ? (data?.insights.unpaid.count ?? 0) : (data?.insights.expired.count ?? 0)) === 0) && (
               <div style={{opacity: 0.5, textAlign: 'center', padding: '2rem'}}>
                 All clearances verified
               </div>
@@ -224,7 +224,7 @@ export default function DashboardPage() {
             <Activity size={16} />
           </div>
           <div className={styles.miniStat}>
-            <span className={styles.miniValue}>₹{data?.expenses.total.toLocaleString()}</span>
+            <span className={styles.miniValue}>₹{(data?.expenses.total ?? 0).toLocaleString()}</span>
             <span className={styles.miniLabel}>Recent Expenditure</span>
           </div>
           <div className={styles.insightList} style={{marginTop: '1rem', maxHeight: '180px'}}>
@@ -254,7 +254,9 @@ export default function DashboardPage() {
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusLabel}>Idle/Standby</span>
-              <span className={styles.statusValue}>{data?.buses.total - data?.buses.active - data?.buses.maintenance}</span>
+              <span className={styles.statusValue}>
+                {(data?.buses.total ?? 0) - (data?.buses.active ?? 0) - (data?.buses.maintenance ?? 0)}
+              </span>
             </div>
             <div className={styles.statusItem}>
               <span className={styles.statusLabel}>Avg Fuel Type</span>
