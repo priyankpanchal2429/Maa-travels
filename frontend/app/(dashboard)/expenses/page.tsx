@@ -116,6 +116,18 @@ export default function ExpensesPage() {
         </Button>
       </header>
 
+      <div className={styles.statsBar}>
+        <div className={styles.statCard}>
+          <div className={styles.statInfo}>
+            <p className={styles.statLabel}>Total Expenditure</p>
+            <h2 className={styles.statValue}>₹{totalAmount.toLocaleString()}</h2>
+          </div>
+          <div className={styles.statChart}>
+            <TrendingUp size={24} className={styles.trendIcon} />
+          </div>
+        </div>
+      </div>
+
       <div className={styles.toolbar}>
         <div className={styles.searchSection}>
           <div className={styles.searchWrap}>
@@ -145,18 +157,6 @@ export default function ExpensesPage() {
               <option value="fuel">Fuel</option>
               <option value="other">Other</option>
             </select>
-          </div>
-        </div>
-      </div>
-
-      <div className={styles.statsBar}>
-        <div className={styles.statCard}>
-          <div className={styles.statInfo}>
-            <p className={styles.statLabel}>Total Expenditure</p>
-            <h2 className={styles.statValue}>₹{totalAmount.toLocaleString()}</h2>
-          </div>
-          <div className={styles.statChart}>
-            <TrendingUp size={24} className={styles.trendIcon} />
           </div>
         </div>
       </div>
