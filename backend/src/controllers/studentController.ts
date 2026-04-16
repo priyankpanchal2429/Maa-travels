@@ -25,7 +25,7 @@ export const getAllStudents = async (req: Request, res: Response, next: NextFunc
     }
 
     // Build filter: If searching for default college, also include students with null collegeId
-    let filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
+    let filter: any = (collegeId && typeof collegeId === 'string' && collegeId.length === 24) ? { collegeId } : {};
     const defaultId = await getDefaultCollegeId();
     if (collegeId === defaultId) {
       filter = { $or: [{ collegeId }, { collegeId: null }] };

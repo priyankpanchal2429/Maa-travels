@@ -68,7 +68,7 @@ export const getDashboardInsights = async (req: Request, res: Response, next: Ne
     }
 
     const defaultId = await getDefaultCollegeId();
-    let baseFilter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
+    let baseFilter: any = (collegeId && typeof collegeId === 'string' && collegeId.length === 24) ? { collegeId } : {};
     
     if (collegeId === defaultId) {
       baseFilter = { $or: [{ collegeId }, { collegeId: null }] };

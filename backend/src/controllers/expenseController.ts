@@ -18,10 +18,17 @@ export const createExpense = async (req: Request, res: Response, next: NextFunct
 export const getAllExpenses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     let { collegeId, busId, type, startDate, endDate } = req.query;
+
     if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
-    const filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
+
+    const defaultId = await getDefaultCollegeId();
+    let filter: any = (collegeId && typeof collegeId === 'string' && collegeId.length === 24) ? { collegeId } : {};
+    
+    if (collegeId === defaultId) {
+      filter = { $or: [{ collegeId }, { collegeId: null }] };
+    }
     
     if (busId) filter.busId = busId;
     if (type) filter.type = type;

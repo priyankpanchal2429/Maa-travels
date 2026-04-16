@@ -86,10 +86,6 @@ export default function DashboardPage() {
           recent: expenses
         }
       });
-
-      if (results.some(r => r.status === 'rejected')) {
-        showToast('Nexus synced with partial service outages', 'warning');
-      }
     } catch (err) {
       console.error('Critical Dashboard Failure', err);
       showToast('Deep Nexus Sync Failure', 'error');

@@ -21,7 +21,7 @@ export const getAllDrivers = async (req: Request, res: Response, next: NextFunct
     if (!collegeId || (typeof collegeId === 'string' && collegeId.length !== 24)) {
       collegeId = (await getDefaultCollegeId()) as string;
     }
-    const filter: any = collegeId && (collegeId as string).length === 24 ? { collegeId } : {};
+    const filter: any = (collegeId && typeof collegeId === 'string' && collegeId.length === 24) ? { collegeId } : {};
     const drivers = await Driver.find(filter).populate('assignedBusId');
     res.json({ success: true, count: drivers.length, data: drivers });
   } catch (error) {
