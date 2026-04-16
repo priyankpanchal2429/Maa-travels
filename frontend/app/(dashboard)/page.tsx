@@ -58,22 +58,26 @@ export default function DashboardPage() {
         expenseService.getAll({ limit: 5 })
       ]);
 
-      const buses = busesRes.data.data;
-      const totalExpenses = (expensesRes.data.data as any[]).reduce((acc, curr) => acc + curr.amount, 0);
+      const buses = Array.isArray(busesRes.data.data) ? busesRes.data.data : [];
+      const students = Array.isArray(studentsRes.data.data) ? studentsRes.data.data : [];
+      const expenses = Array.isArray(expensesRes.data.data) ? expensesRes.data.data : [];
+      const insights = insightsRes.data.data || { unpaid: { count: 0, students: [] }, expiring: { count: 0, students: [] }, expired: { count: 0, students: [] } };
+
+      const totalExpenses = expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
 
       setData({
-        students: studentsRes.data.count || studentsRes.data.data.length,
+        students: studentsRes.data.count || students.length,
         buses: {
           total: buses.length,
           active: buses.filter((b: any) => b.status === 'running').length,
           maintenance: buses.filter((b: any) => b.status === 'maintenance').length,
         },
-        drivers: driversRes.data.data.length,
-        routes: routesRes.data.data.length,
-        insights: insightsRes.data.data,
+        drivers: Array.isArray(driversRes.data.data) ? driversRes.data.data.length : 0,
+        routes: Array.isArray(routesRes.data.data) ? routesRes.data.data.length : 0,
+        insights,
         expenses: {
           total: totalExpenses,
-          recent: expensesRes.data.data
+          recent: expenses
         }
       });
     } catch (err) {
@@ -180,18 +184,18 @@ export default function DashboardPage() {
               className={`${styles.tabBtn} ${threatTab === 'unpaid' ? styles.active : ''}`}
               onClick={() => setThreatTab('unpaid')}
             >
-              Unpaid ({data?.insights.unpaid.count ?? 0})
+              Unpaid ({data?.insights?.unpaid?.count ?? 0})
             </button>
             <button 
               className={`${styles.tabBtn} ${threatTab === 'expired' ? styles.active : ''}`}
               onClick={() => setThreatTab('expired')}
             >
-              Expired ({data?.insights.expired.count ?? 0})
+              Expired ({data?.insights?.expired?.count ?? 0})
             </button>
           </div>
 
           <div className={styles.insightList}>
-            {(threatTab === 'unpaid' ? data?.insights.unpaid.students : data?.insights.expired.students).map((s: any) => (
+            {(threatTab === 'unpaid' ? (data?.insights?.unpaid?.students || []) : (data?.insights?.expired?.students || [])).map((s: any) => (
               <div key={s._id} className={styles.insightRow}>
                 <div className={styles.miniStat}>
                   <span className={styles.studentName} style={{fontWeight: 800, fontSize: '0.9rem'}}>{s.name}</span>
@@ -205,7 +209,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
-            {((threatTab === 'unpaid' ? (data?.insights.unpaid.count ?? 0) : (data?.insights.expired.count ?? 0)) === 0) && (
+            {((threatTab === 'unpaid' ? (data?.insights?.unpaid?.count ?? 0) : (data?.insights?.expired?.count ?? 0)) === 0) && (
               <div style={{opacity: 0.5, textAlign: 'center', padding: '2rem'}}>
                 All clearances verified
               </div>
@@ -228,7 +232,7 @@ export default function DashboardPage() {
             <span className={styles.miniLabel}>Recent Expenditure</span>
           </div>
           <div className={styles.insightList} style={{marginTop: '1rem', maxHeight: '180px'}}>
-            {data?.expenses.recent.map((e: any) => (
+            {(data?.expenses?.recent || []).map((e: any) => (
               <div key={e._id} style={{display:'flex', justifyContent:'space-between', fontSize:'0.75rem', padding:'0.5rem 0', borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
                 <span>{e.description}</span>
                 <span style={{fontWeight: 800}}>₹{e.amount}</span>
