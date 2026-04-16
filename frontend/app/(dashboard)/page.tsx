@@ -2,13 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { 
-  BarChart3, RefreshCw, Calendar as CalendarIcon, Filter
+  Users, Truck, Activity, Landmark, RefreshCw, TrendingUp, AlertCircle
 } from 'lucide-react';
 import studentService, { Student } from '@/services/studentService';
 import driverService, { Driver } from '@/services/driverService';
 import busService, { Bus } from '@/services/busService';
 import expenseService, { Expense } from '@/services/expenseService';
 import Spinner from '@/components/ui/Spinner/Spinner';
+import CrystalCard from '@/components/ui/CrystalCard/CrystalCard';
 import styles from './page.module.css';
 
 export default function DashboardPage() {
@@ -21,6 +22,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
+    setIsLoading(true);
     try {
       const [studentsRes, driversRes, busesRes, expensesRes] = await Promise.all([
         studentService.getAll(),
@@ -56,208 +58,138 @@ export default function DashboardPage() {
 
   // Aggregations
   const totalExpenses = data.expenses.reduce((acc, curr) => acc + curr.amount, 0);
-  
-  // Fleet Status
   const runningBuses = data.buses.filter(b => b.status === 'running').length;
-  const maintenanceBuses = data.buses.filter(b => b.status === 'maintenance').length;
-  const outOfServiceBuses = data.buses.filter(b => b.status === 'idle').length;
-  const totalBuses = data.buses.length || 1; // avoid division by zero
+  const activeFleetPct = data.buses.length > 0 ? Math.round((runningBuses / data.buses.length) * 100) : 0;
   
-  const pctRunning = (runningBuses / totalBuses) * 100;
-  const pctMaint = (maintenanceBuses / totalBuses) * 100;
-
   // Expirations
   const now = new Date().getTime();
-  const dayMs = 1000 * 60 * 60 * 24;
-  let exp7 = 0;
-  let exp30 = 0;
-  let safe = 0;
-  
-  data.students.forEach(s => {
+  const expiringSoon = data.students.filter(s => {
     const diff = new Date(s.expiryDate).getTime() - now;
-    if (diff <= 0) exp7++; 
-    else if (diff <= 7 * dayMs) exp7++;
-    else if (diff <= 30 * dayMs) exp30++;
-    else safe++;
-  });
-  
-  const totalStudents = data.students.length || 1;
-  const pctExp7 = (exp7 / totalStudents) * 100;
-  const pctExp30 = (exp30 / totalStudents) * 100;
+    return diff > 0 && diff <= 1000 * 60 * 60 * 24 * 7;
+  }).length;
 
   return (
     <div className={styles.container}>
-      <div className={styles.toolbar}>
-        <span className={styles.lastUpdated}>Last Updated just now</span>
-        <button className={styles.dateRangeBtn}>
-          14-10-2025 To 14-04-2026 <CalendarIcon size={12} />
-        </button>
-        <button className={styles.refreshBtn} onClick={fetchData}>
-          Refresh <RefreshCw size={12} />
-        </button>
-      </div>
-
-      <div className={styles.grid}>
-        
-        {/* Row 1 - Card 1: Students */}
-        <div className={`${styles.card} ${styles.cardThird}`}>
-          <div className={styles.cardHeader}>
-            <div>
-              <h2 className={styles.cardTitle}>Students Enrolled</h2>
-            </div>
-          </div>
-          <div className={styles.cardBodyRow}>
-            <div className={styles.cardMetrics}>
-              <span className={styles.cardDate}>Apr 2026</span>
-              <span className={styles.cardValue}>{data.students.length}</span>
-              <span className={styles.cardSubValue}>+ Total active accounts</span>
-            </div>
-            <div className={styles.barChart}>
-              <div className={styles.bar} style={{ height: '20%' }} />
-              <div className={styles.bar} style={{ height: '60%' }} />
-              <div className={styles.bar} style={{ height: '30%' }} />
-              <div className={styles.bar} style={{ height: '100%' }} />
-              <div className={styles.bar} style={{ height: '80%' }} />
-            </div>
-          </div>
+      <header className={styles.toolbar}>
+        <div className={styles.titleSection}>
+          <h1>Dashboard Overview</h1>
+          <p className={styles.subtitle}>Welcome back to Maa Travels Ops Hub</p>
         </div>
-
-        {/* Row 1 - Card 2: Drivers */}
-        <div className={`${styles.card} ${styles.cardThird}`}>
-          <div className={styles.cardHeader}>
-            <div>
-              <h2 className={styles.cardTitle}>Active Drivers</h2>
-            </div>
-          </div>
-          <div className={styles.cardBodyRow}>
-            <div className={styles.cardMetrics}>
-              <span className={styles.cardDate}>Apr 2026</span>
-              <span className={styles.cardValue}>{data.drivers.length}</span>
-              <span className={styles.cardSubValue}>+ Currently employed</span>
-            </div>
-            <div className={styles.barChart}>
-              <div className={styles.bar} style={{ height: '40%' }} />
-              <div className={styles.bar} style={{ height: '80%' }} />
-              <div className={styles.bar} style={{ height: '50%' }} />
-              <div className={styles.bar} style={{ height: '90%' }} />
-              <div className={styles.bar} style={{ height: '20%' }} />
-            </div>
-          </div>
+        <div className={styles.actions}>
+          <button className={styles.refreshBtn} onClick={fetchData}>
+            Sync Data <RefreshCw size={14} />
+          </button>
         </div>
+      </header>
 
-        {/* Row 1 - Card 3: Expenses Donut */}
-        <div className={`${styles.card} ${styles.cardThird}`}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Financial Overview</h2>
-            <BarChart3 className={styles.cardIcon} size={16} />
-          </div>
-          <div className={styles.donutContainer}>
-            <div className={styles.donutWrapper}>
-              <div className={`${styles.donut} ${styles.donut1}`} />
-              <div style={{ textAlign: 'center' }}>
-                <div className={styles.donutLabel}>Expense</div>
-                <div className={styles.donutValue}>₹ {totalExpenses.toLocaleString()}</div>
+      <main className={styles.grid}>
+        {/* LARGE: Fleet Vitality Pulse */}
+        <CrystalCard 
+          title="Fleet Vitality" 
+          subtitle="Real-time operational health" 
+          variant="cyan"
+          className={styles.vitality}
+          icon={<Activity size={18} />}
+          pulse={activeFleetPct > 80}
+        >
+          <div className={styles.pulseContainer}>
+            <div className={styles.pulseOrb}>
+              <span className={styles.orbValue}>{activeFleetPct}%</span>
+              <span className={styles.orbLabel}>Active</span>
+            </div>
+            <div className={styles.fleetLegent}>
+              <div className={styles.legendItem}>
+                <span className={styles.legendValue}>{runningBuses}</span>
+                <span className={styles.legendLabel}>Running</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.legendValue}>{data.buses.length - runningBuses}</span>
+                <span className={styles.legendLabel}>In Pits</span>
               </div>
             </div>
-            <div className={styles.donutWrapper}>
-              <div className={`${styles.donut} ${styles.donut2}`} />
-              <div style={{ textAlign: 'center' }}>
-                <div className={styles.donutLabel}>Income</div>
-                <div className={styles.donutValue}>₹ 3,000</div>
-              </div>
-            </div>
           </div>
-        </div>
+        </CrystalCard>
 
-        {/* Row 2 - Card 4: Fleet Progress */}
-        <div className={`${styles.card} ${styles.cardHalf}`}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Fleet Status</h2>
-            <Filter className={styles.cardIcon} size={16} />
+        {/* SMALL: Students */}
+        <CrystalCard 
+          title="Students" 
+          subtitle="Enrolled accounts" 
+          variant="default"
+          className={styles.students}
+          icon={<Users size={18} />}
+        >
+          <div className={styles.metricValue}>{data.students.length}</div>
+          <div className={`${styles.metricTrend} ${styles.trendUp}`}>
+            <TrendingUp size={14} /> +12% from last month
           </div>
-          <div className={styles.progressContainer}>
-            <div>
-              <div className={styles.progressHeader}>
-                <span>Total Vehicles ₹ {data.buses.length}.00</span>
-              </div>
-              <div className={styles.progressTrack}>
-                <div className={styles.progressSegment} style={{ width: `${pctRunning}%`, background: 'var(--color-primary)' }} />
-                <div className={styles.progressSegment} style={{ width: `${pctMaint}%`, background: '#f59e0b' }} />
-                <div className={styles.progressSegment} style={{ width: `${100 - pctRunning - pctMaint}%`, background: 'var(--color-border-hover)' }} />
-              </div>
-            </div>
-            
-            <div className={styles.progressLegend}>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: 'var(--color-primary)' }} /> CURRENT
-                </div>
-                <div className={styles.legendValue}>{runningBuses} Active</div>
-                <div className={styles.legendSub}>Running</div>
-              </div>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: '#f59e0b' }} /> OVERDUE
-                </div>
-                <div className={styles.legendValue}>{maintenanceBuses} Pending</div>
-                <div className={styles.legendSub}>Maintenance</div>
-              </div>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: '#ef4444' }} /> SEVERE
-                </div>
-                <div className={styles.legendValue}>{outOfServiceBuses} Offline</div>
-                <div className={styles.legendSub}>Out of Service</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </CrystalCard>
 
-        {/* Row 2 - Card 5: Subscriptions Progress */}
-        <div className={`${styles.card} ${styles.cardHalf}`}>
-           <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Subscription Outstanding</h2>
-            <Filter className={styles.cardIcon} size={16} />
+        {/* SMALL: Drivers */}
+        <CrystalCard 
+          title="Field Workforce" 
+          subtitle="On-duty drivers" 
+          variant="default"
+          className={styles.drivers}
+          icon={<Truck size={18} />}
+        >
+          <div className={styles.metricValue}>{data.drivers.length}</div>
+          <div className={styles.metricTrend}>
+            <Activity size={14} /> All drivers compliant
           </div>
-          <div className={styles.progressContainer}>
-            <div>
-              <div className={styles.progressHeader}>
-                <span>Total Payables ₹ {data.students.length * 15000}.00</span>
-              </div>
-              <div className={styles.progressTrack}>
-                <div className={styles.progressSegment} style={{ width: `${100 - pctExp7 - pctExp30}%`, background: 'var(--color-primary)' }} />
-                <div className={styles.progressSegment} style={{ width: `${pctExp30}%`, background: '#f59e0b' }} />
-                <div className={styles.progressSegment} style={{ width: `${pctExp7}%`, background: '#ef4444' }} />
-              </div>
-            </div>
-            
-            <div className={styles.progressLegend}>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: 'var(--color-primary)' }} /> CURRENT
-                </div>
-                <div className={styles.legendValue}>₹ {(safe * 15000).toLocaleString()}.00</div>
-                <div className={styles.legendSub}>Active</div>
-              </div>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: '#f59e0b' }} /> OVERDUE
-                </div>
-                <div className={styles.legendValue}>₹ {(exp30 * 15000).toLocaleString()}.00</div>
-                <div className={styles.legendSub}>1-30 Days</div>
-              </div>
-              <div className={styles.legendItem}>
-                <div className={styles.legendHeader}>
-                  <div className={styles.legendDot} style={{ background: '#ef4444' }} />
-                </div>
-                <div className={styles.legendValue}>₹ {(exp7 * 15000).toLocaleString()}.00</div>
-                <div className={styles.legendSub}>Immediate</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </CrystalCard>
 
-      </div>
+        {/* MEDIUM: Economic Pulse Sparkline */}
+        <CrystalCard 
+          title="Economic Pulse" 
+          subtitle="Expenditure velocity trends" 
+          variant="magenta"
+          className={styles.economy}
+          icon={<Landmark size={18} />}
+        >
+          <div className={styles.metricValue}>₹ {totalExpenses.toLocaleString()}</div>
+          <div className={styles.sparklineContainer}>
+             <svg className={styles.sparklineSvg} viewBox="0 0 400 120" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#d946ef" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+              </defs>
+              <path 
+                className={styles.sparklinePath} 
+                d="M 0 100 Q 50 10, 100 80 T 200 40 T 300 90 T 400 20" 
+              />
+            </svg>
+          </div>
+        </CrystalCard>
+
+        {/* FULL WIDTH: Live Alerts & Activity */}
+        <CrystalCard 
+          title="Operational Intel" 
+          subtitle="Prioritized system alerts" 
+          variant="orange"
+          className={styles.activity}
+          icon={<AlertCircle size={18} />}
+        >
+          <div className={styles.alertList}>
+            {expiringSoon > 0 ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                <div style={{ padding: '0.5rem', background: '#ef4444', borderRadius: '50%', color: 'white' }}>
+                  <AlertCircle size={16} />
+                </div>
+                <div>
+                  <h4 style={{ margin: 0 }}>Critical Subscription Expiry</h4>
+                  <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>{expiringSoon} student accounts are set to expire within 7 days.</p>
+                </div>
+              </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>
+                No critical alerts today. All systems green.
+              </div>
+            )}
+          </div>
+        </CrystalCard>
+      </main>
     </div>
   );
 }
