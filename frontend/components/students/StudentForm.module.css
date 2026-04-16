@@ -116,27 +116,57 @@
 
 .segmentedControl {
   display: flex;
-  background: rgba(255,255,255,0.03);
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.segmentedSlider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--gradient-cyan);
+  border-radius: calc(var(--radius-lg) - 4px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  z-index: 1;
+  box-shadow: 0 4px 12px var(--color-primary-glow);
+}
+
+.segmentedSlider.right {
+  transform: translateX(100%);
+  background: var(--gradient-magenta);
+  box-shadow: 0 4px 12px rgba(217, 70, 239, 0.2);
 }
 
 .segmentedControl button {
   flex: 1;
-  padding: 0.625rem;
-  font-size: 0.6875rem;
-  font-weight: 800;
-  border-radius: 6px;
+  position: relative;
+  z-index: 2;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  transition: var(--transition);
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.segmentedControl button:hover {
+  color: var(--color-text);
 }
 
 .segmentedControl button.active {
-  background: var(--color-primary);
-  color: #000;
+  color: white;
 }
 
 .footer {

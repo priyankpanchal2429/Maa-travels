@@ -206,6 +206,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
         <div className={styles.formGroup}>
           <label className={styles.label}>Subscription Period</label>
           <div className={styles.segmentedControl}>
+            <div className={`${styles.segmentedSlider} ${formData.duration === '1y' ? styles.right : ''}`} />
             <button 
               type="button" 
               className={formData.duration === '6m' ? styles.active : ''}
