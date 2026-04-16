@@ -264,8 +264,8 @@ export default function StudentsPage() {
                     </td>
                     <td>
                       <div className={styles.actions}>
-                        <button onClick={() => handleEdit(student)} className={styles.actionBtn}>
-                          <Edit size={16} /> Edit
+                        <button onClick={() => handleEdit(student)} className={styles.actionBtn} title="Edit Student">
+                          <Edit size={16} />
                         </button>
                         <button 
                           className={styles.printBtn} 
@@ -273,10 +273,10 @@ export default function StudentsPage() {
                           onClick={() => handlePrint(student)}
                           title="Print ID Card"
                         >
-                          <Printer size={16} /> Print
+                          <Printer size={16} />
                         </button>
-                        <button onClick={() => handleDelete(student._id)} className={styles.actionBtnDelete}>
-                          <Trash2 size={16} /> Delete
+                        <button onClick={() => handleDelete(student._id)} className={styles.actionBtnDelete} title="Delete Student">
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>

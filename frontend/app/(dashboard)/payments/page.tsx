@@ -370,7 +370,7 @@ export default function PaymentsPage() {
                           disabled={student.paymentStatus === 'paid'}
                           title="Mark as Paid"
                         >
-                          <CheckCircle2 size={14} /> Pay
+                          <CheckCircle2 size={14} />
                         </button>
                         <button
                           className={styles.actionBtnSecondary}

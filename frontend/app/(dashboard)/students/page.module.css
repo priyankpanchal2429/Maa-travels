@@ -288,20 +288,17 @@
 }
 
 .printBtn, .actionBtn, .actionBtnDelete {
-  height: 36px;
-  padding: 0 0.75rem;
-  gap: 6px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .printBtn:hover:not(:disabled) { background: var(--color-primary-glow); color: var(--color-primary); border-color: var(--color-primary); }

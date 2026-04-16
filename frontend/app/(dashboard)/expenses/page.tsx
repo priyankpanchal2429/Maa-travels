@@ -194,10 +194,10 @@ export default function ExpensesPage() {
                 </div>
 
                 <div className={styles.itemActions}>
-                  <button onClick={() => handleEdit(expense)} className={styles.itemBtn}>
+                  <button onClick={() => handleEdit(expense)} className={styles.itemBtn} title="Edit Entry">
                     <Edit size={14} />
                   </button>
-                  <button onClick={() => handleDelete(expense._id)} className={styles.itemBtnDelete}>
+                  <button onClick={() => handleDelete(expense._id)} className={styles.itemBtnDelete} title="Delete Entry">
                     <Trash2 size={14} />
                   </button>
                 </div>
