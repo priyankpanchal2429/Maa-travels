@@ -240,9 +240,6 @@ export default function StudentsPage() {
                         <div className={styles.stopItem}>
                           <span>{student.stopId}</span>
                         </div>
-                      </div>
-                      </div>
-                    </td>
                     <td>
                       <div className={styles.addressCell}>
                         <span className={styles.addressText}>{student.address}</span>
