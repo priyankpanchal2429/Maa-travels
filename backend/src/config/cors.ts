@@ -8,13 +8,16 @@ import { env } from './env';
  */
 export const corsMiddleware = cors({
   origin: (origin, callback) => {
+    // Strip trailing slash from CLIENT_URL robustly
+    const clientUrl = env.CLIENT_URL ? env.CLIENT_URL.replace(/\/+$/, '') : '';
+    
     const allowed =
       env.NODE_ENV === 'development'
-        ? ['http://localhost:3000', env.CLIENT_URL]
-        : [env.CLIENT_URL];
+        ? ['http://localhost:3000', clientUrl]
+        : [clientUrl];
 
     // Allow requests with no origin (e.g. Postman, server-to-server)
-    if (!origin || allowed.includes(origin)) {
+    if (!origin || allowed.includes(origin) || allowed.includes(origin.replace(/\/+$/, ''))) {
       callback(null, true);
     } else {
       callback(new Error(`CORS: origin ${origin} not allowed`));
