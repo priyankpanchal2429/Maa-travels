@@ -63,7 +63,7 @@ export default function DashboardPage() {
       const expenses = Array.isArray(expensesRes.data.data) ? expensesRes.data.data : [];
       const insights = insightsRes.data.data || { unpaid: { count: 0, students: [] }, expiring: { count: 0, students: [] }, expired: { count: 0, students: [] } };
 
-      const totalExpenses = expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+      const totalExpenses = expenses.reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0);
 
       setData({
         students: studentsRes.data.count || students.length,
