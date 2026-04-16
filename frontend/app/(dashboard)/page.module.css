@@ -38,8 +38,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: linear-gradient(145deg, #ccff00 0%, #a3cc00 100%);
-  color: #000;
+  background: linear-gradient(145deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: #fff;
   border: none;
   border-radius: var(--radius-lg);
   padding: 2rem;
@@ -47,11 +47,11 @@
 }
 
 .cardPrimary .statLabel {
-  color: rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.7);
 }
 
 .cardPrimary .statValue {
-  color: #000;
+  color: #fff;
   font-size: 5rem;
   letter-spacing: -0.06em;
   line-height: 1;
@@ -59,12 +59,12 @@
 
 .cardPrimary .statSub {
   font-size: 2.5rem;
-  color: rgba(0,0,0,0.35);
+  color: rgba(255,255,255,0.5);
 }
 
 .cardPrimary .iconBox {
-  background: rgba(0,0,0,0.1);
-  color: #000;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
   border-color: transparent;
 }
 

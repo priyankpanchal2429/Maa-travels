@@ -11,15 +11,15 @@
   --color-text: #fafafa;      /* Off-white */
   --color-text-muted: #a1a1aa; /* Zinc 400 */
   
-  /* Electric Lime Accent */
-  --color-primary: #ccff00;   
-  --color-primary-hover: #a3cc00; 
-  --color-primary-glow: rgba(204, 255, 0, 0.15);
+  /* Red Accent */
+  --color-primary: #ff3333;   
+  --color-primary-hover: #cc0000; 
+  --color-primary-glow: rgba(255, 51, 51, 0.15);
   
   --color-success: #22c55e;
   --color-error: #ef4444;
   --color-warning: #f59e0b;
-  --color-primary-light: rgba(204, 255, 0, 0.2);
+  --color-primary-light: rgba(255, 51, 51, 0.2);
   
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -110,7 +110,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #fafafa 0%, #ccff00 100%);
+  background: linear-gradient(135deg, #fafafa 0%, var(--color-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
