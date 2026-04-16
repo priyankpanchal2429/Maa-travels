@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, MapPin, Edit, Trash2, Map as MapIcon } from 'lucide-react';
+import { Plus, MapPin, Edit, Trash2, Map as MapIcon, Search } from 'lucide-react';
+import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import routeService, { Route } from '@/services/routeService';
 import Button from '@/components/ui/Button/Button';
@@ -12,6 +13,7 @@ import styles from './page.module.css';
 export default function RoutesPage() {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchRoutes = useCallback(async () => {
@@ -28,6 +30,12 @@ export default function RoutesPage() {
   useEffect(() => {
     fetchRoutes();
   }, [fetchRoutes]);
+
+  const filteredRoutes = useMemo(() => {
+    return routes.filter((route) => 
+      route.routeName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [routes, searchQuery]);
 
   const handleCreate = () => {
     openDrawer(
@@ -71,7 +79,7 @@ export default function RoutesPage() {
       <header className={styles.header}>
         <div>
           <h1 className="text-gradient">Route Management</h1>
-          <p className={styles.subtitle}>Define bus paths and hop-on stops</p>
+          <p className={styles.subtitle}>{filteredRoutes.length} {filteredRoutes.length === 1 ? 'path' : 'paths'} mapped</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
@@ -79,13 +87,28 @@ export default function RoutesPage() {
         </Button>
       </header>
 
+      <div className={styles.toolbar}>
+        <div className={styles.searchSection}>
+          <div className={styles.searchWrap}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search by route name..." 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
       {isLoading ? (
         <div className={styles.loader}>
           <Spinner size="lg" />
         </div>
       ) : (
         <div className={styles.grid}>
-          {routes.map((route) => (
+          {filteredRoutes.map((route) => (
             <div key={route._id} className={styles.card}>
               <div className={styles.cardHeader}>
                 <div className={styles.iconBox}>
@@ -120,12 +143,18 @@ export default function RoutesPage() {
             </div>
           ))}
 
-          {routes.length === 0 && (
+          {filteredRoutes.length === 0 && (
             <div className={styles.empty}>
               <MapIcon size={48} className={styles.emptyIcon} />
-              <h3>No routes found</h3>
-              <p>Start by creating your first bus route.</p>
-              <Button variant="secondary" onClick={handleCreate}>Create Route</Button>
+              <h3>{searchQuery ? 'No matches found' : 'No routes found'}</h3>
+              <p>
+                {searchQuery 
+                  ? 'Try adjusting your search to find the correct transit path.' 
+                  : 'Start by creating your first bus route.'}
+              </p>
+              {!searchQuery && (
+                <Button variant="secondary" onClick={handleCreate}>Create Route</Button>
+              )}
             </div>
           )}
         </div>
