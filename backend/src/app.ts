@@ -13,6 +13,7 @@ import routeRoutes from './routes/routeRoutes';
 import expenseRoutes from './routes/expenseRoutes';
 import collegeRoutes from './routes/collegeRoutes';
 import adminRoutes from './routes/adminRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import path from 'path';
 
 const app = express();
@@ -52,6 +53,7 @@ app.use('/api/routes', routeRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {

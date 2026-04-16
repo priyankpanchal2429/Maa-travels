@@ -1,9 +1,13 @@
 import { connectDB } from './config/db';
 import { env } from './config/env';
 import app from './app';
+import { startCronJobs } from './scripts/cronJobs';
 
 const start = async (): Promise<void> => {
   await connectDB();
+
+  // Initialize background jobs
+  startCronJobs();
 
   const PORT = parseInt(env.PORT, 10);
 

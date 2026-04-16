@@ -46,7 +46,7 @@
   border-color: var(--color-border-hover);
 }
 
-/* Bento Grid System */
+/* ─── Bento Grid System ─── */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -55,7 +55,7 @@
   grid-template-areas:
     "vitality vitality students drivers"
     "vitality vitality economy economy"
-    "activity activity activity activity";
+    "insightUnpaid insightUnpaid insightExpiring insightExpired";
 }
 
 @media (max-width: 1200px) {
@@ -65,7 +65,8 @@
       "vitality vitality"
       "students drivers"
       "economy economy"
-      "activity activity";
+      "insightUnpaid insightUnpaid"
+      "insightExpiring insightExpired";
   }
 }
 
@@ -77,18 +78,22 @@
       "students"
       "drivers"
       "economy"
-      "activity";
+      "insightUnpaid"
+      "insightExpiring"
+      "insightExpired";
   }
 }
 
-/* Specific Card Styling */
+/* ─── Card Grid Areas ─── */
 .vitality { grid-area: vitality; }
 .students { grid-area: students; }
 .drivers { grid-area: drivers; }
 .economy { grid-area: economy; }
-.activity { grid-area: activity; }
+.insightUnpaid { grid-area: insightUnpaid; }
+.insightExpiring { grid-area: insightExpiring; }
+.insightExpired { grid-area: insightExpired; }
 
-/* Vitality Pulse Visualization */
+/* ─── Vitality Pulse Visualization ─── */
 .pulseContainer {
   display: flex;
   flex-direction: column;
@@ -165,7 +170,7 @@
   color: var(--color-text-muted);
 }
 
-/* Metric Display */
+/* ─── Metric Display ─── */
 .metricValue {
   font-size: 2.5rem;
   font-weight: 800;
@@ -181,7 +186,7 @@
 
 .trendUp { color: var(--color-success); }
 
-/* Economy Sparkline */
+/* ─── Economy Sparkline ─── */
 .sparklineContainer {
   height: 120px;
   width: 100%;
@@ -202,6 +207,133 @@
   filter: drop-shadow(0 0 8px rgba(217, 70, 239, 0.5));
 }
 
+/* ─── Insight Widgets ─── */
+.insightList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.insightRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+.insightRow:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-bg-hover);
+}
+
+.insightName {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.insightStudentName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.insightStudentId {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.insightMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.125rem;
+}
+
+.insightAmount {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--color-error);
+  letter-spacing: -0.02em;
+}
+
+.insightDate {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.insightDays {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-warning);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.insightDays[data-urgent="true"] {
+  color: var(--color-error);
+  animation: urgentPulse 2s ease-in-out infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.insightBadgeExpired {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.625rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(161, 161, 170, 0.15);
+  color: var(--color-text-muted);
+  border: 1px solid rgba(161, 161, 170, 0.2);
+}
+
+.insightEmpty {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.viewAllLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.625rem;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.viewAllLink:hover {
+  background: var(--color-primary-glow);
+  border-color: var(--color-primary);
+}
+
+/* ─── Loader ─── */
 .loader {
   display: flex;
   justify-content: center;

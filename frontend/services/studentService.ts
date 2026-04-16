@@ -10,9 +10,11 @@ export interface Student {
   parentPhone: string;
   address: string;
   duration: SubscriptionDuration;
+  collegeId: string | any;
   routeId: string | any;
   stopId: string;
   paymentStatus: PaymentStatus;
+  amount: number;
   expiryDate: string;
   photo?: string;
   isActive: boolean;

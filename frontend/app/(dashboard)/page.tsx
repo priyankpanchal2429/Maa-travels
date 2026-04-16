@@ -2,15 +2,35 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { 
-  Users, Truck, Activity, Landmark, RefreshCw, TrendingUp, AlertCircle
+  Users, Truck, Activity, Landmark, RefreshCw, TrendingUp, AlertCircle,
+  CreditCard, Clock, ShieldAlert, ArrowRight
 } from 'lucide-react';
+import Link from 'next/link';
 import studentService, { Student } from '@/services/studentService';
 import driverService, { Driver } from '@/services/driverService';
 import busService, { Bus } from '@/services/busService';
 import expenseService, { Expense } from '@/services/expenseService';
+import paymentService from '@/services/paymentService';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import CrystalCard from '@/components/ui/CrystalCard/CrystalCard';
 import styles from './page.module.css';
+
+/** Insight student shape returned by the /payments/insights endpoint */
+interface InsightStudent {
+  _id: string;
+  name: string;
+  studentId: string;
+  amount?: number;
+  expiryDate: string;
+  parentPhone: string;
+  collegeId?: { name: string; code: string };
+}
+
+interface DashboardInsights {
+  unpaid: { count: number; students: InsightStudent[] };
+  expiring: { count: number; students: InsightStudent[] };
+  expired: { count: number; students: InsightStudent[] };
+}
 
 export default function DashboardPage() {
   const [data, setData] = useState({
@@ -19,16 +39,18 @@ export default function DashboardPage() {
     buses: [] as Bus[],
     expenses: [] as Expense[],
   });
+  const [insights, setInsights] = useState<DashboardInsights | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [studentsRes, driversRes, busesRes, expensesRes] = await Promise.all([
+      const [studentsRes, driversRes, busesRes, expensesRes, insightsRes] = await Promise.all([
         studentService.getAll(),
         driverService.getAll(),
         busService.getAll(),
         expenseService.getAll(),
+        paymentService.getInsights(),
       ]);
 
       setData({
@@ -37,6 +59,7 @@ export default function DashboardPage() {
         buses: busesRes.data.data,
         expenses: expensesRes.data.data,
       });
+      setInsights(insightsRes.data.data);
     } catch (err) {
       console.error('Failed to load dashboard data');
     } finally {
@@ -60,13 +83,12 @@ export default function DashboardPage() {
   const totalExpenses = data.expenses.reduce((acc, curr) => acc + curr.amount, 0);
   const runningBuses = data.buses.filter(b => b.status === 'running').length;
   const activeFleetPct = data.buses.length > 0 ? Math.round((runningBuses / data.buses.length) * 100) : 0;
-  
-  // Expirations
-  const now = new Date().getTime();
-  const expiringSoon = data.students.filter(s => {
-    const diff = new Date(s.expiryDate).getTime() - now;
-    return diff > 0 && diff <= 1000 * 60 * 60 * 24 * 7;
-  }).length;
+
+  /** Calculate remaining days until expiry */
+  const getRemainingDays = (expiryDate: string) => {
+    const diff = new Date(expiryDate).getTime() - new Date().getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
 
   return (
     <div className={styles.container}>
@@ -163,31 +185,113 @@ export default function DashboardPage() {
           </div>
         </CrystalCard>
 
-        {/* FULL WIDTH: Live Alerts & Activity */}
-        <CrystalCard 
-          title="Operational Intel" 
-          subtitle="Prioritized system alerts" 
+        {/* ─── INSIGHT WIDGETS ─── */}
+
+        {/* Unpaid Payments */}
+        <CrystalCard
+          title="Unpaid Payments"
+          subtitle={`${insights?.unpaid.count || 0} students with pending fees`}
           variant="orange"
-          className={styles.activity}
-          icon={<AlertCircle size={18} />}
+          className={styles.insightUnpaid}
+          icon={<CreditCard size={18} />}
         >
-          <div className={styles.alertList}>
-            {expiringSoon > 0 ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                <div style={{ padding: '0.5rem', background: '#ef4444', borderRadius: '50%', color: 'white' }}>
-                  <AlertCircle size={16} />
+          <div className={styles.insightList}>
+            {insights?.unpaid.students.slice(0, 5).map((s) => (
+              <div key={s._id} className={styles.insightRow}>
+                <div className={styles.insightName}>
+                  <span className={styles.insightStudentName}>{s.name}</span>
+                  <span className={styles.insightStudentId}>{s.studentId}</span>
                 </div>
-                <div>
-                  <h4 style={{ margin: 0 }}>Critical Subscription Expiry</h4>
-                  <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.7 }}>{expiringSoon} student accounts are set to expire within 7 days.</p>
+                <div className={styles.insightMeta}>
+                  <span className={styles.insightAmount}>₹{(s.amount || 0).toLocaleString()}</span>
+                  <span className={styles.insightDate}>
+                    {new Date(s.expiryDate).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '2rem', opacity: 0.5 }}>
-                No critical alerts today. All systems green.
-              </div>
+            ))}
+            {(!insights?.unpaid.count) && (
+              <div className={styles.insightEmpty}>All payments cleared ✓</div>
             )}
           </div>
+          {(insights?.unpaid.count || 0) > 5 && (
+            <Link href="/payments?status=unpaid" className={styles.viewAllLink}>
+              View all {insights?.unpaid.count} <ArrowRight size={14} />
+            </Link>
+          )}
+        </CrystalCard>
+
+        {/* Expiring Passes */}
+        <CrystalCard
+          title="Expiring Passes"
+          subtitle={`${insights?.expiring.count || 0} passes expiring in 7 days`}
+          variant="magenta"
+          className={styles.insightExpiring}
+          icon={<Clock size={18} />}
+        >
+          <div className={styles.insightList}>
+            {insights?.expiring.students.slice(0, 5).map((s) => {
+              const days = getRemainingDays(s.expiryDate);
+              return (
+                <div key={s._id} className={styles.insightRow}>
+                  <div className={styles.insightName}>
+                    <span className={styles.insightStudentName}>{s.name}</span>
+                    <span className={styles.insightStudentId}>{s.studentId}</span>
+                  </div>
+                  <div className={styles.insightMeta}>
+                    <span className={styles.insightDays} data-urgent={days <= 3}>
+                      {days}d left
+                    </span>
+                    <span className={styles.insightDate}>
+                      {new Date(s.expiryDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+            {(!insights?.expiring.count) && (
+              <div className={styles.insightEmpty}>No passes expiring soon</div>
+            )}
+          </div>
+          {(insights?.expiring.count || 0) > 5 && (
+            <Link href="/payments?status=expiring" className={styles.viewAllLink}>
+              View all {insights?.expiring.count} <ArrowRight size={14} />
+            </Link>
+          )}
+        </CrystalCard>
+
+        {/* Expired Passes */}
+        <CrystalCard
+          title="Expired Passes"
+          subtitle={`${insights?.expired.count || 0} passes have expired`}
+          variant="default"
+          className={styles.insightExpired}
+          icon={<ShieldAlert size={18} />}
+        >
+          <div className={styles.insightList}>
+            {insights?.expired.students.slice(0, 5).map((s) => (
+              <div key={s._id} className={styles.insightRow}>
+                <div className={styles.insightName}>
+                  <span className={styles.insightStudentName}>{s.name}</span>
+                  <span className={styles.insightStudentId}>{s.studentId}</span>
+                </div>
+                <div className={styles.insightMeta}>
+                  <span className={styles.insightBadgeExpired}>Expired</span>
+                  <span className={styles.insightDate}>
+                    {new Date(s.expiryDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {(!insights?.expired.count) && (
+              <div className={styles.insightEmpty}>No expired passes</div>
+            )}
+          </div>
+          {(insights?.expired.count || 0) > 5 && (
+            <Link href="/payments?status=expired" className={styles.viewAllLink}>
+              View all {insights?.expired.count} <ArrowRight size={14} />
+            </Link>
+          )}
         </CrystalCard>
       </main>
     </div>

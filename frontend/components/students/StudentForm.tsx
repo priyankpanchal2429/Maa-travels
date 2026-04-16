@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Save, User, Upload, X, MapPin, Phone, CreditCard } from 'lucide-react';
+import { Save, User, Upload, X, MapPin, Phone, CreditCard, IndianRupee } from 'lucide-react';
 import studentService, { Student } from '@/services/studentService';
 import routeService, { Route } from '@/services/routeService';
 import Button from '@/components/ui/Button/Button';
@@ -24,6 +24,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
     routeId: typeof initialData?.routeId === 'object' ? initialData.routeId._id : initialData?.routeId || '',
     stopId: initialData?.stopId || '',
     paymentStatus: initialData?.paymentStatus || 'unpaid' as 'paid' | 'unpaid' | 'bypassed',
+    amount: initialData?.amount?.toString() || '',
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(initialData?.photo || null);
@@ -65,6 +66,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
     if (!formData.address.trim()) newErrors.address = 'Full address is required';
     if (!formData.routeId) newErrors.routeId = 'Route selection is required';
     if (!formData.stopId) newErrors.stopId = 'Stop is required';
+    if (!formData.amount.trim() || Number(formData.amount) <= 0) newErrors.amount = 'Valid fee amount is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -235,6 +237,17 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
             </button>
           </div>
         </div>
+
+        <Input
+          label="Fee Amount (₹)"
+          type="number"
+          placeholder="e.g. 15000"
+          value={formData.amount}
+          onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+          error={errors.amount}
+          required
+          leftIcon={<IndianRupee size={16} />}
+        />
 
         <div className={styles.formGroup}>
           <label className={styles.label}>Payment Status</label>

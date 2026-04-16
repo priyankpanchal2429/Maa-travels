@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
 import { Student } from '../models/Student';
+import '../models/PaymentLog'; // Make sure the model is registered
 
 import { getDefaultCollegeId } from '../utils/collegeUtils';
 
@@ -45,8 +46,24 @@ export const getStudentById = async (req: Request, res: Response, next: NextFunc
 
 export const updateStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const oldStudent = await Student.findById(req.params.id);
+    if (!oldStudent) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    const wasPaid = oldStudent.paymentStatus === 'paid';
+    const isNowPaid = req.body.paymentStatus === 'paid';
+
     const student = await Student.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+    
+    // Log payment if status changed to paid
+    if (!wasPaid && isNowPaid && student) {
+      await mongoose.connection.models.PaymentLog.create({
+        collegeId: student.collegeId,
+        studentId: student._id,
+        amountPaid: student.amount,
+        recordedBy: 'Admin', // In a real app with auth, extract from req.user
+      });
+    }
+
     res.json({ success: true, data: student });
   } catch (error) {
     next(error);

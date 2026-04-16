@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Building2 
+  LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Building2, CreditCard 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import adminService, { AdminProfile } from '@/services/adminService';
@@ -14,6 +14,7 @@ import styles from './TopNav.module.css';
 const NAV_LINKS = [
   { href: '/', label: 'Overview', icon: LayoutDashboard },
   { href: '/students', label: 'Students', icon: Users },
+  { href: '/payments', label: 'Payments', icon: CreditCard },
   { href: '/drivers', label: 'Drivers', icon: ShieldAlert },
   { href: '/buses', label: 'Bus', icon: Bus },
   { href: '/routes', label: 'Routes', icon: Map },

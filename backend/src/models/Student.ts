@@ -13,6 +13,7 @@ export interface IStudent extends Document {
   routeId: mongoose.Types.ObjectId;
   stopId: string;
   paymentStatus: PaymentStatus;
+  amount: number;
   expiryDate: Date;
   photo?: string; // Base64
   isActive: boolean;
@@ -31,6 +32,7 @@ const studentSchema = new Schema<IStudent>(
     routeId: { type: Schema.Types.ObjectId, ref: 'Route', required: true },
     stopId: { type: String, required: true }, // Name of the stop
     paymentStatus: { type: String, enum: ['paid', 'unpaid', 'bypassed'], default: 'unpaid' },
+    amount: { type: Number, required: true, default: 0 },
     expiryDate: { type: Date, required: true },
     photo: { type: String }, // Base64 compressed image
     isActive: { type: Boolean, default: true },
