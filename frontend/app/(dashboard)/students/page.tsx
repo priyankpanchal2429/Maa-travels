@@ -143,44 +143,51 @@ export default function StudentsPage() {
       </header>
 
       <div className={styles.toolbar}>
-        <div className={styles.searchWrap}>
-          <Search size={18} className={styles.searchIcon} />
-          <input 
-            type="text" 
-            placeholder="Search by name, ID or phone..." 
-            className={styles.searchInput}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className={styles.filterWrap}>
-          <Filter size={16} className={styles.searchIcon} />
-          <span className={styles.filterLabel}>Status:</span>
-          <select 
-            className={styles.filterSelect}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="all">All Status</option>
-            <option value="paid">Active & Paid</option>
-            <option value="unpaid">Unpaid Records</option>
-            <option value="bypassed">Bypassed</option>
-            <option value="expired">Expired</option>
-          </select>
+        <div className={styles.searchSection}>
+          <div className={styles.searchWrap}>
+            <Search size={18} className={styles.searchIcon} />
+            <input 
+              type="text" 
+              placeholder="Search by name, ID or phone..." 
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
 
-        <div className={styles.filterWrap}>
-          <Filter size={16} className={styles.searchIcon} />
-          <span className={styles.filterLabel}>Plan:</span>
-          <select 
-            className={styles.filterSelect}
-            value={durationFilter}
-            onChange={(e) => setDurationFilter(e.target.value)}
-          >
-            <option value="all">Any Duration</option>
-            <option value="6m">6 Months</option>
-            <option value="1y">1 Year</option>
-          </select>
+        <div className={styles.filterSection}>
+          <div className={styles.filterWrap}>
+            <Filter size={16} className={styles.filterIcon} />
+            <span className={styles.filterLabel}>Status</span>
+            <select 
+              className={styles.filterSelect}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="all">All Status</option>
+              <option value="paid">Active & Paid</option>
+              <option value="unpaid">Unpaid Records</option>
+              <option value="bypassed">Bypassed</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+
+          <div className={styles.filterDivider} />
+
+          <div className={styles.filterWrap}>
+            <Filter size={16} className={styles.filterIcon} />
+            <span className={styles.filterLabel}>Plan</span>
+            <select 
+              className={styles.filterSelect}
+              value={durationFilter}
+              onChange={(e) => setDurationFilter(e.target.value)}
+            >
+              <option value="all">Any Duration</option>
+              <option value="6m">6 Months</option>
+              <option value="1y">1 Year</option>
+            </select>
+          </div>
         </div>
       </div>
 
