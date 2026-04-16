@@ -8,6 +8,7 @@ import {
 import { useState, useEffect } from 'react';
 import adminService, { AdminProfile } from '@/services/adminService';
 import CollegeSwitcher from '../CollegeSwitcher/CollegeSwitcher';
+import ThemeToggle from '@/components/ui/ThemeToggle/ThemeToggle';
 import styles from './TopNav.module.css';
 
 const NAV_LINKS = [
@@ -78,6 +79,7 @@ export default function TopNav() {
         </div>
 
         <div className={styles.right}>
+          <ThemeToggle />
           <Link href="/profile" className={styles.avatar}>
             {photoUrl ? (
               <img src={photoUrl} alt="User" className={styles.avatarImg} />
