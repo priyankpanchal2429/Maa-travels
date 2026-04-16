@@ -5,6 +5,7 @@ import { Camera, LogOut, Settings, Bell, ShieldCheck, Mail } from 'lucide-react'
 import adminService, { AdminProfile } from '@/services/adminService';
 import CrystalCard from '@/components/ui/CrystalCard/CrystalCard';
 import Spinner from '@/components/ui/Spinner/Spinner';
+import { useRouter } from 'next/navigation';
 import { useTheme } from '@/context/ThemeContext';
 import styles from './page.module.css';
 
