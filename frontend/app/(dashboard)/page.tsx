@@ -196,7 +196,7 @@ export default function DashboardPage() {
           icon={<CreditCard size={18} />}
         >
           <div className={styles.insightList}>
-            {insights?.unpaid.students.slice(0, 5).map((s) => (
+            {insights?.unpaid.students.map((s) => (
               <div key={s._id} className={styles.insightRow}>
                 <div className={styles.insightName}>
                   <span className={styles.insightStudentName}>{s.name}</span>
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           icon={<Clock size={18} />}
         >
           <div className={styles.insightList}>
-            {insights?.expiring.students.slice(0, 5).map((s) => {
+            {insights?.expiring.students.map((s) => {
               const days = getRemainingDays(s.expiryDate);
               return (
                 <div key={s._id} className={styles.insightRow}>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
           icon={<ShieldAlert size={18} />}
         >
           <div className={styles.insightList}>
-            {insights?.expired.students.slice(0, 5).map((s) => (
+            {insights?.expired.students.map((s) => (
               <div key={s._id} className={styles.insightRow}>
                 <div className={styles.insightName}>
                   <span className={styles.insightStudentName}>{s.name}</span>

@@ -213,6 +213,22 @@
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 0.5rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.insightList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.insightList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.insightList::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: var(--radius-full);
 }
 
 .insightRow {
