@@ -1,5 +1,12 @@
 import { api } from '@/lib/axiosInstance';
 
+export interface AdminProfile {
+  _id: string;
+  name: string;
+  role: string;
+  profilePhoto: string;
+}
+
 const adminService = {
   getProfile: () => api.get('/admin/profile'),
   updatePhoto: (data: FormData) => api.post('/admin/profile/photo', data, {
