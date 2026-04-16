@@ -8,8 +8,10 @@ import {
 import Link from 'next/link';
 import studentService, { Student } from '@/services/studentService';
 import paymentService from '@/services/paymentService';
+import adminService from '@/services/adminService';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import { useCollege } from '@/context/CollegeContext';
+import { useUI } from '@/context/UIContext';
 import styles from './page.module.css';
 
 interface InsightStudent {
@@ -28,14 +30,16 @@ interface DashboardInsights {
 }
 
 export default function DashboardPage() {
-  const { activeCollegeId, isLoading: isCollegeLoading } = useCollege();
+  const { activeCollegeId, isLoading: isCollegeLoading, activeCollege } = useCollege();
+  const { showToast } = useUI();
   const [studentCount, setStudentCount] = useState(0);
   const [insights, setInsights] = useState<DashboardInsights | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFixing, setIsFixing] = useState(false);
 
   const fetchData = useCallback(async () => {
-    // Wait until college context is ready and we have an ID
-    if (isCollegeLoading || !activeCollegeId) return;
+    // Wait until college context is ready
+    if (isCollegeLoading) return;
 
     setIsLoading(true);
     try {
@@ -56,6 +60,19 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleFixData = async () => {
+    setIsFixing(true);
+    try {
+      const res = await adminService.migrateLegacyStudents();
+      showToast(res.data.message, 'success');
+      fetchData();
+    } catch (err) {
+      showToast('Failed to fix data', 'error');
+    } finally {
+      setIsFixing(false);
+    }
+  };
 
   const getRemainingDays = (expiryDate: string) => {
     const diff = new Date(expiryDate).getTime() - new Date().getTime();
@@ -78,6 +95,16 @@ export default function DashboardPage() {
           <p className={styles.subtitle}>Streamlined operational intelligence</p>
         </div>
         <div className={styles.actions}>
+          {studentCount === 0 && (
+            <button 
+              className={styles.fixBtn} 
+              onClick={handleFixData}
+              disabled={isFixing}
+            >
+              {isFixing ? <RefreshCw size={14} className="spin" /> : <ShieldAlert size={14} />}
+              Fix Student Mapping
+            </button>
+          )}
           <button className={styles.refreshBtn} onClick={fetchData}>
             <RefreshCw size={14} /> Refresh Pulse
           </button>
@@ -91,8 +118,13 @@ export default function DashboardPage() {
             <span className={styles.heroLabel}>Total Enrolled Accounts</span>
             <span className={styles.heroValue}>{studentCount}</span>
             <div className={styles.heroSubtitle}>
-              Active Transport Lifelines across all Colleges
+              {activeCollege?.name || 'Active Transport Lifelines'}
             </div>
+            {studentCount === 0 && (
+              <p className={styles.heroTip}>
+                If you expect students here, they might miss a college assignment. Use "Fix Student Mapping" above.
+              </p>
+            )}
             {/* Subtle floating glow inside the hero */}
             <div className={styles.heroGlow} />
           </div>
