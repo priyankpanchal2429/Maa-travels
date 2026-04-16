@@ -2,20 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { 
-  Users, 
-  Bus as BusIcon, 
-  IndianRupee, 
-  AlertTriangle,
-  TrendingUp,
-  Activity,
-  UserSquare2,
-  Map as MapIcon
+  BarChart3, RefreshCw, Calendar as CalendarIcon, Filter
 } from 'lucide-react';
-import Link from 'next/link';
 import studentService, { Student } from '@/services/studentService';
 import driverService, { Driver } from '@/services/driverService';
 import busService, { Bus } from '@/services/busService';
-import routeService, { Route } from '@/services/routeService';
 import expenseService, { Expense } from '@/services/expenseService';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import styles from './page.module.css';
@@ -25,18 +16,16 @@ export default function DashboardPage() {
     students: [] as Student[],
     drivers: [] as Driver[],
     buses: [] as Bus[],
-    routes: [] as Route[],
     expenses: [] as Expense[],
   });
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
-      const [studentsRes, driversRes, busesRes, routesRes, expensesRes] = await Promise.all([
+      const [studentsRes, driversRes, busesRes, expensesRes] = await Promise.all([
         studentService.getAll(),
         driverService.getAll(),
         busService.getAll(),
-        routeService.getAll(),
         expenseService.getAll(),
       ]);
 
@@ -44,7 +33,6 @@ export default function DashboardPage() {
         students: studentsRes.data.data,
         drivers: driversRes.data.data,
         buses: busesRes.data.data,
-        routes: routesRes.data.data,
         expenses: expensesRes.data.data,
       });
     } catch (err) {
@@ -68,113 +56,207 @@ export default function DashboardPage() {
 
   // Aggregations
   const totalExpenses = data.expenses.reduce((acc, curr) => acc + curr.amount, 0);
-  const activeBusesCount = data.buses.filter(b => b.status === 'running').length;
-  const expirations = data.students.filter(s => {
-    const diff = new Date(s.expiryDate).getTime() - new Date().getTime();
-    return diff > 0 && diff <= (7 * 24 * 60 * 60 * 1000);
+  
+  // Fleet Status
+  const runningBuses = data.buses.filter(b => b.status === 'running').length;
+  const maintenanceBuses = data.buses.filter(b => b.status === 'maintenance').length;
+  const outOfServiceBuses = data.buses.filter(b => b.status === 'out_of_service').length;
+  const totalBuses = data.buses.length || 1; // avoid division by zero
+  
+  const pctRunning = (runningBuses / totalBuses) * 100;
+  const pctMaint = (maintenanceBuses / totalBuses) * 100;
+
+  // Expirations
+  const now = new Date().getTime();
+  const dayMs = 1000 * 60 * 60 * 24;
+  let exp7 = 0;
+  let exp30 = 0;
+  let safe = 0;
+  
+  data.students.forEach(s => {
+    const diff = new Date(s.expiryDate).getTime() - now;
+    if (diff <= 0) exp7++; 
+    else if (diff <= 7 * dayMs) exp7++;
+    else if (diff <= 30 * dayMs) exp30++;
+    else safe++;
   });
+  
+  const totalStudents = data.students.length || 1;
+  const pctExp7 = (exp7 / totalStudents) * 100;
+  const pctExp30 = (exp30 / totalStudents) * 100;
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <h1 className="text-gradient">Control Center</h1>
-        <p className={styles.subtitle}>Welcome back. Here is what is happening today.</p>
-      </header>
+      <div className={styles.toolbar}>
+        <span className={styles.lastUpdated}>Last Updated just now</span>
+        <button className={styles.dateRangeBtn}>
+          14-10-2025 To 14-04-2026 <CalendarIcon size={12} />
+        </button>
+        <button className={styles.refreshBtn} onClick={fetchData}>
+          Refresh <RefreshCw size={12} />
+        </button>
+      </div>
 
-      <div className={styles.bentoGrid}>
+      <div className={styles.grid}>
         
-        {/* Primary Hero Card: Buses on Route */}
-        <div className={styles.cardPrimary}>
-          <div className={styles.statHeader}>
-            <div className={styles.iconBox}>
-              <BusIcon size={24} />
+        {/* Row 1 - Card 1: Students */}
+        <div className={`${styles.card} ${styles.cardThird}`}>
+          <div className={styles.cardHeader}>
+            <div>
+              <h2 className={styles.cardTitle}>Students Enrolled</h2>
             </div>
-            <Activity size={20} style={{ color: 'rgba(0,0,0,0.4)' }} />
           </div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Buses on Route</span>
-            <span className={styles.statValue}>
-              {activeBusesCount}
-              <span className={styles.statSub}> / {data.buses.length}</span>
-            </span>
+          <div className={styles.cardBodyRow}>
+            <div className={styles.cardMetrics}>
+              <span className={styles.cardDate}>Apr 2026</span>
+              <span className={styles.cardValue}>{data.students.length}</span>
+              <span className={styles.cardSubValue}>+ Total active accounts</span>
+            </div>
+            <div className={styles.barChart}>
+              <div className={styles.bar} style={{ height: '20%' }} />
+              <div className={styles.bar} style={{ height: '60%' }} />
+              <div className={styles.bar} style={{ height: '30%' }} />
+              <div className={styles.bar} style={{ height: '100%' }} />
+              <div className={styles.bar} style={{ height: '80%' }} />
+            </div>
           </div>
         </div>
 
-        {/* Students Enrolled */}
-        <div className={`bento-card ${styles.cardMetric}`}>
-          <div className={styles.statHeader}>
-            <div className={styles.iconBox} style={{ color: 'var(--color-primary)' }}>
-              <Users size={22} />
+        {/* Row 1 - Card 2: Drivers */}
+        <div className={`${styles.card} ${styles.cardThird}`}>
+          <div className={styles.cardHeader}>
+            <div>
+              <h2 className={styles.cardTitle}>Active Drivers</h2>
             </div>
-            <TrendingUp size={16} className={styles.trendIcon} />
           </div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Students Enrolled</span>
-            <span className={styles.statValue}>{data.students.length}</span>
+          <div className={styles.cardBodyRow}>
+            <div className={styles.cardMetrics}>
+              <span className={styles.cardDate}>Apr 2026</span>
+              <span className={styles.cardValue}>{data.drivers.length}</span>
+              <span className={styles.cardSubValue}>+ Currently employed</span>
+            </div>
+            <div className={styles.barChart}>
+              <div className={styles.bar} style={{ height: '40%' }} />
+              <div className={styles.bar} style={{ height: '80%' }} />
+              <div className={styles.bar} style={{ height: '50%' }} />
+              <div className={styles.bar} style={{ height: '90%' }} />
+              <div className={styles.bar} style={{ height: '20%' }} />
+            </div>
           </div>
         </div>
 
-        {/* Active Drivers */}
-        <div className={`bento-card ${styles.cardMetric}`}>
-          <div className={styles.statHeader}>
-            <div className={styles.iconBox}>
-              <UserSquare2 size={22} />
-            </div>
+        {/* Row 1 - Card 3: Expenses Donut */}
+        <div className={`${styles.card} ${styles.cardThird}`}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Financial Overview</h2>
+            <BarChart3 className={styles.cardIcon} size={16} />
           </div>
-          <div className={styles.statInfo}>
-            <span className={styles.statLabel}>Active Drivers</span>
-            <span className={styles.statValue}>{data.drivers.length}</span>
-          </div>
-        </div>
-
-        {/* Fleet Status List */}
-        <div className={`bento-card ${styles.cardList}`}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Fleet Status</h2>
-            <Link href="/buses" className={styles.viewAll}>View Fleet</Link>
-          </div>
-          <div className={styles.list}>
-            {data.buses.slice(0, 5).map(bus => (
-              <div key={bus._id} className={styles.listItem}>
-                <div 
-                  className={styles.statusIndicator} 
-                  style={{ '--status-color': bus.status === 'running' ? 'var(--color-primary)' : bus.status === 'maintenance' ? 'var(--color-warning)' : 'var(--color-border-hover)' } as any} 
-                />
-                <div className={styles.itemInfo}>
-                  <p className={styles.itemName}>{bus.busNumber}</p>
-                  <p className={styles.itemDetail}>{bus.plateNumber}</p>
-                </div>
-                <div className={styles.itemStatus}>{bus.status}</div>
+          <div className={styles.donutContainer}>
+            <div className={styles.donutWrapper}>
+              <div className={`${styles.donut} ${styles.donut1}`} />
+              <div style={{ textAlign: 'center' }}>
+                <div className={styles.donutLabel}>Expense</div>
+                <div className={styles.donutValue}>₹ {totalExpenses.toLocaleString()}</div>
               </div>
-            ))}
-            {data.buses.length === 0 && <p className={styles.emptyList}>No buses registered yet.</p>}
+            </div>
+            <div className={styles.donutWrapper}>
+              <div className={`${styles.donut} ${styles.donut2}`} />
+              <div style={{ textAlign: 'center' }}>
+                <div className={styles.donutLabel}>Income</div>
+                <div className={styles.donutValue}>₹ 3,000</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Impending Expirations List */}
-        <div className={`bento-card ${styles.cardList}`}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>
-              <AlertTriangle size={16} style={{ color: 'var(--color-error)' }} />
-              Expiring Soon
-            </h2>
-            <Link href="/students" className={styles.viewAll}>View All</Link>
+        {/* Row 2 - Card 4: Fleet Progress */}
+        <div className={`${styles.card} ${styles.cardHalf}`}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Fleet Status</h2>
+            <Filter className={styles.cardIcon} size={16} />
           </div>
-          <div className={styles.list}>
-            {expirations.slice(0, 5).map(student => (
-              <div key={student._id} className={styles.listItem}>
-                <div className={styles.itemInfo}>
-                  <p className={styles.itemName}>{student.name}</p>
-                  <p className={styles.itemDetail}>Exp: {new Date(student.expiryDate).toLocaleDateString()}</p>
-                </div>
-                <div className={styles.itemStatus} style={{ color: 'var(--color-error)', background: 'rgba(239, 68, 68, 0.1)' }}>
-                  {Math.ceil((new Date(student.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d left
-                </div>
+          <div className={styles.progressContainer}>
+            <div>
+              <div className={styles.progressHeader}>
+                <span>Total Vehicles ₹ {data.buses.length}.00</span>
               </div>
-            ))}
-            {expirations.length === 0 && <p className={styles.emptyList}>No upcoming expiries this week.</p>}
+              <div className={styles.progressTrack}>
+                <div className={styles.progressSegment} style={{ width: `${pctRunning}%`, background: 'var(--color-primary)' }} />
+                <div className={styles.progressSegment} style={{ width: `${pctMaint}%`, background: '#f59e0b' }} />
+                <div className={styles.progressSegment} style={{ width: `${100 - pctRunning - pctMaint}%`, background: 'var(--color-border-hover)' }} />
+              </div>
+            </div>
+            
+            <div className={styles.progressLegend}>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: 'var(--color-primary)' }} /> CURRENT
+                </div>
+                <div className={styles.legendValue}>{runningBuses} Active</div>
+                <div className={styles.legendSub}>Running</div>
+              </div>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: '#f59e0b' }} /> OVERDUE
+                </div>
+                <div className={styles.legendValue}>{maintenanceBuses} Pending</div>
+                <div className={styles.legendSub}>Maintenance</div>
+              </div>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: '#ef4444' }} /> SEVERE
+                </div>
+                <div className={styles.legendValue}>{outOfServiceBuses} Offline</div>
+                <div className={styles.legendSub}>Out of Service</div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Row 2 - Card 5: Subscriptions Progress */}
+        <div className={`${styles.card} ${styles.cardHalf}`}>
+           <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>Subscription Outstanding</h2>
+            <Filter className={styles.cardIcon} size={16} />
+          </div>
+          <div className={styles.progressContainer}>
+            <div>
+              <div className={styles.progressHeader}>
+                <span>Total Payables ₹ {data.students.length * 15000}.00</span>
+              </div>
+              <div className={styles.progressTrack}>
+                <div className={styles.progressSegment} style={{ width: `${100 - pctExp7 - pctExp30}%`, background: 'var(--color-primary)' }} />
+                <div className={styles.progressSegment} style={{ width: `${pctExp30}%`, background: '#f59e0b' }} />
+                <div className={styles.progressSegment} style={{ width: `${pctExp7}%`, background: '#ef4444' }} />
+              </div>
+            </div>
+            
+            <div className={styles.progressLegend}>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: 'var(--color-primary)' }} /> CURRENT
+                </div>
+                <div className={styles.legendValue}>₹ {(safe * 15000).toLocaleString()}.00</div>
+                <div className={styles.legendSub}>Active</div>
+              </div>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: '#f59e0b' }} /> OVERDUE
+                </div>
+                <div className={styles.legendValue}>₹ {(exp30 * 15000).toLocaleString()}.00</div>
+                <div className={styles.legendSub}>1-30 Days</div>
+              </div>
+              <div className={styles.legendItem}>
+                <div className={styles.legendHeader}>
+                  <div className={styles.legendDot} style={{ background: '#ef4444' }} />
+                </div>
+                <div className={styles.legendValue}>₹ {(exp7 * 15000).toLocaleString()}.00</div>
+                <div className={styles.legendSub}>Immediate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

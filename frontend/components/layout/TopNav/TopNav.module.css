@@ -1,135 +1,186 @@
-.capsuleWrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--top-nav-height);
+.navWrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  pointer-events: none;
-  padding: 0 1.5rem;
+  flex-direction: column;
+  width: 100%;
+  position: static;
+  background: var(--color-bg);
 }
 
-.capsule {
-  pointer-events: auto;
-  background: rgba(24, 24, 27, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-full);
-  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+/* 1. Top Header (Red Accent Background) */
+.headerTop {
+  height: 48px;
+  background: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  min-width: 800px;
-  max-width: 1000px;
+  padding: 0 1.5rem;
+  color: #fff;
 }
 
-.left {
+.brand {
+  display: flex;
+  align-items: center;
+}
+
+.brandTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.headerActions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding-right: 2rem;
 }
 
-.logo {
-  width: 32px;
-  height: 32px;
-  background: var(--color-primary);
+.createBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
   color: #000;
-  border-radius: 50%;
+  border: none;
+  padding: 0 12px;
+  height: 28px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.periodSelect {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 0 12px;
+  height: 28px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.actionIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
-  font-size: 1.125rem;
-}
-
-.brandName {
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
-}
-
-.center {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.navItem {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-full);
-  color: var(--color-text-muted);
-  font-weight: 500;
-  font-size: 0.875rem;
-  transition: var(--transition);
-}
-
-.navItem:hover {
-  color: var(--color-text);
-}
-
-.navItem.active {
-  color: var(--color-bg);
-}
-
-.icon {
-  z-index: 2;
-}
-
-.label {
-  z-index: 2;
-}
-
-.activePill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--color-primary);
-  border-radius: var(--radius-full);
-  z-index: 1;
-  box-shadow: 0 0 20px var(--color-primary-glow);
-}
-
-.right {
-  display: flex;
-  align-items: center;
-  padding-left: 2rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  cursor: pointer;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-primary);
   font-weight: 700;
+  margin-left: 0.25rem;
 }
 
-@media (max-width: 900px) {
-  .capsule {
-    min-width: unset;
-    width: 100%;
-    margin: 0 1rem;
-  }
-  
-  .brandName, .label {
-    display: none;
-  }
+/* 2. Tab Bar (Zinc Matte Background) */
+.tabBar {
+  height: 64px;
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+}
+
+.tabContainer {
+  display: flex;
+  height: 100%;
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 1.5rem;
+  height: 100%;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  border-left: 1px solid var(--color-border);
+  position: relative;
+  transition: var(--transition);
+}
+
+.tab:first-child {
+  border-left: none;
+}
+.tab:last-child {
+  border-right: 1px solid var(--color-border);
+}
+
+.tab:hover {
+  color: var(--color-text);
+  background: var(--color-bg-hover);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.tabIcon {
+  margin-bottom: 2px;
+}
+
+/* 3. Pill Strip */
+.pillStrip {
+  height: 56px;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
+}
+
+.pillContainer {
+  display: flex;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.pill {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.pill:hover {
+  color: var(--color-text);
+}
+
+.activePill {
+  background: var(--color-primary);
+  color: #fff;
+}
+.activePill:hover {
+  color: #fff;
 }

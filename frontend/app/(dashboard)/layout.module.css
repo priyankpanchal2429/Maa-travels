@@ -8,14 +8,14 @@
 .main {
   flex: 1;
   min-width: 0;
-  padding-top: calc(var(--top-nav-height) + 24px); /* Space for the floating top nav */
+  background: var(--color-bg);
 }
 
 .content {
-  padding: 0 32px 32px; /* Top padding is handled by .main */
+  padding: 24px;
   max-width: 1600px;
   margin: 0 auto;
-  min-height: calc(100vh - var(--top-nav-height) - 24px);
+  min-height: 100%;
   animation: pageFadeIn 0.3s ease;
 }
 
@@ -35,11 +35,10 @@
 }
 
 @keyframes pageFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 768px) {
-  .main { margin-left: 0; }
   .content { padding: 16px; }
 }
