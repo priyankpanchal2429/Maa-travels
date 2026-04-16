@@ -8,6 +8,7 @@ export interface Student {
   studentId: string;
   name: string;
   parentPhone: string;
+  address: string;
   duration: SubscriptionDuration;
   routeId: string | any;
   stopId: string;

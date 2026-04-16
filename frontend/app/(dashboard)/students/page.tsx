@@ -54,7 +54,8 @@ export default function StudentsPage() {
       const matchesSearch = 
         student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         student.studentId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        student.parentPhone?.includes(searchQuery);
+        student.parentPhone?.includes(searchQuery) ||
+        student.address?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const isExpired = new Date(student.expiryDate) < new Date();
       let matchesStatus = true;
@@ -202,6 +203,7 @@ export default function StudentsPage() {
               <tr>
                 <th>Student</th>
                 <th>Route & Stop</th>
+                <th>Address</th>
                 <th>Subscription</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -238,6 +240,12 @@ export default function StudentsPage() {
                         <div className={styles.stopItem}>
                           <span>{student.stopId}</span>
                         </div>
+                      </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div className={styles.addressCell}>
+                        <span className={styles.addressText}>{student.address}</span>
                       </div>
                     </td>
                     <td>

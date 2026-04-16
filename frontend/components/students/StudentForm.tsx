@@ -19,6 +19,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
     studentId: initialData?.studentId || '',
     name: initialData?.name || '',
     parentPhone: initialData?.parentPhone || '',
+    address: initialData?.address || '',
     duration: initialData?.duration || '6m' as '6m' | '1y',
     routeId: typeof initialData?.routeId === 'object' ? initialData.routeId._id : initialData?.routeId || '',
     stopId: initialData?.stopId || '',
@@ -61,6 +62,7 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
     if (!formData.studentId.trim()) newErrors.studentId = 'Student ID is required';
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.parentPhone.trim()) newErrors.parentPhone = 'Parent phone is required';
+    if (!formData.address.trim()) newErrors.address = 'Full address is required';
     if (!formData.routeId) newErrors.routeId = 'Route selection is required';
     if (!formData.stopId) newErrors.stopId = 'Stop is required';
     setErrors(newErrors);
@@ -167,6 +169,16 @@ const StudentForm: React.FC<StudentFormProps> = ({ initialData, onSuccess }) => 
         error={errors.parentPhone}
         required
         leftIcon={<Phone size={16} />}
+      />
+
+      <Input
+        label="Residential Address"
+        placeholder="e.g. 123, Green Park, City Center"
+        value={formData.address}
+        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+        error={errors.address}
+        required
+        leftIcon={<MapPin size={16} />}
       />
 
       <div className={styles.grid}>
