@@ -135,7 +135,9 @@
   font-weight: 700;
   cursor: pointer;
   outline: none;
-  width: 110px;
+  width: 85px;
+  text-align: center;
+  padding: 0;
 }
 
 .dateInput::-webkit-calendar-picker-indicator {
