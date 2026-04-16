@@ -31,6 +31,7 @@ export default function StudentsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [durationFilter, setDurationFilter] = useState('all');
   const { openDrawer, closeDrawer, showToast } = useUI();
 
   const fetchStudents = useCallback(async () => {
@@ -62,9 +63,11 @@ export default function StudentsPage() {
       else if (statusFilter === 'unpaid') matchesStatus = student.paymentStatus === 'unpaid' && !isExpired;
       else if (statusFilter === 'bypassed') matchesStatus = student.paymentStatus === 'bypassed' && !isExpired;
 
-      return matchesSearch && matchesStatus;
+      const matchesDuration = durationFilter === 'all' || student.duration === durationFilter;
+
+      return matchesSearch && matchesStatus && matchesDuration;
     });
-  }, [students, searchQuery, statusFilter]);
+  }, [students, searchQuery, statusFilter, durationFilter]);
 
   const handleCreate = () => {
     openDrawer(
@@ -150,7 +153,6 @@ export default function StudentsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-
         <div className={styles.filterWrap}>
           <Filter size={16} className={styles.searchIcon} />
           <span className={styles.filterLabel}>Status:</span>
@@ -159,11 +161,25 @@ export default function StudentsPage() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">All Subscriptions</option>
+            <option value="all">All Status</option>
             <option value="paid">Active & Paid</option>
             <option value="unpaid">Unpaid Records</option>
             <option value="bypassed">Bypassed</option>
             <option value="expired">Expired</option>
+          </select>
+        </div>
+
+        <div className={styles.filterWrap}>
+          <Filter size={16} className={styles.searchIcon} />
+          <span className={styles.filterLabel}>Plan:</span>
+          <select 
+            className={styles.filterSelect}
+            value={durationFilter}
+            onChange={(e) => setDurationFilter(e.target.value)}
+          >
+            <option value="all">Any Duration</option>
+            <option value="6m">6 Months</option>
+            <option value="1y">1 Year</option>
           </select>
         </div>
       </div>
@@ -259,13 +275,13 @@ export default function StudentsPage() {
           {filteredStudents.length === 0 && (
             <div className={styles.empty}>
               <Users size={48} className={styles.emptyIcon} />
-              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches found' : 'No students enrolled'}</h3>
+              <h3>{searchQuery || statusFilter !== 'all' || durationFilter !== 'all' ? 'No matches found' : 'No students enrolled'}</h3>
               <p>
-                {searchQuery || statusFilter !== 'all' 
+                {searchQuery || statusFilter !== 'all' || durationFilter !== 'all'
                   ? 'Try adjusting your search or filters to find what you are looking for.' 
                   : 'Register students to manage their transport passes.'}
               </p>
-              {!searchQuery && statusFilter === 'all' && (
+              {!searchQuery && statusFilter === 'all' && durationFilter === 'all' && (
                 <Button variant="secondary" onClick={handleCreate}>Enroll Now</Button>
               )}
             </div>
