@@ -13,6 +13,7 @@ const adminService = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   migrateLegacyStudents: () => api.post('/admin/migrate-legacy-students'),
+  seedDemoData: () => api.post('/admin/seed-demo'),
 };
 
 export default adminService;

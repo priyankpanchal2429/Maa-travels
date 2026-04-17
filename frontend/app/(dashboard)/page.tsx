@@ -35,6 +35,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFixing, setIsFixing] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   const [threatTab, setThreatTab] = useState<'unpaid' | 'expired'>('unpaid');
 
   const fetchDashboardData = useCallback(async () => {
@@ -111,6 +112,19 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSeedDemo = async () => {
+    setIsSeeding(true);
+    try {
+      const res = await adminService.seedDemoData();
+      showToast(res.data.message, 'success');
+      fetchDashboardData();
+    } catch (err) {
+      showToast('Seeding failed', 'error');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   if (isLoading || isCollegeLoading) {
     return <div className={styles.loader}><Spinner size="lg" /></div>;
   }
@@ -123,6 +137,10 @@ export default function DashboardPage() {
           <p className={styles.subtitle}>{activeCollege?.name || 'Global Intelligence Overview'}</p>
         </div>
         <div className={styles.actions}>
+          <button className={`${styles.btn} ${styles.glassBtn}`} onClick={handleSeedDemo} disabled={isSeeding}>
+            {isSeeding ? <RefreshCw className="spin" size={14} /> : <Activity size={14} />}
+            Seed Mock Data
+          </button>
           {data?.students === 0 && (
             <button className={`${styles.btn} ${styles.primaryBtn}`} onClick={handleFixMapping} disabled={isFixing}>
               {isFixing ? <RefreshCw className="spin" size={14} /> : <ShieldAlert size={14} />}

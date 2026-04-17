@@ -100,3 +100,67 @@ export const fixLegacyStudents = async (_req: Request, res: Response, next: Next
     next(error);
   }
 };
+import { PaymentLog } from '../models/PaymentLog';
+import { Expense } from '../models/Expense';
+import { Bus } from '../models/Bus';
+
+export const seedDemoData = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const students = await Student.find().limit(10);
+    const buses = await Bus.find().limit(5);
+
+    if (students.length === 0) {
+      return res.status(400).json({ success: false, message: 'No students found to seed payments for' });
+    }
+
+    const paymentRecords = [];
+    const expenseRecords = [];
+
+    // Create 20 random payments for existing students
+    for (let i = 0; i < 20; i++) {
+      const student = students[Math.floor(Math.random() * students.length)];
+      const date = new Date();
+      date.setDate(date.getDate() - Math.floor(Math.random() * 30)); // Last 30 days
+
+      paymentRecords.push({
+        collegeId: student.collegeId,
+        studentId: student._id,
+        amountPaid: Math.floor(Math.random() * 5000) + 1000,
+        paymentDate: date,
+        recordedBy: 'Demo Seeder',
+        notes: 'Automated demo payment'
+      });
+    }
+
+    // Create 15 random expenses for existing buses
+    const expenseTypes = ['fuel', 'maintenance', 'daily', 'other'];
+    const expenseDescs = ['Fuel Tank Refill', 'Oil Change', 'Tire Rotation', 'Cleaning Supplies', 'Brake Pad Replacement'];
+    
+    for (let i = 0; i < 15; i++) {
+      const bus = buses.length > 0 ? buses[Math.floor(Math.random() * buses.length)] : null;
+      const date = new Date();
+      date.setDate(date.getDate() - Math.floor(Math.random() * 15));
+
+      expenseRecords.push({
+        collegeId: students[0].collegeId, // Use first student's college as fallback
+        type: expenseTypes[Math.floor(Math.random() * expenseTypes.length)],
+        amount: Math.floor(Math.random() * 2000) + 500,
+        date: date,
+        description: expenseDescs[Math.floor(Math.random() * expenseDescs.length)],
+        busId: bus ? bus._id : null
+      });
+    }
+
+    await Promise.all([
+      PaymentLog.insertMany(paymentRecords),
+      Expense.insertMany(expenseRecords)
+    ]);
+
+    res.json({ 
+      success: true, 
+      message: `Successfully seeded 20 payments and 15 expenses for demonstration.` 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
