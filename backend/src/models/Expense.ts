@@ -29,4 +29,8 @@ const expenseSchema = new Schema<IExpense>(
   { timestamps: true, versionKey: false }
 );
 
+expenseSchema.index({ collegeId: 1 });
+expenseSchema.index({ date: -1 });
+expenseSchema.index({ busId: 1 });
+
 export const Expense = mongoose.model<IExpense>('Expense', expenseSchema);

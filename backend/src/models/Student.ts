@@ -40,4 +40,9 @@ const studentSchema = new Schema<IStudent>(
   { timestamps: true, versionKey: false }
 );
 
+studentSchema.index({ collegeId: 1 });
+studentSchema.index({ expiryDate: 1 });
+studentSchema.index({ paymentStatus: 1 });
+studentSchema.index({ name: 'text', studentId: 'text' });
+
 export const Student = mongoose.model<IStudent>('Student', studentSchema);

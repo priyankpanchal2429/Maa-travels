@@ -14,17 +14,13 @@ interface CollegeContextValue {
 
 const CollegeContext = createContext<CollegeContextValue | undefined>(undefined);
 
-const STORAGE_KEY = 'maa-travels-active-college';
-
-export const CollegeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [colleges, setColleges] = useState<College[]>([]);
-  const [activeCollegeId, setActiveCollegeId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const COLLEGES_CACHE_KEY = 'maa-travels-colleges-list';
 
   const refreshColleges = useCallback(async () => {
     try {
       const { data } = await collegeService.getAll();
       setColleges(data.data);
+      localStorage.setItem(COLLEGES_CACHE_KEY, JSON.stringify(data.data));
 
       // If no active college set, try localStorage or default to first college
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -44,6 +40,21 @@ export const CollegeProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, []);
 
   useEffect(() => {
+    // Immediate load from cache
+    const cached = localStorage.getItem(COLLEGES_CACHE_KEY);
+    const cachedActiveId = localStorage.getItem(STORAGE_KEY);
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setColleges(parsed);
+        if (cachedActiveId) setActiveCollegeId(cachedActiveId);
+        setIsLoading(false); // We have enough to unblock the UI
+      } catch (e) {
+        console.warn('College cache corrupted');
+      }
+    }
+
     refreshColleges();
   }, [refreshColleges]);
 

@@ -14,6 +14,7 @@ import expenseRoutes from './routes/expenseRoutes';
 import collegeRoutes from './routes/collegeRoutes';
 import adminRoutes from './routes/adminRoutes';
 import paymentRoutes from './routes/paymentRoutes';
+import dashboardRoutes from './routes/dashboardRoutes';
 import path from 'path';
 
 const app = express();
@@ -54,6 +55,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/colleges', collegeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // ─── 404 handler ─────────────────────────────
 app.use((_req, res) => {

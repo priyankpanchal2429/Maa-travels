@@ -14,10 +14,51 @@ import routeService from '@/services/routeService';
 import expenseService from '@/services/expenseService';
 import paymentService from '@/services/paymentService';
 import adminService from '@/services/adminService';
+import dashboardService from '@/services/dashboardService';
 import { useCollege } from '@/context/CollegeContext';
 import { useUI } from '@/context/UIContext';
 import Spinner from '@/components/ui/Spinner/Spinner';
+import Skeleton from '@/components/ui/Skeleton/Skeleton';
 import styles from './page.module.css';
+
+const DashboardSkeleton = () => (
+  <div className={styles.container}>
+    <header className={styles.header}>
+      <div className={styles.title}>
+        <Skeleton width={300} height={40} />
+        <Skeleton width={200} height={20} style={{ marginTop: '0.5rem' }} />
+      </div>
+      <div className={styles.actions}>
+        <Skeleton width={120} height={40} borderRadius={10} />
+        <Skeleton width={120} height={40} borderRadius={10} />
+      </div>
+    </header>
+
+    <div className={styles.grid}>
+      <div className={`${styles.card} ${styles.hero}`}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={styles.card}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={styles.card}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={styles.card}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={`${styles.card} ${styles.threat}`}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={`${styles.card} ${styles.economy}`}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+      <div className={`${styles.card} ${styles.vitality}`}>
+        <Skeleton width="100%" height="100%" borderRadius={24} />
+      </div>
+    </div>
+  </div>
+);
 
 interface DashboardData {
   students: number;
@@ -38,64 +79,58 @@ export default function DashboardPage() {
   const [isSeeding, setIsSeeding] = useState(false);
   const [threatTab, setThreatTab] = useState<'unpaid' | 'expired'>('unpaid');
 
+  const DASHBOARD_CACHE_KEY = 'maa-travels-dashboard-snapshot';
+
   const fetchDashboardData = useCallback(async () => {
     if (isCollegeLoading) return;
 
-    setIsLoading(true);
+    // Start fetching but don't set loading yet if we have cached data
+    const hasCache = localStorage.getItem(DASHBOARD_CACHE_KEY);
+    if (!hasCache) setIsLoading(true);
+
     try {
-      const results = await Promise.allSettled([
-        studentService.getAll(),
-        busService.getAll(),
-        driverService.getAll(),
-        routeService.getAll(),
-        paymentService.getInsights(),
-        expenseService.getAll({ limit: 5 })
+      const [nexusRes, insightsRes] = await Promise.allSettled([
+        dashboardService.getOverview(activeCollegeId || undefined),
+        paymentService.getInsights()
       ]);
 
-      // Helper to check if a result was successful
       const isOk = (result: any) => result.status === 'fulfilled';
-      const getData = (result: any) => result.value.data.data;
+      
+      const nexusData = isOk(nexusRes) ? (nexusRes as any).value.data.data : null;
+      const insights = isOk(insightsRes) ? (insightsRes as any).value.data.data : null;
 
-      // Log errors for debugging
-      results.forEach((res, idx) => {
-        if (res.status === 'rejected') {
-          console.error(`Service ${idx} failed:`, res.reason);
-        }
-      });
+      if (nexusData && insights) {
+        const dashboardSnapshot = {
+          students: nexusData.counts.students,
+          buses: nexusData.counts.buses,
+          drivers: nexusData.counts.drivers,
+          routes: nexusData.counts.routes,
+          insights,
+          expenses: nexusData.expenses
+        };
 
-      const studentsData = isOk(results[0]) ? (results[0] as any).value.data : { count: 0, data: [] };
-      const buses = isOk(results[1]) ? getData(results[1]) : [];
-      const drivers = isOk(results[2]) ? getData(results[2]) : [];
-      const routes = isOk(results[3]) ? getData(results[3]) : [];
-      const insights = isOk(results[4]) ? getData(results[4]) : { unpaid: { count: 0, students: [] }, expired: { count: 0, students: [] } };
-      const expenses = isOk(results[5]) ? getData(results[5]) : [];
-
-      const totalExpenses = Array.isArray(expenses) ? expenses.reduce((acc: number, curr: any) => acc + (curr.amount || 0), 0) : 0;
-
-      setData({
-        students: studentsData.count || (Array.isArray(studentsData.data) ? studentsData.data.length : 0),
-        buses: {
-          total: buses.length,
-          active: buses.filter((b: any) => b.status === 'running').length,
-          maintenance: buses.filter((b: any) => b.status === 'maintenance').length,
-        },
-        drivers: drivers.length,
-        routes: routes.length,
-        insights,
-        expenses: {
-          total: totalExpenses,
-          recent: expenses
-        }
-      });
+        setData(dashboardSnapshot);
+        localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify(dashboardSnapshot));
+      }
     } catch (err) {
       console.error('Critical Dashboard Failure', err);
       showToast('Deep Nexus Sync Failure', 'error');
     } finally {
       setIsLoading(false);
     }
-  }, [isCollegeLoading, showToast]);
+  }, [activeCollegeId, isCollegeLoading, showToast]);
 
   useEffect(() => {
+    // Attempt to load from cache immediately for instant perceived performance
+    const cached = localStorage.getItem(DASHBOARD_CACHE_KEY);
+    if (cached) {
+      try {
+        setData(JSON.parse(cached));
+      } catch (e) {
+        console.warn('Dashboard cache corrupted');
+      }
+    }
+    
     fetchDashboardData();
   }, [fetchDashboardData]);
 
@@ -125,8 +160,8 @@ export default function DashboardPage() {
     }
   };
 
-  if (isLoading || isCollegeLoading) {
-    return <div className={styles.loader}><Spinner size="lg" /></div>;
+  if (isCollegeLoading || (isLoading && !data)) {
+    return <DashboardSkeleton />;
   }
 
   return (
