@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Building2, CreditCard 
+  LayoutDashboard, Users, Bus, Map, ReceiptText, ShieldAlert, Building2, CreditCard, Bell 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAlerts } from '@/context/AlertContext';
+import NotificationTray from './NotificationTray';
 import adminService, { AdminProfile } from '@/services/adminService';
 import CollegeSwitcher from '../CollegeSwitcher/CollegeSwitcher';
 import ThemeToggle from '@/components/ui/ThemeToggle/ThemeToggle';
@@ -24,7 +26,9 @@ const NAV_LINKS = [
 
 export default function TopNav() {
   const pathname = usePathname();
+  const { unreadCount } = useAlerts();
   const [profile, setProfile] = useState<AdminProfile | null>(null);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
   const loadProfile = async () => {
@@ -80,6 +84,16 @@ export default function TopNav() {
         </div>
 
         <div className={styles.right}>
+          <button 
+            className={styles.notificationBtn} 
+            onClick={() => setIsNotificationsOpen(true)}
+            title="Operational Intelligence"
+          >
+            <Bell size={20} />
+            {unreadCount > 0 && (
+              <span className={styles.badge}>{unreadCount}</span>
+            )}
+          </button>
           <ThemeToggle />
           <Link href="/profile" className={styles.avatar}>
             {photoUrl ? (
@@ -90,6 +104,11 @@ export default function TopNav() {
           </Link>
         </div>
       </nav>
+
+      <NotificationTray 
+        isOpen={isNotificationsOpen} 
+        onClose={() => setIsNotificationsOpen(false)} 
+      />
     </div>
   );
 }

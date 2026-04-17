@@ -3,6 +3,7 @@ import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { UIProvider } from '@/context/UIContext';
 import { CollegeProvider } from '@/context/CollegeContext';
+import { AlertProvider } from '@/context/AlertContext';
 import DrawerHost from '@/components/ui/Drawer/DrawerHost';
 import ToastHost from '@/components/ui/Toast/ToastHost';
 
@@ -17,11 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <CollegeProvider>
-            <UIProvider>
-              {children}
-              <DrawerHost />
-              <ToastHost />
-            </UIProvider>
+            <AlertProvider>
+              <UIProvider>
+                {children}
+                <DrawerHost />
+                <ToastHost />
+              </UIProvider>
+            </AlertProvider>
           </CollegeProvider>
         </ThemeProvider>
       </body>

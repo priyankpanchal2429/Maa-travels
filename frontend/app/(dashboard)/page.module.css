@@ -225,6 +225,19 @@
   font-weight: 800;
 }
 
+/* ─── Analytics Styling ─── */
+.analyticsTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-left: 1rem;
+}
+
+.chartContainer {
+  margin: 1.5rem -1rem 0 -1rem;
+  height: 200px;
+}
+
 /* ─── Header & Actions ─── */
 .header {
   margin-bottom: 3rem;

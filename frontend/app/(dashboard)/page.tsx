@@ -6,6 +6,10 @@ import {
   ShieldAlert, CreditCard, RefreshCw, ChevronRight,
   TrendingUp, Settings, Activity, Clock
 } from 'lucide-react';
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, BarChart, Bar 
+} from 'recharts';
 import Link from 'next/link';
 import studentService from '@/services/studentService';
 import busService from '@/services/busService';
@@ -74,12 +78,14 @@ export default function DashboardPage() {
   const { showToast } = useUI();
   
   const [data, setData] = useState<DashboardData | null>(null);
+  const [analytics, setAnalytics] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFixing, setIsFixing] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
   const [threatTab, setThreatTab] = useState<'unpaid' | 'expired'>('unpaid');
 
   const DASHBOARD_CACHE_KEY = 'maa-travels-dashboard-snapshot';
+  const ANALYTICS_CACHE_KEY = 'maa-travels-analytics-snapshot';
 
   const fetchDashboardData = useCallback(async () => {
     if (isCollegeLoading) return;
@@ -89,15 +95,17 @@ export default function DashboardPage() {
     if (!hasCache) setIsLoading(true);
 
     try {
-      const [nexusRes, insightsRes] = await Promise.allSettled([
+      const [nexusRes, insightsRes, analyticsRes] = await Promise.allSettled([
         dashboardService.getOverview(activeCollegeId || undefined),
-        paymentService.getInsights()
+        paymentService.getInsights(),
+        dashboardService.getAnalytics(activeCollegeId || undefined)
       ]);
 
       const isOk = (result: any) => result.status === 'fulfilled';
       
       const nexusData = isOk(nexusRes) ? (nexusRes as any).value.data.data : null;
       const insights = isOk(insightsRes) ? (insightsRes as any).value.data.data : null;
+      const analyticsData = isOk(analyticsRes) ? (analyticsRes as any).value.data.data : [];
 
       if (nexusData && insights) {
         const dashboardSnapshot = {
@@ -110,7 +118,10 @@ export default function DashboardPage() {
         };
 
         setData(dashboardSnapshot);
+        setAnalytics(analyticsData);
+        
         localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify(dashboardSnapshot));
+        localStorage.setItem(ANALYTICS_CACHE_KEY, JSON.stringify(analyticsData));
       }
     } catch (err) {
       console.error('Critical Dashboard Failure', err);
@@ -123,11 +134,21 @@ export default function DashboardPage() {
   useEffect(() => {
     // Attempt to load from cache immediately for instant perceived performance
     const cached = localStorage.getItem(DASHBOARD_CACHE_KEY);
+    const cachedAnalytics = localStorage.getItem(ANALYTICS_CACHE_KEY);
+
     if (cached) {
       try {
         setData(JSON.parse(cached));
       } catch (e) {
         console.warn('Dashboard cache corrupted');
+      }
+    }
+
+    if (cachedAnalytics) {
+      try {
+        setAnalytics(JSON.parse(cachedAnalytics));
+      } catch (e) {
+        console.warn('Analytics cache corrupted');
       }
     }
     
@@ -280,23 +301,68 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* STAT: Economy Summary */}
-        <div className={`${styles.card} ${styles.economy} ${styles.amber}`}>
+        {/* STAT: Economy Analytics */}
+        <div className={`${styles.card} ${styles.economy}`}>
           <div className={styles.cardHeader}>
             <div className={styles.cardIcon}><IndianRupee size={20} /></div>
-            <Activity size={16} />
+            <div className={styles.analyticsTitle}>
+              <h2 style={{fontSize: '1rem', fontWeight: 900}}>Economic Pulse</h2>
+              <span className={styles.miniLabel}>Revenue vs Overhead</span>
+            </div>
           </div>
-          <div className={styles.miniStat}>
+          
+          <div className={styles.chartContainer}>
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={analytics}>
+                <defs>
+                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fill: 'var(--color-text-muted)', fontSize: 10}}
+                />
+                <YAxis hide />
+                <Tooltip 
+                  contentStyle={{ 
+                    background: 'rgba(0,0,0,0.8)', 
+                    border: '1px solid var(--glass-border)', 
+                    borderRadius: '12px',
+                    fontSize: '12px'
+                  }} 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="#10b981" 
+                  strokeWidth={2}
+                  fillOpacity={1} 
+                  fill="url(#colorRev)" 
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  fillOpacity={1} 
+                  fill="url(#colorExp)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className={styles.miniStat} style={{marginTop: '1.5rem'}}>
             <span className={styles.miniValue}>₹{(data?.expenses.total ?? 0).toLocaleString()}</span>
-            <span className={styles.miniLabel}>Recent Expenditure</span>
-          </div>
-          <div className={styles.insightList} style={{marginTop: '1rem', maxHeight: '180px'}}>
-            {(data?.expenses?.recent || []).map((e: any) => (
-              <div key={e._id} style={{display:'flex', justifyContent:'space-between', fontSize:'0.75rem', padding:'0.5rem 0', borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
-                <span>{e.description}</span>
-                <span style={{fontWeight: 800}}>₹{e.amount}</span>
-              </div>
-            ))}
+            <span className={styles.miniLabel}>Total Lifecycle Expenditure</span>
           </div>
         </div>
 

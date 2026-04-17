@@ -20,6 +20,8 @@ export interface DashboardOverview {
 const dashboardService = {
   getOverview: (collegeId?: string) => 
     api.get('/dashboard/nexus', { params: { collegeId } }),
+  getAnalytics: (collegeId?: string) =>
+    api.get('/dashboard/analytics', { params: { collegeId } }),
 };
 
 export default dashboardService;
