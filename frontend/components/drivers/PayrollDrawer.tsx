@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useRef, useMemo } from 'react';
 import { IndianRupee, FileText, UserSquare2, Download, Clock, Send, Eye, EyeOff, Printer, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useUI } from '@/context/UIContext';
