@@ -24,12 +24,16 @@ interface PayslipData {
   earnedSalary: number;
   overtimeBonus: number;
   netPay: number;
+  presentDays?: number;
+  absentDays?: number;
+  halfDays?: number;
 }
 
 const PayslipTemplate = forwardRef<HTMLDivElement, { data: PayslipData }>(
   ({ data }, ref) => {
     const { driver, month, year, totalDays, daysWorked, overtimeHours, overtimeRate,
-      allowances, advances, deductions, baseSalary, earnedSalary, overtimeBonus, netPay } = data;
+      allowances, advances, deductions, baseSalary, earnedSalary, overtimeBonus, netPay,
+      presentDays = 0, absentDays = 0, halfDays = 0 } = data;
 
     return (
       <div
@@ -97,17 +101,27 @@ const PayslipTemplate = forwardRef<HTMLDivElement, { data: PayslipData }>(
         <p style={{ margin: '0 0 10px', fontSize: 11, fontWeight: 800, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
           Timesheet Summary
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 12 }}>
           {[
-            { label: 'Total Days', value: totalDays },
-            { label: 'Days Worked', value: daysWorked },
-            { label: 'Overtime Hrs', value: overtimeHours },
+            { label: 'Present', value: presentDays, color: '#10b981' },
+            { label: 'Half Day', value: halfDays, color: '#f59e0b' },
+            { label: 'Absent', value: absentDays, color: '#ef4444' },
           ].map((item) => (
-            <div key={item.label} style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff' }}>{item.value}</p>
+            <div key={item.label} style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: `1px solid ${item.color}30`, textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: item.color }}>{item.value}</p>
               <p style={{ margin: '4px 0 0', fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{item.label}</p>
             </div>
           ))}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
+          <div style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(59,130,246,0.2)', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#3b82f6' }}>{daysWorked}</p>
+            <p style={{ margin: '4px 0 0', fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Effective Days</p>
+          </div>
+          <div style={{ padding: 14, background: 'rgba(255,255,255,0.03)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: 22, fontWeight: 900, color: '#fff' }}>{overtimeHours}</p>
+            <p style={{ margin: '4px 0 0', fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Overtime Hrs</p>
+          </div>
         </div>
 
         {/* Pay Breakdown */}

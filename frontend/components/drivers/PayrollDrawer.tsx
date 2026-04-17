@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { IndianRupee, FileText, Send, UserSquare2, Download, Clock } from 'lucide-react';
+import React, { useState, useRef, useMemo } from 'react';
+import { IndianRupee, FileText, UserSquare2, Download, Clock } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useUI } from '@/context/UIContext';
 import { Driver } from '@/services/driverService';
@@ -19,19 +19,35 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-/** Fixed 30-day month for daily wage calculation */
-const DAYS_IN_MONTH = 30;
+/** Attendance status for each day */
+type DayStatus = 'P' | 'A' | 'H';
+
+const STATUS_CYCLE: DayStatus[] = ['P', 'A', 'H'];
+const STATUS_LABELS: Record<DayStatus, string> = { P: 'Present', A: 'Absent', H: 'Half Day' };
+const STATUS_COLORS: Record<DayStatus, string> = { P: '#10b981', A: '#ef4444', H: '#f59e0b' };
+
+/** Returns number of days in a given month/year */
+function getDaysInMonth(monthName: string, year: number): number {
+  const monthIndex = MONTHS.indexOf(monthName);
+  return new Date(year, monthIndex + 1, 0).getDate();
+}
 
 export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps) {
   const [month, setMonth] = useState(MONTHS[new Date().getMonth()]);
   const [year, setYear] = useState(new Date().getFullYear().toString());
 
-  // Timesheet
-  const [daysWorked, setDaysWorked] = useState<number>(DAYS_IN_MONTH);
+  // Timesheet — daily attendance map (day number → status)
+  const totalDays = useMemo(() => getDaysInMonth(month, Number(year)), [month, year]);
+
+  const [attendance, setAttendance] = useState<Record<number, DayStatus>>(() => {
+    const init: Record<number, DayStatus> = {};
+    for (let d = 1; d <= 31; d++) init[d] = 'P';
+    return init;
+  });
+
+  // Overtime / adjustments
   const [overtimeHours, setOvertimeHours] = useState<number>(0);
   const [overtimeRate, setOvertimeRate] = useState<number>(100);
-
-  // Pay adjustments
   const [allowances, setAllowances] = useState<number>(0);
   const [advances, setAdvances] = useState<number>(0);
   const [deductions, setDeductions] = useState<number>(0);
@@ -42,32 +58,55 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
   const payslipRef = useRef<HTMLDivElement>(null);
   const { showToast } = useUI();
 
+  // ─── Toggle day status on click ───
+  const toggleDay = (day: number) => {
+    setAttendance(prev => {
+      const current = prev[day] || 'P';
+      const nextIndex = (STATUS_CYCLE.indexOf(current) + 1) % STATUS_CYCLE.length;
+      return { ...prev, [day]: STATUS_CYCLE[nextIndex] };
+    });
+  };
+
+  // ─── Derived timesheet stats ───
+  const timesheetStats = useMemo(() => {
+    let present = 0, absent = 0, halfDay = 0;
+    for (let d = 1; d <= totalDays; d++) {
+      const s = attendance[d] || 'P';
+      if (s === 'P') present++;
+      else if (s === 'A') absent++;
+      else if (s === 'H') halfDay++;
+    }
+    const effectiveDays = present + (halfDay * 0.5);
+    return { present, absent, halfDay, effectiveDays };
+  }, [attendance, totalDays]);
+
   // ─── Calculations ───
   const baseSalary = driver.salary || 0;
-  const dailyWage = baseSalary / DAYS_IN_MONTH;
-  const earnedSalary = Math.round(dailyWage * daysWorked);
+  const dailyWage = baseSalary / totalDays;
+  const earnedSalary = Math.round(dailyWage * timesheetStats.effectiveDays);
   const overtimeBonus = overtimeHours * overtimeRate;
   const netPay = earnedSalary + overtimeBonus + allowances - advances - deductions;
 
   // ─── Payslip data bundle ───
   const payslipData = {
     driver, month, year,
-    totalDays: DAYS_IN_MONTH,
-    daysWorked, overtimeHours, overtimeRate,
+    totalDays,
+    daysWorked: timesheetStats.effectiveDays,
+    overtimeHours, overtimeRate,
     allowances, advances, deductions,
     baseSalary, earnedSalary, overtimeBonus, netPay,
+    // Attendance summary for the template
+    presentDays: timesheetStats.present,
+    absentDays: timesheetStats.absent,
+    halfDays: timesheetStats.halfDay,
   };
 
-  /**
-   * Renders the hidden PayslipTemplate to a PNG using html2canvas,
-   * triggers a download, and opens the driver's WhatsApp chat.
-   */
+  /** Render payslip PNG + open WhatsApp */
   const handleGenerateAndSend = async () => {
     if (!payslipRef.current) return;
     setIsSubmitting(true);
 
     try {
-      // 1. Record expense if checked
       if (recordExpense) {
         await expenseService.create({
           type: 'salary',
@@ -77,7 +116,6 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
         showToast('Payroll recorded in Expenses', 'success');
       }
 
-      // 2. Generate PNG from template
       const canvas = await html2canvas(payslipRef.current, {
         scale: 2,
         backgroundColor: null,
@@ -85,7 +123,6 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
         logging: false,
       });
 
-      // 3. Trigger download
       const link = document.createElement('a');
       link.download = `Payslip_${driver.name.replace(/\s+/g, '_')}_${month}_${year}.png`;
       link.href = canvas.toDataURL('image/png');
@@ -93,7 +130,6 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
 
       showToast('Payslip downloaded! Attach it in the WhatsApp chat.', 'success');
 
-      // 4. Open WhatsApp chat for the driver
       let cleanPhone = driver.phone.replace(/\D/g, '');
       if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
 
@@ -121,7 +157,7 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
           <FileText size={24} />
         </div>
         <h2 className={styles.title}>Timesheet & Payslip</h2>
-        <p className={styles.subtitle}>Fill timesheet, calculate pay, and send via WhatsApp</p>
+        <p className={styles.subtitle}>Mark daily attendance, then generate payslip</p>
       </header>
 
       {/* Driver Card */}
@@ -140,44 +176,91 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       </div>
 
       {/* Month / Year */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className={styles.formGroup}>
+          <label>Month</label>
+          <select className={styles.select} value={month} onChange={(e) => setMonth(e.target.value)}>
+            {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+        <div className={styles.formGroup}>
+          <label>Year</label>
+          <select className={styles.select} value={year} onChange={(e) => setYear(e.target.value)}>
+            {[...Array(5)].map((_, i) => {
+              const y = new Date().getFullYear() - i;
+              return <option key={y} value={y}>{y}</option>;
+            })}
+          </select>
+        </div>
+      </div>
+
+      {/* ─── Daily Timesheet Grid ─── */}
+      <div className={styles.sectionLabel}>
+        <Clock size={14} />
+        <span>Daily Attendance — Tap to toggle</span>
+      </div>
+
+      {/* Legend */}
+      <div className={styles.timesheetLegend}>
+        {STATUS_CYCLE.map(s => (
+          <div key={s} className={styles.legendItem}>
+            <div className={styles.legendDot} style={{ background: STATUS_COLORS[s] }} />
+            <span>{s} = {STATUS_LABELS[s]}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Day Grid */}
+      <div className={styles.timesheetGrid}>
+        {Array.from({ length: totalDays }, (_, i) => i + 1).map(day => {
+          const status = attendance[day] || 'P';
+          return (
+            <button
+              key={day}
+              className={styles.dayCell}
+              style={{
+                borderColor: STATUS_COLORS[status],
+                background: `${STATUS_COLORS[status]}15`,
+              }}
+              onClick={() => toggleDay(day)}
+              type="button"
+              title={`Day ${day}: ${STATUS_LABELS[status]}`}
+            >
+              <span className={styles.dayNumber}>{day}</span>
+              <span className={styles.dayStatus} style={{ color: STATUS_COLORS[status] }}>{status}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Attendance Summary */}
+      <div className={styles.attendanceSummary}>
+        <div className={styles.summaryChip} style={{ borderColor: STATUS_COLORS.P }}>
+          <span style={{ color: STATUS_COLORS.P, fontWeight: 800 }}>{timesheetStats.present}</span>
+          <span>Present</span>
+        </div>
+        <div className={styles.summaryChip} style={{ borderColor: STATUS_COLORS.H }}>
+          <span style={{ color: STATUS_COLORS.H, fontWeight: 800 }}>{timesheetStats.halfDay}</span>
+          <span>Half Day</span>
+        </div>
+        <div className={styles.summaryChip} style={{ borderColor: STATUS_COLORS.A }}>
+          <span style={{ color: STATUS_COLORS.A, fontWeight: 800 }}>{timesheetStats.absent}</span>
+          <span>Absent</span>
+        </div>
+        <div className={styles.summaryChip} style={{ borderColor: '#3b82f6' }}>
+          <span style={{ color: '#3b82f6', fontWeight: 800 }}>{timesheetStats.effectiveDays}</span>
+          <span>Effective</span>
+        </div>
+      </div>
+
+      {/* Overtime & Adjustments */}
+      <div className={styles.sectionLabel}>
+        <IndianRupee size={14} />
+        <span>Overtime & Adjustments</span>
+      </div>
+
       <div className={styles.formGrid}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div className={styles.formGroup}>
-            <label>Month</label>
-            <select className={styles.select} value={month} onChange={(e) => setMonth(e.target.value)}>
-              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Year</label>
-            <select className={styles.select} value={year} onChange={(e) => setYear(e.target.value)}>
-              {[...Array(5)].map((_, i) => {
-                const y = new Date().getFullYear() - i;
-                return <option key={y} value={y}>{y}</option>;
-              })}
-            </select>
-          </div>
-        </div>
-
-        {/* Timesheet Section */}
-        <div className={styles.sectionLabel}>
-          <Clock size={14} />
-          <span>Timesheet</span>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div className={styles.formGroup}>
-            <label>Days Worked</label>
-            <input
-              type="number"
-              className={styles.input}
-              value={daysWorked || ''}
-              min="0"
-              max="31"
-              onChange={(e) => setDaysWorked(Number(e.target.value))}
-              placeholder="30"
-            />
-          </div>
           <div className={styles.formGroup}>
             <label>Overtime Hours</label>
             <input
@@ -189,27 +272,17 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
               placeholder="0"
             />
           </div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label>Overtime Rate (₹ / hr)</label>
-          <div className={styles.inputWrap}>
-            <IndianRupee size={16} className={styles.currencyIcon} />
+          <div className={styles.formGroup}>
+            <label>OT Rate (₹/hr)</label>
             <input
               type="number"
-              className={`${styles.input} ${styles.withIcon}`}
+              className={styles.input}
               value={overtimeRate || ''}
               min="0"
               onChange={(e) => setOvertimeRate(Number(e.target.value))}
               placeholder="100"
             />
           </div>
-        </div>
-
-        {/* Pay Adjustments */}
-        <div className={styles.sectionLabel}>
-          <IndianRupee size={14} />
-          <span>Pay Adjustments</span>
         </div>
 
         <div className={styles.formGroup}>
@@ -266,7 +339,7 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
           <span className={styles.calcValue}>₹{baseSalary.toLocaleString('en-IN')}</span>
         </div>
         <div className={styles.calcRow}>
-          <span>Earned ({daysWorked}/{DAYS_IN_MONTH} days)</span>
+          <span>Earned ({timesheetStats.effectiveDays}/{totalDays} days)</span>
           <span className={styles.calcValue}>₹{earnedSalary.toLocaleString('en-IN')}</span>
         </div>
         <div className={styles.calcRow}>
@@ -302,7 +375,7 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
         <span className={styles.checkboxLabel}>Record as an Expense automatically</span>
       </label>
 
-      {/* Action Buttons */}
+      {/* Action Button */}
       <div className={styles.actions}>
         <button
           className={styles.btnSend}
