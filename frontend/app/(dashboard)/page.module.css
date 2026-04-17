@@ -300,3 +300,72 @@
   align-items: center;
   height: 60vh;
 }
+
+/* ─── Visual Enhancements ─── */
+.sparklineContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.miniStat {
+  position: relative;
+  z-index: 1;
+}
+
+.threatBalance {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.threatSegmentUnpaid {
+  background: var(--color-warning);
+  transition: width 0.3s ease;
+}
+
+.threatSegmentExpired {
+  background: var(--color-error);
+  transition: width 0.3s ease;
+}
+
+.pieContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+  margin-top: -1rem;
+  margin-bottom: 0.5rem;
+}
+
+.pieLegend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: auto;
+}
+
+.pieLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+
+.pieLegendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+

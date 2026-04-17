@@ -8,7 +8,8 @@ import {
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
-  Tooltip, ResponsiveContainer
+  Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
 import Link from 'next/link';
 import paymentService from '@/services/paymentService';
@@ -153,18 +154,39 @@ export default function DashboardPage() {
         <div className={`${styles.card} ${styles.fleet} ${styles.cyan}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><Bus size={20} /></div></div>
           <div className={styles.miniStat}><span className={styles.miniValue}>{data?.buses.total}</span><span className={styles.miniLabel}>Total Buses</span></div>
+          <div className={styles.sparklineContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={[{v:10},{v:15},{v:13},{v:20},{v:18},{v:25}]}>
+                <Line type="monotone" dataKey="v" stroke="#06b6d4" strokeWidth={3} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* STAT: Drivers */}
         <div className={`${styles.card} ${styles.drivers} ${styles.magenta}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><Navigation size={20} /></div></div>
           <div className={styles.miniStat}><span className={styles.miniValue}>{data?.drivers}</span><span className={styles.miniLabel}>Active Drivers</span></div>
+          <div className={styles.sparklineContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={[{v:5},{v:7},{v:6},{v:9},{v:10},{v:8}]}>
+                <Line type="monotone" dataKey="v" stroke="#d946ef" strokeWidth={3} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* STAT: Routes */}
         <div className={`${styles.card} ${styles.routes} ${styles.amber}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><MapPin size={20} /></div></div>
           <div className={styles.miniStat}><span className={styles.miniValue}>{data?.routes}</span><span className={styles.miniLabel}>Total Routes</span></div>
+          <div className={styles.sparklineContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={[{v:2},{v:3},{v:2},{v:5},{v:4},{v:6}]}>
+                <Line type="monotone" dataKey="v" stroke="#f59e0b" strokeWidth={3} dot={false} isAnimationActive={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
         {/* QUICK COMMANDS */}
@@ -174,6 +196,10 @@ export default function DashboardPage() {
 
         {/* THREAT MATRIX */}
         <div className={`${styles.card} ${styles.threat}`}>
+          <div className={styles.threatBalance}>
+            <div className={styles.threatSegmentUnpaid} style={{ width: `${Math.max(10, ((data?.insights?.unpaid?.count || 1) / (((data?.insights?.unpaid?.count || 1) + (data?.insights?.expired?.count || 0)) || 1)) * 100)}%` }} />
+            <div className={styles.threatSegmentExpired} style={{ width: `${Math.max(10, ((data?.insights?.expired?.count || 0) / (((data?.insights?.unpaid?.count || 1) + (data?.insights?.expired?.count || 0)) || 1)) * 100)}%` }} />
+          </div>
           <div className={styles.threatTabs}>
             <button className={`${styles.tabBtn} ${threatTab === 'unpaid' ? styles.active : ''}`} onClick={() => setThreatTab('unpaid')}>
               Unpaid ({data?.insights?.unpaid?.count ?? 0})
@@ -237,11 +263,33 @@ export default function DashboardPage() {
         {/* VITALITY */}
         <div className={`${styles.card} ${styles.vitality}`}>
           <div className={styles.cardHeader}><h2 style={{fontSize: '1.25rem', fontWeight: 900}}>Bus Stats</h2><Settings size={18} /></div>
-          <div className={styles.statusGrid}>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Running</span><span className={styles.statusValue} style={{color: '#10b981'}}>{data?.buses.active}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Repairs</span><span className={styles.statusValue} style={{color: '#ef4444'}}>{data?.buses.maintenance}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Idle</span><span className={styles.statusValue}>{(data?.buses.total ?? 0) - (data?.buses.active ?? 0) - (data?.buses.maintenance ?? 0)}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Paperwork</span><span className={styles.statusValue} style={{fontSize: '0.8rem', color: '#10b981'}}>ALL CLEAR</span></div>
+          <div className={styles.pieContainer}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie 
+                  data={[
+                    { name: 'Running', value: data?.buses.active || 1, color: '#10b981' },
+                    { name: 'Repairs', value: data?.buses.maintenance || 0, color: '#ef4444' },
+                    { name: 'Idle', value: Math.max(0, (data?.buses.total || 0) - (data?.buses.active || 0) - (data?.buses.maintenance || 0)), color: '#6b7280' }
+                  ]}
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                  isAnimationActive={false}
+                  stroke="none"
+                >
+                  <Cell fill="#10b981" />
+                  <Cell fill="#ef4444" />
+                  <Cell fill="#6b7280" />
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className={styles.pieLegend}>
+            <div className={styles.pieLegendItem}><div className={styles.pieLegendDot} style={{background: '#10b981'}} />Running</div>
+            <div className={styles.pieLegendItem}><div className={styles.pieLegendDot} style={{background: '#ef4444'}} />Repairs</div>
+            <div className={styles.pieLegendItem}><div className={styles.pieLegendDot} style={{background: '#6b7280'}} />Idle</div>
           </div>
         </div>
 
