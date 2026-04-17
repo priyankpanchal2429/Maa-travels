@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { 
   Users, Bus, MapPin, Navigation, IndianRupee, 
   ShieldAlert, CreditCard, RefreshCw, ChevronRight,
-  TrendingUp, Settings, Activity, Clock
+  TrendingUp, Settings, Clock
 } from 'lucide-react';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, 
@@ -81,7 +81,6 @@ export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFixing, setIsFixing] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
   const [threatTab, setThreatTab] = useState<'unpaid' | 'expired'>('unpaid');
 
   const DASHBOARD_CACHE_KEY = 'maa-travels-dashboard-snapshot';
@@ -167,18 +166,6 @@ export default function DashboardPage() {
       setIsFixing(false);
     }
   };
-
-  const handleFixMapping = async () => {
-    setIsFixing(true);
-    try {
-      const res = await adminService.migrateLegacyStudents();
-      showToast(res.data.message, 'success');
-      fetchDashboardData();
-    } catch (err) {
-      showToast('Migration failed', 'error');
-    } finally {
-      setIsFixing(false);
-    }
   };
 
   if (isCollegeLoading || (isLoading && !data)) {
