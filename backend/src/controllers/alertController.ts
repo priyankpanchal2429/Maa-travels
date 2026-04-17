@@ -49,7 +49,7 @@ export const getGlobalAlerts = async (req: Request, res: Response, next: NextFun
       })),
       ...maintenanceBuses.map(b => ({
         type: 'warning',
-        category: 'Fleet Health',
+        category: 'Bus Health',
         message: `Bus ${b.busNumber} is currently out of service (Maintenance).`,
         date: new Date(),
         id: `bus-${b._id}`

@@ -81,7 +81,7 @@ export const deleteBus = async (req: Request, res: Response, next: NextFunction)
 
     await logInternalActivity({
       type: 'fleet',
-      message: `Bus removed from fleet: ${bus.busNumber}`,
+      message: `Bus removed: ${bus.busNumber}`,
       collegeId: bus.collegeId?.toString()
     });
 

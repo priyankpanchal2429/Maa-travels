@@ -68,7 +68,7 @@ const BusForm: React.FC<BusFormProps> = ({ initialData, onSuccess }) => {
           <Truck size={24} />
         </div>
         <h2>{initialData ? 'Edit Vehicle' : 'Register New Bus'}</h2>
-        <p>Update your fleet details and compliance dates</p>
+        <p>Update your bus details and compliance dates</p>
       </div>
 
       <div className={styles.section}>
