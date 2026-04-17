@@ -4,6 +4,10 @@ import sharp from 'sharp';
 import path from 'path';
 import fs from 'fs';
 import { Admin } from '../models/Admin';
+import { Student } from '../models/Student';
+import { College } from '../models/College';
+import { PaymentLog } from '../models/PaymentLog';
+import { Expense } from '../models/Expense';
 
 // ─── Multer Config ───────────────────────────
 const storage = multer.memoryStorage();
@@ -77,9 +81,6 @@ export const updatePhoto = async (req: Request, res: Response, next: NextFunctio
 /**
  * Migration: Finds all students with null collegeId and assigns them the first available college.
  */
-import { Student } from '../models/Student';
-import { College } from '../models/College';
-
 export const fixLegacyStudents = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const defaultCollege = await College.findOne({ code: 'DEFAULT' }) || await College.findOne();
@@ -100,83 +101,27 @@ export const fixLegacyStudents = async (_req: Request, res: Response, next: Next
     next(error);
   }
 };
-import { PaymentLog } from '../models/PaymentLog';
-import { Expense } from '../models/Expense';
-import { Bus } from '../models/Bus';
 
-export const seedDemoData = async (_req: Request, res: Response, next: NextFunction) => {
+/**
+ * DELETE /api/admin/clear-demo
+ * Purges all mock records created by the Global Seeder.
+ */
+export const clearDemoData = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const colleges = await College.find();
+    // Delete payments created by seeder
+    const paymentPurge = await PaymentLog.deleteMany({ recordedBy: 'Global Seeder' });
     
-    if (colleges.length === 0) {
-      return res.status(400).json({ success: false, message: 'No colleges found. Please create colleges first.' });
-    }
-
-    const paymentRecords = [];
-    const expenseRecords = [];
-    const expenseTypes = ['fuel', 'maintenance', 'daily', 'other'];
-    const expenseDescs = ['Fuel Tank Refill', 'Oil Change', 'Tire Rotation', 'Cleaning Supplies', 'Brake Pad Replacement', 'Insurance Renewal', 'GPS Maintenance'];
-
-    for (const college of colleges) {
-      // 1. Get students for this specific college
-      const students = await Student.find({ collegeId: college._id }).limit(20);
-      const buses = await Bus.find({ collegeId: college._id }).limit(10);
-
-      // Seed Payments for this college's students
-      if (students.length > 0) {
-        for (let i = 0; i < 15; i++) {
-          const student = students[Math.floor(Math.random() * students.length)];
-          const date = new Date();
-          date.setDate(date.getDate() - Math.floor(Math.random() * 60)); // Spread over 60 days
-
-          // Update student status to 'paid' and extend expiry for demo
-          const newExpiry = new Date(date);
-          newExpiry.setMonth(newExpiry.getMonth() + 6);
-          await Student.findByIdAndUpdate(student._id, {
-            paymentStatus: 'paid',
-            expiryDate: newExpiry
-          });
-
-          paymentRecords.push({
-            collegeId: college._id,
-            studentId: student._id,
-            amountPaid: Math.floor(Math.random() * 5000) + 1000,
-            paymentDate: date,
-            recordedBy: 'Global Seeder',
-            notes: `Mock payment for ${college.name}`
-          });
-        }
-      }
-
-      // Seed Expenses for this college's buses
-      if (buses.length > 0) {
-        for (let i = 0; i < 10; i++) {
-          const bus = buses[Math.floor(Math.random() * buses.length)];
-          const date = new Date();
-          date.setDate(date.getDate() - Math.floor(Math.random() * 20));
-
-          expenseRecords.push({
-            collegeId: college._id,
-            type: expenseTypes[Math.floor(Math.random() * expenseTypes.length)],
-            amount: Math.floor(Math.random() * 3000) + 200,
-            date: date,
-            description: expenseDescs[Math.floor(Math.random() * expenseDescs.length)],
-            busId: bus._id
-          });
-        }
-      }
-    }
-
-    if (paymentRecords.length > 0 || expenseRecords.length > 0) {
-      await Promise.all([
-        paymentRecords.length > 0 ? PaymentLog.insertMany(paymentRecords) : Promise.resolve(),
-        expenseRecords.length > 0 ? Expense.insertMany(expenseRecords) : Promise.resolve()
-      ]);
-    }
+    // Expenses don't have a specific tag, so we match against the seeder's known descriptions
+    const seederDescs = [
+      'Fuel Tank Refill', 'Oil Change', 'Tire Rotation', 
+      'Cleaning Supplies', 'Brake Pad Replacement', 
+      'Insurance Renewal', 'GPS Maintenance'
+    ];
+    const expensePurge = await Expense.deleteMany({ description: { $in: seederDescs } });
 
     res.json({ 
       success: true, 
-      message: `Successfully seeded data across ${colleges.length} colleges: ${paymentRecords.length} payments and ${expenseRecords.length} expenses created.` 
+      message: `System Cleanse Complete: Purged ${paymentPurge.deletedCount} mock payments and ${expensePurge.deletedCount} mock expenses.` 
     });
   } catch (error) {
     next(error);

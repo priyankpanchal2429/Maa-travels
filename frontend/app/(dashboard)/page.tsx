@@ -168,16 +168,16 @@ export default function DashboardPage() {
     }
   };
 
-  const handleSeedDemo = async () => {
-    setIsSeeding(true);
+  const handleFixMapping = async () => {
+    setIsFixing(true);
     try {
-      const res = await adminService.seedDemoData();
+      const res = await adminService.migrateLegacyStudents();
       showToast(res.data.message, 'success');
       fetchDashboardData();
     } catch (err) {
-      showToast('Seeding failed', 'error');
+      showToast('Migration failed', 'error');
     } finally {
-      setIsSeeding(false);
+      setIsFixing(false);
     }
   };
 
@@ -193,10 +193,6 @@ export default function DashboardPage() {
           <p className={styles.subtitle}>{activeCollege?.name || 'Global Intelligence Overview'}</p>
         </div>
         <div className={styles.actions}>
-          <button className={`${styles.btn} ${styles.glassBtn}`} onClick={handleSeedDemo} disabled={isSeeding}>
-            {isSeeding ? <RefreshCw className="spin" size={14} /> : <Activity size={14} />}
-            Seed Mock Data
-          </button>
           {data?.students === 0 && (
             <button className={`${styles.btn} ${styles.primaryBtn}`} onClick={handleFixMapping} disabled={isFixing}>
               {isFixing ? <RefreshCw className="spin" size={14} /> : <ShieldAlert size={14} />}

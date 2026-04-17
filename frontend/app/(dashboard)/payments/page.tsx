@@ -14,15 +14,12 @@ import {
   IndianRupee,
   Eye,
   MessageSquare,
-  Smartphone,
-  RefreshCw,
-  Activity
+  Smartphone
 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { Student } from '@/services/studentService';
 import paymentService from '@/services/paymentService';
 import collegeService, { College } from '@/services/collegeService';
-import adminService from '@/services/adminService';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import styles from './page.module.css';
 
@@ -39,7 +36,6 @@ export default function PaymentsPage() {
   const [collegeFilter, setCollegeFilter] = useState('all');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [isSeeding, setIsSeeding] = useState(false);
   
   // History Modal State
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -103,24 +99,9 @@ export default function PaymentsPage() {
     }
   };
 
-  /** Seed demo data across all colleges */
-  const handleSeedDemo = async () => {
-    setIsSeeding(true);
-    try {
-      const res = await adminService.seedDemoData();
-      showToast(res.data.message, 'success');
-      fetchData();
-    } catch (err) {
-      showToast('Seeding failed', 'error');
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
   /** Open WhatsApp reminder with pre-filled message */
   const handleSendReminder = (student: Student) => {
     const phone = student.parentPhone.replace(/\D/g, '');
-    // Prefix with India code if not present
     const intlPhone = phone.startsWith('91') ? phone : `91${phone}`;
     const expiryStr = new Date(student.expiryDate).toLocaleDateString();
     const message = encodeURIComponent(
@@ -139,7 +120,6 @@ export default function PaymentsPage() {
     const message = encodeURIComponent(
       `Maa Travels: ${student.name}'s transport pass expires on ${expiryStr}. Due: ₹${(student.amount || 0).toLocaleString()}. Please pay soon.`
     );
-    // Use sms: scheme (Works well on mobile, and macOS Messages app)
     window.open(`sms:${phone}?body=${message}`, '_self');
   };
 
@@ -192,12 +172,6 @@ export default function PaymentsPage() {
             {filteredStudents.length} {filteredStudents.length === 1 ? 'record' : 'records'} found
           </p>
         </div>
-        <div className={styles.headerActions}>
-          <button className={styles.seedBtn} onClick={handleSeedDemo} disabled={isSeeding}>
-            {isSeeding ? <RefreshCw className="spin" size={14} /> : <Activity size={14} />}
-            Seed Demo Data
-          </button>
-        </div>
       </header>
 
       {/* ─── Search & Filter Toolbar ─── */}
@@ -216,7 +190,6 @@ export default function PaymentsPage() {
         </div>
 
         <div className={styles.filterSection}>
-          {/* Status filter */}
           <div className={styles.filterWrap}>
             <Filter size={16} className={styles.filterIcon} />
             <span className={styles.filterLabel}>Status</span>
@@ -236,7 +209,6 @@ export default function PaymentsPage() {
 
           <div className={styles.filterDivider} />
 
-          {/* College filter */}
           <div className={styles.filterWrap}>
             <Filter size={16} className={styles.filterIcon} />
             <span className={styles.filterLabel}>College</span>
@@ -256,7 +228,6 @@ export default function PaymentsPage() {
 
           <div className={styles.filterDivider} />
 
-          {/* Date range filter */}
           <div className={styles.filterWrap}>
             <Calendar size={16} className={styles.filterIcon} />
             <input
@@ -278,7 +249,6 @@ export default function PaymentsPage() {
         </div>
       </div>
 
-      {/* ─── Table ─── */}
       {isLoading ? (
         <div className={styles.loader}>
           <Spinner size="lg" />
@@ -305,7 +275,6 @@ export default function PaymentsPage() {
 
                 return (
                   <tr key={student._id}>
-                    {/* Student */}
                     <td>
                       <div className={styles.studentCell}>
                         <div className={styles.avatarWrap}>
@@ -324,7 +293,6 @@ export default function PaymentsPage() {
                       </div>
                     </td>
 
-                    {/* College */}
                     <td>
                       <div>
                         <p className={styles.collegeName}>
@@ -340,7 +308,6 @@ export default function PaymentsPage() {
                       </div>
                     </td>
 
-                    {/* Route & Stop */}
                     <td>
                       <div className={styles.routeCell}>
                         <div className={styles.routeItem}>
@@ -355,14 +322,12 @@ export default function PaymentsPage() {
                       </div>
                     </td>
 
-                    {/* Pass Type */}
                     <td>
                       <span className={styles.passBadge}>
                         {student.duration === '6m' ? '6 Months' : '1 Year'}
                       </span>
                     </td>
 
-                    {/* Status */}
                     <td>
                       <span className={`${styles.statusBadge} ${statusCfg.className}`}>
                         {statusCfg.icon}
@@ -370,14 +335,12 @@ export default function PaymentsPage() {
                       </span>
                     </td>
 
-                    {/* Amount */}
                     <td>
                       <span className={styles.amountValue}>
                         ₹{(student.amount || 0).toLocaleString()}
                       </span>
                     </td>
 
-                    {/* Due Date */}
                     <td>
                       <div className={`${styles.dueDate} ${dueDateStatus ? styles[dueDateStatus] : ''}`}>
                         <Calendar size={12} />
@@ -385,7 +348,6 @@ export default function PaymentsPage() {
                       </div>
                     </td>
 
-                    {/* Actions */}
                     <td>
                       <div className={styles.actions}>
                         <button
@@ -443,7 +405,6 @@ export default function PaymentsPage() {
         </div>
       )}
 
-      {/* ─── History Modal ─── */}
       {isHistoryModalOpen && selectedStudentForHistory && (
         <div className={styles.modalOverlay} onClick={() => setIsHistoryModalOpen(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
