@@ -29,8 +29,8 @@ interface PayslipData {
   halfDays?: number;
 }
 
-const PayslipTemplate = forwardRef<HTMLDivElement, { data: PayslipData }>(
-  ({ data }, ref) => {
+const PayslipTemplate = forwardRef<HTMLDivElement, { data: PayslipData, isPreview?: boolean }>(
+  ({ data, isPreview }, ref) => {
     const { driver, month, year, totalDays, daysWorked, overtimeHours, overtimeRate,
       allowances, advances, deductions, baseSalary, earnedSalary, overtimeBonus, netPay,
       presentDays = 0, absentDays = 0, halfDays = 0 } = data;
@@ -39,17 +39,20 @@ const PayslipTemplate = forwardRef<HTMLDivElement, { data: PayslipData }>(
       <div
         ref={ref}
         style={{
-          width: 600,
+          width: isPreview ? '100%' : 600,
+          maxWidth: 600,
           padding: 40,
           background: 'linear-gradient(145deg, #0a0e1a 0%, #111827 50%, #0a0e1a 100%)',
           color: '#e5e7eb',
           fontFamily: "'Inter', 'Segoe UI', sans-serif",
           borderRadius: 24,
           border: '1px solid rgba(255,255,255,0.08)',
-          position: 'absolute',
-          left: -9999,
+          position: isPreview ? 'relative' : 'absolute',
+          left: isPreview ? 0 : -9999,
           top: 0,
-          zIndex: -1,
+          zIndex: isPreview ? 1 : -1,
+          margin: isPreview ? '0 auto' : 0,
+          boxSizing: 'border-box',
         }}
       >
         {/* Header */}

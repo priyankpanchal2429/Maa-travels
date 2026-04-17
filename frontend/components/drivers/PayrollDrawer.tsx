@@ -175,7 +175,7 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       {showPreview && (
         <div className={styles.previewWrap}>
           <div ref={previewRef}>
-            <PayslipTemplate data={payslipData} />
+            <PayslipTemplate data={payslipData} isPreview={true} />
           </div>
         </div>
       )}
