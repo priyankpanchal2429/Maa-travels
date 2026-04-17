@@ -1,10 +1,8 @@
 .container {
-  padding: 2.5rem;
-  max-width: 1600px;
-  margin: 0 auto;
-  min-height: calc(100vh - 80px);
-  position: relative;
-  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-top: 1rem;
 }
 
 /* ─── Bento Grid System ─── */
@@ -238,21 +236,24 @@
 
 /* ─── Header & Actions ─── */
 .header {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
 .title h1 {
-  font-size: 2.5rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  line-height: 1.1;
 }
 
 .subtitle {
   color: var(--color-text-muted);
-  font-weight: 500;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
 }
 
 .actions {
