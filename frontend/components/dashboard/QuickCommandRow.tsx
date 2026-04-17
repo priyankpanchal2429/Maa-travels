@@ -6,14 +6,14 @@ import styles from './QuickCommandRow.module.css';
 const QuickCommandRow = () => {
   const commands = [
     {
-      label: 'Enroll Student',
+      label: 'Add Student',
       icon: <Plus size={20} />,
       href: '/students',
       color: '#f59e0b',
       glow: 'rgba(245, 158, 11, 0.4)'
     },
     {
-      label: 'Collect Payment',
+      label: 'Get Payment',
       icon: <IndianRupee size={20} />,
       href: '/payments',
       color: '#10b981',
@@ -27,7 +27,7 @@ const QuickCommandRow = () => {
       glow: 'rgba(59, 130, 246, 0.4)'
     },
     {
-      label: 'Update Fleet',
+      label: 'Add Bus',
       icon: <Bus size={20} />,
       href: '/buses',
       color: '#8b5cf6',

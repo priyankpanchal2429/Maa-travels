@@ -12,7 +12,7 @@ interface NotificationTrayProps {
 }
 
 const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) => {
-  const { alerts, markAsRead } = useAlerts();
+  const { alerts, markAsRead, dismissAlert, dismissAll } = useAlerts();
 
   React.useEffect(() => {
     if (isOpen) markAsRead();
@@ -24,6 +24,11 @@ const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) 
       case 'warning': return <AlertTriangle className={styles.warningIcon} size={18} />;
       default: return <Info className={styles.infoIcon} size={18} />;
     }
+  };
+
+  const handleDismissAll = () => {
+    dismissAll();
+    onClose();
   };
 
   return (
@@ -46,10 +51,14 @@ const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) 
           >
             <div className={styles.header}>
               <div>
-                <h2>Intelligence Feed</h2>
-                <p>{alerts.length} Active Operational Flags</p>
+                <h2>Notifications</h2>
+                <p>{alerts.length} Active</p>
               </div>
-              <button onClick={onClose} className={styles.closeBtn}>
+              <button 
+                onClick={onClose} 
+                className={styles.closeBtn}
+                aria-label="Close"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -58,7 +67,7 @@ const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) 
               {alerts.length === 0 ? (
                 <div className={styles.empty}>
                   <div className={styles.emptyIcon}><Info size={40} /></div>
-                  <p>All systems verified operational. No flags detected.</p>
+                  <p>No new notifications.</p>
                 </div>
               ) : (
                 alerts.map((alert: Alert) => (
@@ -68,9 +77,18 @@ const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) 
                         {getIcon(alert.type)}
                         <span>{alert.category}</span>
                       </div>
-                      <div className={styles.time}>
-                         <Clock size={12} />
-                         <span>{new Date(alert.date).toLocaleDateString()}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className={styles.time}>
+                           <Clock size={12} />
+                           <span>{new Date(alert.date).toLocaleDateString()}</span>
+                        </div>
+                        <button 
+                          className={styles.itemDismiss}
+                          onClick={() => dismissAlert(alert.id)}
+                          title="Remove"
+                        >
+                          <X size={14} />
+                        </button>
                       </div>
                     </div>
                     <p className={styles.message}>{alert.message}</p>
@@ -79,11 +97,16 @@ const NotificationTray: React.FC<NotificationTrayProps> = ({ isOpen, onClose }) 
               )}
             </div>
 
-            <div className={styles.footer}>
-              <button className={styles.clearBtn} onClick={onClose}>
-                Dismiss All Intelligence
-              </button>
-            </div>
+            {alerts.length > 0 && (
+              <div className={styles.footer}>
+                <button 
+                  className={styles.clearBtn} 
+                  onClick={handleDismissAll}
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
           </motion.div>
         </>
       )}

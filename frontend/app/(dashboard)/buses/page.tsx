@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
   Plus, Bus as BusIcon, Edit, Trash2, Power, 
-  Wrench, AlertCircle, Search, Filter, ShieldAlert, 
-  FileText, Calendar as CalendarIcon 
+  Wrench, Search, Filter, ShieldAlert, 
+  Calendar as CalendarIcon 
 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import busService, { Bus, BusStatus } from '@/services/busService';
@@ -16,7 +16,7 @@ import styles from './page.module.css';
 const statusConfig = {
   idle: { label: 'Idle', color: '#64748b', icon: <Power size={14} /> },
   running: { label: 'Running', color: '#10b981', icon: <Power size={14} className={styles.spin} /> },
-  maintenance: { label: 'Maintenance', color: '#f59e0b', icon: <Wrench size={14} /> },
+  maintenance: { label: 'Repairs', color: '#f59e0b', icon: <Wrench size={14} /> },
 };
 
 export default function BusesPage() {
@@ -31,7 +31,7 @@ export default function BusesPage() {
       const { data } = await busService.getAll();
       setBuses(data.data);
     } catch {
-      showToast('Failed to load buses', 'error');
+      showToast('Error loading buses', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -53,11 +53,10 @@ export default function BusesPage() {
     });
   }, [buses, searchQuery, statusFilter]);
 
-  /** Compliance Intelligence: Check for expiring documents */
   const getComplianceAlerts = (bus: Bus) => {
     const alerts = [];
     const now = new Date();
-    const threshold = 30; // Alert if expiring within 30 days
+    const threshold = 30; 
 
     const check = (dateStr: string | undefined, label: string) => {
       if (!dateStr) return null;
@@ -89,7 +88,7 @@ export default function BusesPage() {
         onSuccess={() => {
           closeDrawer();
           fetchBuses();
-          showToast('Bus added successfully', 'success');
+          showToast('Added', 'success');
         }} 
       />
     );
@@ -102,20 +101,20 @@ export default function BusesPage() {
         onSuccess={() => {
           closeDrawer();
           fetchBuses();
-          showToast('Bus updated successfully', 'success');
+          showToast('Updated', 'success');
         }} 
       />
     );
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this bus?')) {
+    if (confirm('Delete this bus?')) {
       try {
         await busService.delete(id);
         fetchBuses();
-        showToast('Bus deleted', 'success');
+        showToast('Deleted', 'success');
       } catch {
-        showToast('Failed to delete bus', 'error');
+        showToast('Error deleting', 'error');
       }
     }
   };
@@ -130,9 +129,9 @@ export default function BusesPage() {
     try {
       await busService.update(bus._id, { status: nextStatus[bus.status] });
       fetchBuses();
-      showToast(`Status updated to ${nextStatus[bus.status]}`, 'info');
+      showToast(`Status changed to ${statusConfig[nextStatus[bus.status]].label}`, 'info');
     } catch {
-      showToast('Failed to update status', 'error');
+      showToast('Error changing status', 'error');
     }
   };
 
@@ -140,12 +139,12 @@ export default function BusesPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className="text-gradient">Bus Management</h1>
-          <p className={styles.subtitle}>{filteredBuses.length} {filteredBuses.length === 1 ? 'vehicle' : 'vehicles'} tracked</p>
+          <h1 className="text-gradient">Buses</h1>
+          <p className={styles.subtitle}>{filteredBuses.length} {filteredBuses.length === 1 ? 'bus' : 'buses'} listed</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
-          Add New Bus
+          Add Bus
         </Button>
       </header>
 
@@ -155,7 +154,7 @@ export default function BusesPage() {
             <Search size={18} className={styles.searchIcon} />
             <input 
               type="text" 
-              placeholder="Search by bus number or plate..." 
+              placeholder="Search by number or plate..." 
               className={styles.searchInput}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -175,7 +174,7 @@ export default function BusesPage() {
               <option value="all">Any Status</option>
               <option value="running">Running</option>
               <option value="idle">Idle</option>
-              <option value="maintenance">Maintenance</option>
+              <option value="maintenance">Repairs</option>
             </select>
           </div>
         </div>
@@ -212,13 +211,13 @@ export default function BusesPage() {
 
                 <div className={styles.detailsRow}>
                   <div className={styles.detail}>
-                    <span className={styles.detailLabel}>Capacity</span>
-                    <span className={styles.detailValue}>{bus.capacity} Seats</span>
+                    <span className={styles.detailLabel}>Seats</span>
+                    <span className={styles.detailValue}>{bus.capacity}</span>
                   </div>
                   <div className={styles.detail}>
                     <span className={styles.detailLabel}>Driver</span>
                     <span className={styles.detailValue}>
-                      {bus.currentDriverId ? 'Assigned' : <span className={styles.unassigned}>Unassigned</span>}
+                      {bus.currentDriverId ? 'Assigned' : <span className={styles.unassigned}>None</span>}
                     </span>
                   </div>
                 </div>
@@ -232,7 +231,7 @@ export default function BusesPage() {
                         title={`${alert.label} expires on ${alert.days < 0 ? 'Previously' : 'In ' + alert.days + ' days'}`}
                       >
                         <ShieldAlert size={12} className={alert.status === 'expired' ? styles.pulsingIcon : ''} />
-                        <span>{alert.label} {alert.status === 'expired' ? 'Expired' : 'Renewal Due'}</span>
+                        <span>{alert.label} {alert.status === 'expired' ? 'Expired' : 'Renewal'}</span>
                       </div>
                     ))}
                   </div>
@@ -248,7 +247,7 @@ export default function BusesPage() {
                     {statusConfig[bus.status].icon}
                     <span>{statusConfig[bus.status].label}</span>
                   </div>
-                  <p className={styles.statusHint}>Click to change status</p>
+                  <p className={styles.statusHint}>Click to change</p>
                 </div>
               </div>
             );
@@ -257,11 +256,11 @@ export default function BusesPage() {
           {filteredBuses.length === 0 && (
             <div className={styles.empty}>
               <BusIcon size={48} className={styles.emptyIcon} />
-              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches found' : 'No buses registered'}</h3>
+              <h3>{searchQuery || statusFilter !== 'all' ? 'No matches' : 'No buses'}</h3>
               <p>
                 {searchQuery || statusFilter !== 'all'
-                  ? 'Try adjusting your search or deployment status to find vehicles.'
-                  : 'Add your first vehicle to the bus network.'}
+                  ? 'Try searching for something else.'
+                  : 'Add your first bus to the list.'}
               </p>
               {!searchQuery && statusFilter === 'all' && (
                 <Button variant="secondary" onClick={handleCreate}>Add Bus</Button>

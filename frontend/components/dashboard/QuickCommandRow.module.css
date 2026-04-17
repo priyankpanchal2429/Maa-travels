@@ -22,7 +22,6 @@
 }
 
 .commandCard:hover {
-  transform: translateY(-5px) scale(1.02);
   border-color: var(--cmd-color);
   box-shadow: 0 12px 30px -10px var(--cmd-glow);
 }
@@ -42,7 +41,6 @@
 .commandCard:hover .iconBox {
   background: var(--cmd-color);
   color: #fff;
-  transform: rotate(10deg);
 }
 
 .label {

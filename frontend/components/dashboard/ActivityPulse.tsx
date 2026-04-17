@@ -44,9 +44,9 @@ const ActivityPulse = () => {
       <div className={styles.pulseHeader}>
         <div className={styles.titleGroup}>
           <Clock size={16} className={styles.pulseIcon} />
-          <h3>System History</h3>
+          <h3>Recent Actions</h3>
         </div>
-        <span className={styles.liveIndicator}>Live Pulse</span>
+        <span className={styles.liveIndicator}>Live</span>
       </div>
 
       <div className={styles.feed}>
@@ -70,13 +70,13 @@ const ActivityPulse = () => {
 
         {activities.length === 0 && (
           <div className={styles.empty}>
-            <p>No recent activity detected.</p>
+            <p>No actions found.</p>
           </div>
         )}
       </div>
 
       <button className={styles.viewAllBtn}>
-        Full Audit Log <ChevronRight size={14} />
+        See All <ChevronRight size={14} />
       </button>
     </div>
   );

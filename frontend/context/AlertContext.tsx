@@ -18,25 +18,39 @@ interface AlertContextValue {
   isLoading: boolean;
   refreshAlerts: () => Promise<void>;
   markAsRead: () => void;
+  dismissAlert: (id: string) => void;
+  dismissAll: () => void;
 }
 
 const AlertContext = createContext<AlertContextValue | undefined>(undefined);
 
+const DISMISSED_KEY = 'maa-travels-dismissed-alerts';
+
 export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { activeCollegeId } = useCollege();
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [rawAlerts, setRawAlerts] = useState<Alert[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [lastReadAt, setLastReadAt] = useState<number>(0);
+
+  // Initialize dismissed IDs from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(DISMISSED_KEY);
+    if (saved) {
+      try {
+        setDismissedIds(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse dismissed alerts');
+      }
+    }
+  }, []);
 
   const fetchAlerts = useCallback(async () => {
     try {
       const { data } = await alertService.getAlerts(activeCollegeId || undefined);
       const newAlerts = data.data;
-      setAlerts(newAlerts);
-      
-      // Calculate unread: alerts newer than lastReadAt (or just count all if lastReadAt is 0)
-      setUnreadCount(newAlerts.length); // Simplified for now: count is total alerts
+      setRawAlerts(newAlerts);
     } catch (err) {
       console.error('Alert fetch failed');
     } finally {
@@ -46,15 +60,36 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   useEffect(() => {
     fetchAlerts();
-    
-    // Smart Polling: Every 60 seconds
     const interval = setInterval(fetchAlerts, 60000);
     return () => clearInterval(interval);
   }, [fetchAlerts]);
 
+  // Derive active alerts (those not dismissed)
+  const alerts = React.useMemo(() => {
+    return rawAlerts.filter(a => !dismissedIds.includes(a.id));
+  }, [rawAlerts, dismissedIds]);
+
+  // Update unread count whenever alerts change
+  useEffect(() => {
+    setUnreadCount(alerts.length);
+  }, [alerts]);
+
   const markAsRead = () => {
     setUnreadCount(0);
     setLastReadAt(Date.now());
+  };
+
+  const dismissAlert = (id: string) => {
+    const updated = [...dismissedIds, id];
+    setDismissedIds(updated);
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify(updated));
+  };
+
+  const dismissAll = () => {
+    const allIds = rawAlerts.map(a => a.id);
+    const updated = Array.from(new Set([...dismissedIds, ...allIds]));
+    setDismissedIds(updated);
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify(updated));
   };
 
   return (
@@ -64,7 +99,9 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         unreadCount,
         isLoading,
         refreshAlerts: fetchAlerts,
-        markAsRead
+        markAsRead,
+        dismissAlert,
+        dismissAll
       }}
     >
       {children}

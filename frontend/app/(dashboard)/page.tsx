@@ -92,7 +92,7 @@ export default function DashboardPage() {
         localStorage.setItem(ANALYTICS_CACHE_KEY, JSON.stringify(analyticsData));
       }
     } catch (err) {
-      showToast('Deep Nexus Sync Failure', 'error');
+      showToast('Update Failed', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +113,7 @@ export default function DashboardPage() {
       showToast(res.data.message, 'success');
       fetchDashboardData();
     } catch {
-      showToast('Migration failed', 'error');
+      showToast('Error fixing records', 'error');
     } finally {
       setIsFixing(false);
     }
@@ -125,17 +125,17 @@ export default function DashboardPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.title}>
-          <h1>Operational Nexus</h1>
-          <p className={styles.subtitle}>{activeCollege?.name || 'Global Intelligence Overview'}</p>
+          <h1>Main Board</h1>
+          <p className={styles.subtitle}>{activeCollege?.name || 'Overview'}</p>
         </div>
         <div className={styles.actions}>
           {data?.students === 0 && (
             <button className={`${styles.btn} ${styles.primaryBtn}`} onClick={handleFixMapping} disabled={isFixing}>
-              {isFixing ? <RefreshCw className="spin" size={14} /> : <ShieldAlert size={14} />} Fix Student Mapping
+              {isFixing ? <RefreshCw className="spin" size={14} /> : <ShieldAlert size={14} />} Fix Records
             </button>
           )}
           <button className={`${styles.btn} ${styles.glassBtn}`} onClick={fetchDashboardData}>
-            <RefreshCw size={14} /> Refresh Pulse
+            <RefreshCw size={14} /> Refresh
           </button>
         </div>
       </header>
@@ -145,26 +145,26 @@ export default function DashboardPage() {
         <div className={`${styles.card} ${styles.hero} ${styles.orange}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><Users size={20} /></div><TrendingUp size={16} /></div>
           <span className={styles.heroValue}>{data?.students}</span>
-          <span className={styles.heroLabel}>Total Enrolled Accounts</span>
+          <span className={styles.heroLabel}>Total Students</span>
           <div className={styles.progressContainer}><div className={styles.progressBar} style={{ width: '85%' }} /></div>
         </div>
 
         {/* STAT: Fleet */}
         <div className={`${styles.card} ${styles.fleet} ${styles.cyan}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><Bus size={20} /></div></div>
-          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.buses.total}</span><span className={styles.miniLabel}>Total Fleet</span></div>
+          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.buses.total}</span><span className={styles.miniLabel}>Total Buses</span></div>
         </div>
 
         {/* STAT: Drivers */}
         <div className={`${styles.card} ${styles.drivers} ${styles.magenta}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><Navigation size={20} /></div></div>
-          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.drivers}</span><span className={styles.miniLabel}>Active Pilots</span></div>
+          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.drivers}</span><span className={styles.miniLabel}>Active Drivers</span></div>
         </div>
 
         {/* STAT: Routes */}
         <div className={`${styles.card} ${styles.routes} ${styles.amber}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><MapPin size={20} /></div></div>
-          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.routes}</span><span className={styles.miniLabel}>Network Routes</span></div>
+          <div className={styles.miniStat}><span className={styles.miniValue}>{data?.routes}</span><span className={styles.miniLabel}>Total Routes</span></div>
         </div>
 
         {/* QUICK COMMANDS */}
@@ -199,7 +199,7 @@ export default function DashboardPage() {
             ))}
           </div>
           <Link href="/payments" className={styles.btn} style={{marginTop: '1.5rem', justifyContent: 'center', background: 'rgba(255,255,255,0.05)'}}>
-            Detailed Clearance Hub <ChevronRight size={14} />
+            Go to Payments <ChevronRight size={14} />
           </Link>
         </div>
 
@@ -211,7 +211,7 @@ export default function DashboardPage() {
         {/* STAT: Economy Analytics */}
         <div className={`${styles.card} ${styles.economy}`}>
           <div className={styles.cardHeader}><div className={styles.cardIcon}><IndianRupee size={20} /></div>
-            <div className={styles.analyticsTitle}><h2 style={{fontSize: '1rem', fontWeight: 900}}>Economic Pulse</h2><span className={styles.miniLabel}>Revenue vs Overhead</span></div>
+            <div className={styles.analyticsTitle}><h2 style={{fontSize: '1rem', fontWeight: 900}}>Money Stats</h2><span className={styles.miniLabel}>Income vs Spending</span></div>
           </div>
           <div className={styles.chartContainer}>
             <ResponsiveContainer width="100%" height={200}>
@@ -230,18 +230,18 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
           <div className={styles.miniStat} style={{marginTop: '1.5rem'}}>
-            <span className={styles.miniValue}>₹{(data?.expenses.total ?? 0).toLocaleString()}</span><span className={styles.miniLabel}>Total Lifecycle Expenditure</span>
+            <span className={styles.miniValue}>₹{(data?.expenses.total ?? 0).toLocaleString()}</span><span className={styles.miniLabel}>Total Money Spent</span>
           </div>
         </div>
 
         {/* VITALITY */}
         <div className={`${styles.card} ${styles.vitality}`}>
-          <div className={styles.cardHeader}><h2 style={{fontSize: '1.25rem', fontWeight: 900}}>Fleet Vitality</h2><Settings size={18} /></div>
+          <div className={styles.cardHeader}><h2 style={{fontSize: '1.25rem', fontWeight: 900}}>Bus Stats</h2><Settings size={18} /></div>
           <div className={styles.statusGrid}>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Running Buses</span><span className={styles.statusValue} style={{color: '#10b981'}}>{data?.buses.active}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Under Maintenance</span><span className={styles.statusValue} style={{color: '#ef4444'}}>{data?.buses.maintenance}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Idle/Standby</span><span className={styles.statusValue}>{(data?.buses.total ?? 0) - (data?.buses.active ?? 0) - (data?.buses.maintenance ?? 0)}</span></div>
-            <div className={styles.statusItem}><span className={styles.statusLabel}>Compliance</span><span className={styles.statusValue} style={{fontSize: '0.8rem', color: '#10b981'}}>ALL CLEAR</span></div>
+            <div className={styles.statusItem}><span className={styles.statusLabel}>Running</span><span className={styles.statusValue} style={{color: '#10b981'}}>{data?.buses.active}</span></div>
+            <div className={styles.statusItem}><span className={styles.statusLabel}>Repairs</span><span className={styles.statusValue} style={{color: '#ef4444'}}>{data?.buses.maintenance}</span></div>
+            <div className={styles.statusItem}><span className={styles.statusLabel}>Idle</span><span className={styles.statusValue}>{(data?.buses.total ?? 0) - (data?.buses.active ?? 0) - (data?.buses.maintenance ?? 0)}</span></div>
+            <div className={styles.statusItem}><span className={styles.statusLabel}>Paperwork</span><span className={styles.statusValue} style={{fontSize: '0.8rem', color: '#10b981'}}>ALL CLEAR</span></div>
           </div>
         </div>
 

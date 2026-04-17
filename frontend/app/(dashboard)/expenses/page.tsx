@@ -3,8 +3,8 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { 
   Plus, Search, Filter, Fuel, Wrench, IndianRupee, 
-  Trash2, Edit, TrendingUp, PieChart as PieChartIcon,
-  ChevronRight, Calendar
+  Trash2, TrendingUp, PieChart as PieChartIcon,
+  Calendar
 } from 'lucide-react';
 import { 
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend 
@@ -19,7 +19,7 @@ import styles from './page.module.css';
 
 const categoryConfig = {
   fuel: { label: 'Fuel', color: '#10b981' },
-  maintenance: { label: 'Maintenance', color: '#f59e0b' },
+  maintenance: { label: 'Repairs', color: '#f59e0b' },
   salary: { label: 'Salary', color: '#3b82f6' },
   other: { label: 'Other', color: '#8b5cf6' },
 };
@@ -41,7 +41,7 @@ export default function ExpensesPage() {
       setExpenses(expRes.data.data);
       setBuses(busRes.data.data);
     } catch {
-      showToast('Failed to load financial records', 'error');
+      showToast('Error loading data', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -63,11 +63,10 @@ export default function ExpensesPage() {
     return filteredExpenses.reduce((acc, curr) => acc + curr.amount, 0);
   }, [filteredExpenses]);
 
-  /** Analytics Logic: Prepare Pie Chart Data */
   const pieData = useMemo(() => {
     const data: any = {
       fuel: { name: 'Fuel', value: 0, color: categoryConfig.fuel.color },
-      maintenance: { name: 'Maintenance', value: 0, color: categoryConfig.maintenance.color },
+      maintenance: { name: 'Repairs', value: 0, color: categoryConfig.maintenance.color },
       salary: { name: 'Salary', value: 0, color: categoryConfig.salary.color },
       other: { name: 'Other', value: 0, color: categoryConfig.other.color },
     };
@@ -87,20 +86,20 @@ export default function ExpensesPage() {
         onSuccess={() => {
           closeDrawer();
           fetchExpenses();
-          showToast('Expense recorded', 'success');
+          showToast('Added', 'success');
         }} 
       />
     );
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Permanently remove this financial record?')) {
+    if (confirm('Delete this record?')) {
       try {
         await expenseService.delete(id);
         fetchExpenses();
-        showToast('Record purged', 'success');
+        showToast('Deleted', 'success');
       } catch {
-        showToast('Failed to delete record', 'error');
+        showToast('Error deleting', 'error');
       }
     }
   };
@@ -109,12 +108,12 @@ export default function ExpensesPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
-          <h1 className="text-gradient">Expense Ledger</h1>
-          <p className={styles.subtitle}>Audit-ready financial tracking for fleet operations</p>
+          <h1 className="text-gradient">Money Spent</h1>
+          <p className={styles.subtitle}>Track your payments</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus size={18} />
-          Record Expense
+          Add Expense
         </Button>
       </header>
 
@@ -124,7 +123,7 @@ export default function ExpensesPage() {
             <Search size={18} className={styles.searchIcon} />
             <input 
               type="text" 
-              placeholder="Filter by description or vendor..." 
+              placeholder="Search..." 
               className={styles.searchInput}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -141,9 +140,9 @@ export default function ExpensesPage() {
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
             >
-              <option value="all">Every Category</option>
+              <option value="all">All Types</option>
               <option value="fuel">Fuel</option>
-              <option value="maintenance">Maintenance</option>
+              <option value="maintenance">Repairs</option>
               <option value="salary">Salary</option>
               <option value="other">Other</option>
             </select>
@@ -159,17 +158,17 @@ export default function ExpensesPage() {
         <>
           <div className={styles.insightGrid}>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Total Solidified Disbursement</span>
+              <span className={styles.statLabel}>Total Paid</span>
               <span className={styles.statValue}>₹{totalExpense.toLocaleString()}</span>
               <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '1rem', color: '#10b981', fontWeight: 700, fontSize: '0.8rem'}}>
                 <TrendingUp size={14} />
-                <span>Synchronized with Central Bank</span>
+                <span>Records are safe</span>
               </div>
             </div>
 
             <div className={styles.chartBox}>
               <div className={styles.chartHeader}>
-                <h3 className={styles.chartTitle}>Categorical Disbursement Breakdown</h3>
+                <h3 className={styles.chartTitle}>Where your money goes</h3>
                 <PieChartIcon size={16} style={{opacity: 0.5}} />
               </div>
               <div className={styles.chartContainer}>
@@ -220,7 +219,7 @@ export default function ExpensesPage() {
                       <span className={styles.itemAmount}>₹{exp.amount.toLocaleString()}</span>
                     </div>
                     <div className={styles.itemMeta}>
-                      <span className={styles.itemType}>{exp.type}</span>
+                      <span className={styles.itemType}>{categoryConfig[exp.type as keyof typeof categoryConfig]?.label || exp.type}</span>
                       <span className={styles.dot}>•</span>
                       <span className={styles.itemDate}><Calendar size={12} /> {new Date(exp.date).toLocaleDateString()}</span>
                       {bus && (
@@ -243,8 +242,8 @@ export default function ExpensesPage() {
             {filteredExpenses.length === 0 && (
               <div className={styles.empty}>
                 <IndianRupee size={48} className={styles.emptyIcon} />
-                <h3>No financial records found</h3>
-                <p>Try adjusting your filters or search terms.</p>
+                <h3>No records found</h3>
+                <p>Try searching for something else.</p>
               </div>
             )}
           </div>
