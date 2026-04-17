@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useMemo } from 'react';
-import { IndianRupee, FileText, UserSquare2, Download, Clock, Send } from 'lucide-react';
+import { IndianRupee, FileText, UserSquare2, Download, Clock, Send, Eye, EyeOff, Printer } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useUI } from '@/context/UIContext';
 import { Driver } from '@/services/driverService';
@@ -54,8 +54,10 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
 
   const [recordExpense, setRecordExpense] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const payslipRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
   const { showToast } = useUI();
 
   // ─── Toggle day status on click ───
@@ -148,10 +150,35 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
 
+  /** Print the payslip preview */
+  const handlePrint = () => {
+    if (!previewRef.current) return;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <html><head><title>Payslip - ${driver.name}</title>
+      <style>body{margin:0;display:flex;justify-content:center;background:#fff;}@media print{body{background:#fff;}}</style>
+      </head><body>${previewRef.current.innerHTML}</body></html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  };
+
   return (
     <div className={styles.container}>
-      {/* Hidden payslip template for html2canvas */}
+      {/* Hidden payslip template for html2canvas (always off-screen) */}
       <PayslipTemplate ref={payslipRef} data={payslipData} />
+
+      {/* Visible preview (toggled by user) */}
+      {showPreview && (
+        <div className={styles.previewWrap}>
+          <div ref={previewRef}>
+            <PayslipTemplate data={payslipData} />
+          </div>
+        </div>
+      )}
 
       <header className={styles.header}>
         <div className={styles.iconBox}>
@@ -377,6 +404,26 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       </label>
 
       {/* Action Buttons */}
+      <div className={styles.actions}>
+        <button
+          className={styles.btnPreview}
+          onClick={() => setShowPreview(!showPreview)}
+          type="button"
+        >
+          {showPreview ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showPreview ? 'Hide' : 'Preview'}
+        </button>
+        {showPreview && (
+          <button
+            className={styles.btnPrint}
+            onClick={handlePrint}
+            type="button"
+          >
+            <Printer size={18} />
+            Print
+          </button>
+        )}
+      </div>
       <div className={styles.actions}>
         <button
           className={styles.btnDownload}
