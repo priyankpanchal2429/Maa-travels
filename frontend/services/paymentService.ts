@@ -19,13 +19,9 @@ const paymentService = {
   /** Fetch payment history logs for a specific student */
   getHistory: (studentId: string) => api.get(`/payments/${studentId}/history`),
 
-  /** Mark a student's payment as paid via existing student endpoint */
+  /** Mark a student's payment as paid via specialized transactional endpoint */
   markAsPaid: (studentId: string) =>
-    studentService.update(studentId, (() => {
-      const fd = new FormData();
-      fd.append('paymentStatus', 'paid');
-      return fd;
-    })()),
+    api.post(`/payments/${studentId}/record`),
 };
 
 export default paymentService;

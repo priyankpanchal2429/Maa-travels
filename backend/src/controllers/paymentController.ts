@@ -137,3 +137,54 @@ export const getPaymentHistory = async (req: Request, res: Response, next: NextF
     next(error);
   }
 };
+
+/**
+ * POST /api/payments/:id/record
+ * Formally records a payment:
+ * 1. Updates student status to 'paid'
+ * 2. Advances expiryDate based on student.duration
+ * 3. Creates a record in the 'payments' (PaymentLog) collection
+ */
+export const recordPayment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const student = await Student.findById(id);
+    
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    // Calculate new expiry date based on subscription duration
+    const now = new Date();
+    const newExpiry = new Date();
+    if (student.duration === '6m') {
+      newExpiry.setMonth(newExpiry.getMonth() + 6);
+    } else {
+      newExpiry.setFullYear(newExpiry.getFullYear() + 1);
+    }
+
+    // Transactional Update
+    student.paymentStatus = 'paid';
+    student.expiryDate = newExpiry;
+    await student.save();
+
+    // Create Audit Log in the 'payments' collection
+    const log = await PaymentLog.create({
+      collegeId: student.collegeId,
+      studentId: student._id,
+      amountPaid: student.amount,
+      paymentDate: now,
+      recordedBy: 'Admin (System)',
+      notes: `Formal payment record for ${student.name} (ID: ${student.studentId})`
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Payment verified and recorded in history.', 
+      data: { student, log } 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
