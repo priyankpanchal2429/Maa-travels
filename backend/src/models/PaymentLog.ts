@@ -20,7 +20,11 @@ const paymentLogSchema = new Schema<IPaymentLog>(
     recordedBy: { type: String, default: 'System' },
     notes: { type: String },
   },
-  { timestamps: true, versionKey: false }
+  { 
+    timestamps: true, 
+    versionKey: false,
+    collection: 'payments'
+  }
 );
 
 export const PaymentLog = mongoose.model<IPaymentLog>('PaymentLog', paymentLogSchema);
