@@ -166,7 +166,6 @@ export default function DashboardPage() {
       setIsFixing(false);
     }
   };
-  };
 
   if (isCollegeLoading || (isLoading && !data)) {
     return <DashboardSkeleton />;
