@@ -405,41 +405,46 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
 
       {/* Action Buttons */}
       <div className={styles.actions}>
-        <button
-          className={styles.btnPreview}
-          onClick={() => setShowPreview(!showPreview)}
-          type="button"
-        >
-          {showPreview ? <EyeOff size={18} /> : <Eye size={18} />}
-          {showPreview ? 'Hide' : 'Preview'}
-        </button>
-        {showPreview && (
-          <button
-            className={styles.btnPrint}
-            onClick={handlePrint}
-            type="button"
-          >
-            <Printer size={18} />
-            Print
-          </button>
-        )}
-      </div>
-      <div className={styles.actions}>
-        <button
-          className={styles.btnDownload}
-          onClick={handleDownload}
-          disabled={isSubmitting}
-        >
-          <Download size={18} />
-          {isSubmitting ? 'Generating...' : 'Download'}
-        </button>
-        <button
-          className={styles.btnWhatsApp}
-          onClick={handleWhatsApp}
-        >
-          <Send size={18} />
-          WhatsApp
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
+          <div className={styles.actionsSecondary}>
+            <button
+              className={styles.btnPreview}
+              onClick={() => setShowPreview(!showPreview)}
+              type="button"
+            >
+              {showPreview ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPreview ? 'Hide Preview' : 'Preview Payslip'}
+            </button>
+            {showPreview && (
+              <button
+                className={styles.btnPrint}
+                onClick={handlePrint}
+                type="button"
+              >
+                <Printer size={18} />
+                Print
+              </button>
+            )}
+          </div>
+          
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button
+              className={styles.btnDownload}
+              onClick={handleDownload}
+              disabled={isSubmitting}
+            >
+              <Download size={18} />
+              {isSubmitting ? 'Generating...' : 'Download'}
+            </button>
+            <button
+              className={styles.btnWhatsApp}
+              onClick={handleWhatsApp}
+            >
+              <Send size={18} />
+              WhatsApp
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
