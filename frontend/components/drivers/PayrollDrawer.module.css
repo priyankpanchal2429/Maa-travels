@@ -397,21 +397,36 @@
   background: #128C7E;
 }
 
-/* ─── Preview ─── */
-.previewWrap {
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  overflow: hidden;
+/* ─── Modal Preview ─── */
+.modalPreviewBody {
   background: #0a0e1a;
+  padding: 1rem 0;
+  display: flex;
+  justify-content: center;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-/* Override PayslipTemplate's off-screen positioning when inside preview */
-.previewWrap > div > div {
-  position: relative !important;
-  left: 0 !important;
-  z-index: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box;
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  width: 100%;
+}
+
+.btnSecondary {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--color-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .btnPreview {

@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useMemo } from 'react';
-import { IndianRupee, FileText, UserSquare2, Download, Clock, Send, Eye, EyeOff, Printer } from 'lucide-react';
+import { IndianRupee, FileText, UserSquare2, Download, Clock, Send, Eye, EyeOff, Printer, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useUI } from '@/context/UIContext';
 import { Driver } from '@/services/driverService';
 import expenseService from '@/services/expenseService';
 import PayslipTemplate from './PayslipTemplate';
+import Modal from '@/components/ui/Modal/Modal';
 import styles from './PayrollDrawer.module.css';
 
 interface PayrollDrawerProps {
@@ -54,10 +54,10 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
 
   const [recordExpense, setRecordExpense] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const payslipRef = useRef<HTMLDivElement>(null);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const modalPreviewRef = useRef<HTMLDivElement>(null);
   const { showToast } = useUI();
 
   // ─── Toggle day status on click ───
@@ -150,15 +150,18 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
 
-  /** Print the payslip preview */
+  /** Print the payslip modal preview */
   const handlePrint = () => {
-    if (!previewRef.current) return;
+    if (!modalPreviewRef.current) return;
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     printWindow.document.write(`
       <html><head><title>Payslip - ${driver.name}</title>
-      <style>body{margin:0;display:flex;justify-content:center;background:#fff;}@media print{body{background:#fff;}}</style>
-      </head><body>${previewRef.current.innerHTML}</body></html>
+      <style>
+        body{margin:0;display:flex;justify-content:center;background:#fff;padding:20px;}
+        @media print{body{background:#fff;padding:0;}}
+      </style>
+      </head><body>${modalPreviewRef.current.innerHTML}</body></html>
     `);
     printWindow.document.close();
     printWindow.focus();
@@ -171,14 +174,29 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       {/* Hidden payslip template for html2canvas (always off-screen) */}
       <PayslipTemplate ref={payslipRef} data={payslipData} />
 
-      {/* Visible preview (toggled by user) */}
-      {showPreview && (
-        <div className={styles.previewWrap}>
-          <div ref={previewRef}>
+      {/* Preview Modal */}
+      <Modal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        title="Payslip Preview"
+        maxWidth="720px"
+        footer={
+          <div className={styles.modalFooter}>
+            <button className={styles.btnPrint} onClick={handlePrint}>
+              <Printer size={18} /> Print Payslip
+            </button>
+            <button className={styles.btnSecondary} onClick={() => setIsPreviewOpen(false)}>
+              Close
+            </button>
+          </div>
+        }
+      >
+        <div className={styles.modalPreviewBody}>
+          <div ref={modalPreviewRef}>
             <PayslipTemplate data={payslipData} isPreview={true} />
           </div>
         </div>
-      )}
+      </Modal>
 
       <header className={styles.header}>
         <div className={styles.iconBox}>
@@ -406,26 +424,14 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       {/* Action Buttons */}
       <div className={styles.actions}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
-          <div className={styles.actionsSecondary}>
-            <button
-              className={styles.btnPreview}
-              onClick={() => setShowPreview(!showPreview)}
-              type="button"
-            >
-              {showPreview ? <EyeOff size={18} /> : <Eye size={18} />}
-              {showPreview ? 'Hide Preview' : 'Preview Payslip'}
-            </button>
-            {showPreview && (
-              <button
-                className={styles.btnPrint}
-                onClick={handlePrint}
-                type="button"
-              >
-                <Printer size={18} />
-                Print
-              </button>
-            )}
-          </div>
+          <button
+            className={styles.btnPreview}
+            onClick={() => setIsPreviewOpen(true)}
+            type="button"
+          >
+            <Eye size={18} />
+            Preview Payslip
+          </button>
           
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             <button
