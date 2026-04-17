@@ -710,9 +710,9 @@
   background: var(--glass-bg-hover);
 }
 
-.glowOrange { box-shadow: 0 0 30px rgba(245, 158, 11, 0.2); }
-.glowGreen { box-shadow: 0 0 30px rgba(16, 185, 129, 0.2); }
-.glowRed { box-shadow: 0 0 30px rgba(239, 68, 68, 0.2); }
+.glowOrange { border-color: rgba(245, 158, 11, 0.2); }
+.glowGreen { border-color: rgba(16, 185, 129, 0.2); }
+.glowRed { border-color: rgba(239, 68, 68, 0.2); }
 
 @media (max-width: 640px) {
   .header {
