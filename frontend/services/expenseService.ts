@@ -1,6 +1,6 @@
 import { api } from '@/lib/axiosInstance';
 
-export type ExpenseType = 'daily' | 'maintenance' | 'fuel' | 'other';
+export type ExpenseType = 'daily' | 'maintenance' | 'fuel' | 'other' | 'salary';
 
 export interface Expense {
   _id: string;

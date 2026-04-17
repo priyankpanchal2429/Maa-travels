@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Plus, UserSquare2, Phone, MapPin, Edit, Trash2, IndianRupee, Search, Filter } from 'lucide-react';
+import { Plus, UserSquare2, Phone, MapPin, Edit, Trash2, IndianRupee, Search, Filter, FileText } from 'lucide-react';
 import { useMemo } from 'react';
 import { useUI } from '@/context/UIContext';
 import driverService, { Driver } from '@/services/driverService';
 import Button from '@/components/ui/Button/Button';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import DriverForm from '@/components/drivers/DriverForm';
+import PayrollDrawer from '@/components/drivers/PayrollDrawer';
 import styles from './page.module.css';
 
 export default function DriversPage() {
@@ -57,6 +58,10 @@ export default function DriversPage() {
         }} 
       />
     );
+  };
+
+  const handlePayroll = (driver: Driver) => {
+    openDrawer(<PayrollDrawer driver={driver} onSuccess={closeDrawer} />);
   };
 
   const handleEdit = (driver: Driver) => {
@@ -148,6 +153,9 @@ export default function DriversPage() {
                   <div className={[styles.statusDot, driver.isActive ? styles.active : ''].join(' ')} />
                 </div>
                 <div className={styles.cardActions}>
+                  <button onClick={() => handlePayroll(driver)} className={styles.actionBtn} title="Generate Payslip">
+                    <FileText size={14} />
+                  </button>
                   <button onClick={() => handleEdit(driver)} className={styles.actionBtn}>
                     <Edit size={14} />
                   </button>
