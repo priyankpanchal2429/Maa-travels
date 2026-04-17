@@ -252,10 +252,8 @@ export default function PaymentsPage() {
       {/* ─── Financial Summary Bar ─── */}
       <div className={styles.summaryHeader}>
         <div className={`${styles.summaryCard} ${styles.glowGreen}`}>
-          <div className={styles.cardHeader}>
-            <div className={styles.cardIcon} style={{background: 'rgba(16, 185, 129, 0.1)', color: '#10b981'}}>
-              <TrendingUp size={24} />
-            </div>
+          <div className={styles.cardIcon} style={{background: 'rgba(16, 185, 129, 0.1)', color: '#10b981'}}>
+            <TrendingUp size={24} />
           </div>
           <div className={styles.cardInfo}>
             <span className={styles.cardValue}>₹{financialStats.totalCollected.toLocaleString()}</span>
@@ -264,10 +262,8 @@ export default function PaymentsPage() {
         </div>
 
         <div className={`${styles.summaryCard} ${styles.glowOrange}`}>
-          <div className={styles.cardHeader}>
-            <div className={styles.cardIcon} style={{background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b'}}>
-              <IndianRupee size={24} />
-            </div>
+          <div className={styles.cardIcon} style={{background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b'}}>
+            <IndianRupee size={24} />
           </div>
           <div className={styles.cardInfo}>
             <span className={styles.cardValue}>₹{financialStats.totalPending.toLocaleString()}</span>
@@ -276,10 +272,8 @@ export default function PaymentsPage() {
         </div>
 
         <div className={`${styles.summaryCard} ${styles.glowRed}`}>
-          <div className={styles.cardHeader}>
-            <div className={styles.cardIcon} style={{background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444'}}>
-              <AlertTriangle size={24} />
-            </div>
+          <div className={styles.cardIcon} style={{background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444'}}>
+            <AlertTriangle size={24} />
           </div>
           <div className={styles.cardInfo}>
             <span className={styles.cardValue}>{financialStats.expiredCount}</span>
