@@ -322,7 +322,33 @@
   margin-top: 0.5rem;
 }
 
-.btnSend {
+.btnDownload {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--color-primary);
+  color: #000;
+  border: none;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btnDownload:hover {
+  filter: brightness(1.15);
+}
+
+.btnDownload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnWhatsApp {
   flex: 1;
   display: flex;
   align-items: center;
@@ -339,11 +365,6 @@
   transition: var(--transition);
 }
 
-.btnSend:hover {
+.btnWhatsApp:hover {
   background: #128C7E;
-}
-
-.btnSend:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }

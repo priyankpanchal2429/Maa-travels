@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useMemo } from 'react';
-import { IndianRupee, FileText, UserSquare2, Download, Clock } from 'lucide-react';
+import { IndianRupee, FileText, UserSquare2, Download, Clock, Send } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { useUI } from '@/context/UIContext';
 import { Driver } from '@/services/driverService';
@@ -101,8 +101,8 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
     halfDays: timesheetStats.halfDay,
   };
 
-  /** Render payslip PNG + open WhatsApp */
-  const handleGenerateAndSend = async () => {
+  /** Download payslip as PNG and optionally record expense */
+  const handleDownload = async () => {
     if (!payslipRef.current) return;
     setIsSubmitting(true);
 
@@ -128,23 +128,24 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
       link.href = canvas.toDataURL('image/png');
       link.click();
 
-      showToast('Payslip downloaded! Attach it in the WhatsApp chat.', 'success');
-
-      let cleanPhone = driver.phone.replace(/\D/g, '');
-      if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
-
-      const msg = encodeURIComponent(
-        `Hi ${driver.name}, your payslip for *${month} ${year}* is attached. Net Pay: *₹${netPay.toLocaleString('en-IN')}*. — Maa Travels`
-      );
-      window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
-
-      if (onSuccess) onSuccess();
+      showToast('Payslip downloaded successfully', 'success');
     } catch (error) {
       console.error('Payslip generation error:', error);
       showToast('Failed to generate payslip', 'error');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  /** Open WhatsApp chat with pre-filled message */
+  const handleWhatsApp = () => {
+    let cleanPhone = driver.phone.replace(/\D/g, '');
+    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+
+    const msg = encodeURIComponent(
+      `Hi ${driver.name}, your payslip for *${month} ${year}* is attached. Net Pay: *₹${netPay.toLocaleString('en-IN')}*. — Maa Travels`
+    );
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   };
 
   return (
@@ -375,15 +376,22 @@ export default function PayrollDrawer({ driver, onSuccess }: PayrollDrawerProps)
         <span className={styles.checkboxLabel}>Record as an Expense automatically</span>
       </label>
 
-      {/* Action Button */}
+      {/* Action Buttons */}
       <div className={styles.actions}>
         <button
-          className={styles.btnSend}
-          onClick={handleGenerateAndSend}
+          className={styles.btnDownload}
+          onClick={handleDownload}
           disabled={isSubmitting}
         >
           <Download size={18} />
-          {isSubmitting ? 'Generating...' : 'Download & Send WhatsApp'}
+          {isSubmitting ? 'Generating...' : 'Download'}
+        </button>
+        <button
+          className={styles.btnWhatsApp}
+          onClick={handleWhatsApp}
+        >
+          <Send size={18} />
+          WhatsApp
         </button>
       </div>
     </div>
