@@ -9,6 +9,10 @@ export interface Bus {
   capacity: number;
   status: BusStatus;
   currentDriverId?: string | any;
+  insuranceExpiry?: string;
+  permitExpiry?: string;
+  fitnessExpiry?: string;
+  rcExpiry?: string;
 }
 
 const busService = {

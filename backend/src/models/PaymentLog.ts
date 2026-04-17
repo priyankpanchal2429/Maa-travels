@@ -5,6 +5,7 @@ export interface IPaymentLog extends Document {
   studentId: mongoose.Types.ObjectId;
   amountPaid: number;
   paymentDate: Date;
+  paymentMethod?: string;
   recordedBy: string;
   notes?: string;
   createdAt: Date;
@@ -17,6 +18,11 @@ const paymentLogSchema = new Schema<IPaymentLog>(
     studentId: { type: Schema.Types.ObjectId, ref: 'Student', required: true },
     amountPaid: { type: Number, required: true },
     paymentDate: { type: Date, default: Date.now },
+    paymentMethod: { 
+      type: String, 
+      enum: ['Cash', 'UPI', 'Bank Transfer', 'Other'],
+      default: 'Cash'
+    },
     recordedBy: { type: String, default: 'System' },
     notes: { type: String },
   },

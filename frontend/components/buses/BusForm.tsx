@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Save, Truck } from 'lucide-react';
+import { Save, Truck, ShieldCheck, FileText, Calendar } from 'lucide-react';
 import busService, { Bus, BusStatus } from '@/services/busService';
 import Button from '@/components/ui/Button/Button';
 import Input from '@/components/ui/Input/Input';
@@ -13,11 +13,21 @@ interface BusFormProps {
 }
 
 const BusForm: React.FC<BusFormProps> = ({ initialData, onSuccess }) => {
+  // Helper to format date for input[type="date"]
+  const formatDate = (dateValue?: string) => {
+    if (!dateValue) return '';
+    return new Date(dateValue).toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
     busNumber: initialData?.busNumber || '',
     plateNumber: initialData?.plateNumber || '',
     capacity: initialData?.capacity || 40,
     status: initialData?.status || 'idle' as BusStatus,
+    insuranceExpiry: formatDate(initialData?.insuranceExpiry),
+    permitExpiry: formatDate(initialData?.permitExpiry),
+    fitnessExpiry: formatDate(initialData?.fitnessExpiry),
+    rcExpiry: formatDate(initialData?.rcExpiry),
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -58,40 +68,43 @@ const BusForm: React.FC<BusFormProps> = ({ initialData, onSuccess }) => {
           <Truck size={24} />
         </div>
         <h2>{initialData ? 'Edit Vehicle' : 'Register New Bus'}</h2>
-        <p>Update your fleet details and capacity</p>
+        <p>Update your fleet details and compliance dates</p>
       </div>
 
       <div className={styles.section}>
-        <Input
-          label="Bus Number / ID"
-          placeholder="e.g. BUS-001"
-          value={formData.busNumber}
-          onChange={(e) => setFormData({ ...formData, busNumber: e.target.value })}
-          error={errors.busNumber}
-          required
-        />
-        
-        <Input
-          label="Plate Number"
-          placeholder="e.g. MH 12 AB 1234"
-          value={formData.plateNumber}
-          onChange={(e) => setFormData({ ...formData, plateNumber: e.target.value })}
-          error={errors.plateNumber}
-          required
-        />
+        <h3 className={styles.sectionTitle}>Basic Information</h3>
+        <div className={styles.inputGrid}>
+          <Input
+            label="Bus Number / ID"
+            placeholder="e.g. BUS-001"
+            value={formData.busNumber}
+            onChange={(e) => setFormData({ ...formData, busNumber: e.target.value })}
+            error={errors.busNumber}
+            required
+          />
+          
+          <Input
+            label="Plate Number"
+            placeholder="e.g. MH 12 AB 1234"
+            value={formData.plateNumber}
+            onChange={(e) => setFormData({ ...formData, plateNumber: e.target.value })}
+            error={errors.plateNumber}
+            required
+          />
 
-        <Input
-          label="Seating Capacity"
-          type="number"
-          placeholder="40"
-          value={formData.capacity}
-          onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
-          error={errors.capacity}
-          required
-        />
+          <Input
+            label="Seating Capacity"
+            type="number"
+            placeholder="40"
+            value={formData.capacity}
+            onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+            error={errors.capacity}
+            required
+          />
+        </div>
 
         <div className={styles.statusGroup}>
-          <label className={styles.label}>Initial Status</label>
+          <label className={styles.label}>Operational Status</label>
           <div className={styles.radioGroup}>
             {(['idle', 'running', 'maintenance'] as BusStatus[]).map((s) => (
               <label key={s} className={[styles.radioLabel, formData.status === s ? styles.active : ''].join(' ')}>
@@ -107,6 +120,43 @@ const BusForm: React.FC<BusFormProps> = ({ initialData, onSuccess }) => {
               </label>
             ))}
           </div>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <div className={styles.titleWithIcon}>
+          <ShieldCheck size={18} className={styles.accentIcon} />
+          <h3 className={styles.sectionTitle}>Compliance & Documents</h3>
+        </div>
+        <div className={styles.inputGrid}>
+          <Input
+            label="RC Expiry"
+            type="date"
+            leftIcon={<FileText size={16} />}
+            value={formData.rcExpiry}
+            onChange={(e) => setFormData({ ...formData, rcExpiry: e.target.value })}
+          />
+          <Input
+            label="Insurance Expiry"
+            type="date"
+            leftIcon={<ShieldCheck size={16} />}
+            value={formData.insuranceExpiry}
+            onChange={(e) => setFormData({ ...formData, insuranceExpiry: e.target.value })}
+          />
+          <Input
+            label="Permit Expiry"
+            type="date"
+            leftIcon={<FileText size={16} />}
+            value={formData.permitExpiry}
+            onChange={(e) => setFormData({ ...formData, permitExpiry: e.target.value })}
+          />
+          <Input
+            label="Fitness Expiry"
+            type="date"
+            leftIcon={<Calendar size={16} />}
+            value={formData.fitnessExpiry}
+            onChange={(e) => setFormData({ ...formData, fitnessExpiry: e.target.value })}
+          />
         </div>
       </div>
 

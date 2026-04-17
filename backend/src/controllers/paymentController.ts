@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Student } from '../models/Student';
 import { PaymentLog } from '../models/PaymentLog';
 import { getDefaultCollegeId } from '../utils/collegeUtils';
+import { logInternalActivity } from './activityController';
 
 /**
  * GET /api/payments
@@ -148,6 +149,7 @@ export const getPaymentHistory = async (req: Request, res: Response, next: NextF
 export const recordPayment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+    const { paymentMethod, notes: userNotes } = req.body;
     const student = await Student.findById(id);
     
     if (!student) {
@@ -174,8 +176,17 @@ export const recordPayment = async (req: Request, res: Response, next: NextFunct
       studentId: student._id,
       amountPaid: student.amount,
       paymentDate: now,
+      paymentMethod: paymentMethod || 'Cash',
       recordedBy: 'Admin (System)',
-      notes: `Formal payment record for ${student.name} (ID: ${student.studentId})`
+      notes: userNotes || `Formal payment record for ${student.name} (ID: ${student.studentId})`
+    });
+
+    // Log System Activity Pulse
+    await logInternalActivity({
+      type: 'payment',
+      message: `Payment of ₹${student.amount} received from ${student.name}`,
+      collegeId: student.collegeId.toString(),
+      metadata: { studentId: student._id, logId: log._id, amount: student.amount }
     });
 
     res.json({ 

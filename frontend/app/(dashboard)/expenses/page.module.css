@@ -128,23 +128,74 @@
   padding-right: 1.5rem;
 }
 
-.statsBar {
-  margin-bottom: 2rem;
+.insightGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+  .insightGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .statCard {
-  background: var(--color-primary);
-  color: #000;
-  border: 1px solid var(--color-primary);
-  border-radius: var(--radius-lg);
-  padding: 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.1), transparent);
+  pointer-events: none;
+}
+
+.chartBox {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.chartHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.chartTitle {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.chartContainer {
+  height: 220px;
   width: 100%;
-  max-width: 420px;
-  position: relative;
-  overflow: hidden;
 }
 
 .statInfo {
@@ -154,18 +205,18 @@
 }
 
 .statLabel {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 800;
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  color: rgba(0,0,0,0.6);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
 }
 
 .statValue {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: #000;
-  letter-spacing: -0.04em;
+  font-size: 3.5rem;
+  font-weight: 950;
+  color: var(--color-primary);
+  letter-spacing: -0.05em;
   line-height: 1;
 }
 

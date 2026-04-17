@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { Plus, Bus as BusIcon, Edit, Trash2, Power, Wrench, AlertCircle, Search, Filter } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { 
+  Plus, Bus as BusIcon, Edit, Trash2, Power, 
+  Wrench, AlertCircle, Search, Filter, ShieldAlert, 
+  FileText, Calendar as CalendarIcon 
+} from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import busService, { Bus, BusStatus } from '@/services/busService';
 import Button from '@/components/ui/Button/Button';
@@ -49,6 +52,36 @@ export default function BusesPage() {
       return matchesSearch && matchesStatus;
     });
   }, [buses, searchQuery, statusFilter]);
+
+  /** Compliance Intelligence: Check for expiring documents */
+  const getComplianceAlerts = (bus: Bus) => {
+    const alerts = [];
+    const now = new Date();
+    const threshold = 30; // Alert if expiring within 30 days
+
+    const check = (dateStr: string | undefined, label: string) => {
+      if (!dateStr) return null;
+      const expiry = new Date(dateStr);
+      const diff = expiry.getTime() - now.getTime();
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      
+      if (days < 0) return { label, status: 'expired', days };
+      if (days <= threshold) return { label, status: 'warning', days };
+      return null;
+    };
+
+    const rc = check(bus.rcExpiry, 'RC');
+    const ins = check(bus.insuranceExpiry, 'Insurance');
+    const pmt = check(bus.permitExpiry, 'Permit');
+    const fit = check(bus.fitnessExpiry, 'Fitness');
+
+    if (rc) alerts.push(rc);
+    if (ins) alerts.push(ins);
+    if (pmt) alerts.push(pmt);
+    if (fit) alerts.push(fit);
+
+    return alerts;
+  };
 
   const handleCreate = () => {
     openDrawer(
@@ -154,54 +187,72 @@ export default function BusesPage() {
         </div>
       ) : (
         <div className={styles.grid}>
-          {filteredBuses.map((bus) => (
-            <div key={bus._id} className={styles.card}>
-              <div className={styles.cardHeader}>
-                <div className={styles.iconBox}>
-                  <BusIcon size={24} />
+          {filteredBuses.map((bus) => {
+            const complianceAlerts = getComplianceAlerts(bus);
+            return (
+              <div key={bus._id} className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.iconBox}>
+                    <BusIcon size={24} />
+                  </div>
+                  <div className={styles.cardActions}>
+                    <button onClick={() => handleEdit(bus)} className={styles.actionBtn}>
+                      <Edit size={16} />
+                    </button>
+                    <button onClick={() => handleDelete(bus._id)} className={styles.actionBtnDelete}>
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className={styles.cardActions}>
-                  <button onClick={() => handleEdit(bus)} className={styles.actionBtn}>
-                    <Edit size={16} />
-                  </button>
-                  <button onClick={() => handleDelete(bus._id)} className={styles.actionBtnDelete}>
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
 
-              <div className={styles.busInfo}>
-                <h3 className={styles.busNumber}>{bus.busNumber}</h3>
-                <p className={styles.plateNumber}>{bus.plateNumber}</p>
-              </div>
+                <div className={styles.busInfo}>
+                  <h3 className={styles.busNumber}>{bus.busNumber}</h3>
+                  <p className={styles.plateNumber}>{bus.plateNumber}</p>
+                </div>
 
-              <div className={styles.detailsRow}>
-                <div className={styles.detail}>
-                  <span className={styles.detailLabel}>Capacity</span>
-                  <span className={styles.detailValue}>{bus.capacity} Seats</span>
+                <div className={styles.detailsRow}>
+                  <div className={styles.detail}>
+                    <span className={styles.detailLabel}>Capacity</span>
+                    <span className={styles.detailValue}>{bus.capacity} Seats</span>
+                  </div>
+                  <div className={styles.detail}>
+                    <span className={styles.detailLabel}>Driver</span>
+                    <span className={styles.detailValue}>
+                      {bus.currentDriverId ? 'Assigned' : <span className={styles.unassigned}>Unassigned</span>}
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.detail}>
-                  <span className={styles.detailLabel}>Driver</span>
-                  <span className={styles.detailValue}>
-                    {bus.currentDriverId ? 'Assigned' : <span className={styles.unassigned}>Unassigned</span>}
-                  </span>
-                </div>
-              </div>
 
-              <div className={styles.statusSection}>
-                <div 
-                  className={styles.statusBadge} 
-                  style={{ '--status-color': statusConfig[bus.status].color } as any}
-                  onClick={() => toggleStatus(bus)}
-                  title="Click to toggle status"
-                >
-                  {statusConfig[bus.status].icon}
-                  <span>{statusConfig[bus.status].label}</span>
+                {complianceAlerts.length > 0 && (
+                  <div className={styles.complianceAlerts}>
+                    {complianceAlerts.map((alert, idx) => (
+                      <div 
+                        key={idx} 
+                        className={[styles.complianceBadge, alert.status === 'warning' ? styles.warning : ''].join(' ')}
+                        title={`${alert.label} expires on ${alert.days < 0 ? 'Previously' : 'In ' + alert.days + ' days'}`}
+                      >
+                        <ShieldAlert size={12} className={alert.status === 'expired' ? styles.pulsingIcon : ''} />
+                        <span>{alert.label} {alert.status === 'expired' ? 'Expired' : 'Renewal Due'}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className={styles.statusSection}>
+                  <div 
+                    className={styles.statusBadge} 
+                    style={{ '--status-color': statusConfig[bus.status].color } as any}
+                    onClick={() => toggleStatus(bus)}
+                    title="Click to toggle status"
+                  >
+                    {statusConfig[bus.status].icon}
+                    <span>{statusConfig[bus.status].label}</span>
+                  </div>
+                  <p className={styles.statusHint}>Click to change status</p>
                 </div>
-                <p className={styles.statusHint}>Click to change status</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {filteredBuses.length === 0 && (
             <div className={styles.empty}>

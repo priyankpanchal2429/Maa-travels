@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 import { Student } from '../models/Student';
 import '../models/PaymentLog'; // Make sure the model is registered
-
 import { getDefaultCollegeId } from '../utils/collegeUtils';
+import { logInternalActivity } from './activityController';
+import { Request, Response, NextFunction } from 'express';
 
 export const createStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -11,6 +12,15 @@ export const createStudent = async (req: Request, res: Response, next: NextFunct
       req.body.collegeId = await getDefaultCollegeId();
     }
     const student = await Student.create(req.body);
+    
+    // Log Activity
+    await logInternalActivity({
+      type: 'student',
+      message: `New student enrolled: ${student.name} (${student.studentId})`,
+      collegeId: student.collegeId.toString(),
+      metadata: { studentId: student._id }
+    });
+
     res.status(201).json({ success: true, data: student });
   } catch (error) {
     next(error);
@@ -66,6 +76,19 @@ export const updateStudent = async (req: Request, res: Response, next: NextFunct
         amountPaid: student.amount,
         recordedBy: 'Admin', // In a real app with auth, extract from req.user
       });
+
+      await logInternalActivity({
+        type: 'payment',
+        message: `Payment of ₹${student.amount} received from ${student.name}`,
+        collegeId: student.collegeId.toString(),
+        metadata: { studentId: student._id, amount: student.amount }
+      });
+    } else if (student) {
+      await logInternalActivity({
+        type: 'student',
+        message: `Profile updated for ${student.name}`,
+        collegeId: student.collegeId.toString()
+      });
     }
 
     res.json({ success: true, data: student });
@@ -78,6 +101,13 @@ export const deleteStudent = async (req: Request, res: Response, next: NextFunct
   try {
     const student = await Student.findByIdAndDelete(req.params.id);
     if (!student) return res.status(404).json({ success: false, message: 'Student not found' });
+
+    await logInternalActivity({
+      type: 'student',
+      message: `Student record removed: ${student.name}`,
+      collegeId: student.collegeId?.toString()
+    });
+
     res.json({ success: true, message: 'Student deleted' });
   } catch (error) {
     next(error);

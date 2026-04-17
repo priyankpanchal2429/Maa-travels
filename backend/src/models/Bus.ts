@@ -9,6 +9,10 @@ export interface IBus extends Document {
   capacity: number;
   status: BusStatus;
   currentDriverId?: mongoose.Types.ObjectId;
+  insuranceExpiry?: Date;
+  permitExpiry?: Date;
+  fitnessExpiry?: Date;
+  rcExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +29,10 @@ const busSchema = new Schema<IBus>(
       default: 'idle',
     },
     currentDriverId: { type: Schema.Types.ObjectId, ref: 'Driver' },
+    insuranceExpiry: { type: Date },
+    permitExpiry: { type: Date },
+    fitnessExpiry: { type: Date },
+    rcExpiry: { type: Date },
   },
   { timestamps: true, versionKey: false }
 );

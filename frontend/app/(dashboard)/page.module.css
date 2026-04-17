@@ -15,8 +15,9 @@
   gap: 1.5rem;
   grid-template-areas:
     "hero hero fleet drivers"
-    "threat threat economy routes"
-    "threat threat vitality vitality";
+    "command command command command"
+    "threat threat activity activity"
+    "economy economy vitality vitality";
 }
 
 @media (max-width: 1200px) {
@@ -25,9 +26,10 @@
     grid-template-areas:
       "hero hero"
       "fleet drivers"
-      "routes economy"
+      "command command"
       "threat threat"
-      "vitality vitality";
+      "activity activity"
+      "economy vitality";
   }
 }
 
@@ -38,9 +40,10 @@
       "hero"
       "fleet"
       "drivers"
-      "routes"
-      "economy"
+      "command"
       "threat"
+      "activity"
+      "economy"
       "vitality";
   }
 }
@@ -91,6 +94,8 @@
 .economy { grid-area: economy; }
 .threat { grid-area: threat; }
 .vitality { grid-area: vitality; }
+.command { grid-area: command; }
+.activity { grid-area: activity; }
 
 /* ─── Stat Specifics ─── */
 .heroValue {

@@ -20,8 +20,8 @@ const paymentService = {
   getHistory: (studentId: string) => api.get(`/payments/${studentId}/history`),
 
   /** Mark a student's payment as paid via specialized transactional endpoint */
-  markAsPaid: (studentId: string) =>
-    api.post(`/payments/${studentId}/record`),
+  markAsPaid: (studentId: string, data?: { paymentMethod: string; notes?: string }) =>
+    api.post(`/payments/${studentId}/record`, data),
 };
 
 export default paymentService;

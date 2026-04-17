@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
 import { Student } from '../models/Student';
 import { Bus } from '../models/Bus';
 import { Driver } from '../models/Driver';
 import { Route } from '../models/Route';
 import { Expense } from '../models/Expense';
+import { PaymentLog } from '../models/PaymentLog';
 import { getDefaultCollegeId } from '../utils/collegeUtils';
 
 /**
@@ -121,7 +123,6 @@ export const getAnalytics = async (req: Request, res: Response, next: NextFuncti
       },
       { $sort: { "_id.year": 1, "_id.month": 1 } }
     ];
-
     // Aggregate Revenue (Payments) by Month
     const revenuePipeline = [
       { 
@@ -140,8 +141,9 @@ export const getAnalytics = async (req: Request, res: Response, next: NextFuncti
       { $sort: { "_id.year": 1, "_id.month": 1 } }
     ];
 
+    // Aggregation pipelines cast to any to satisfy strict Mongoose typing
     const [monthlyExpenses, monthlyRevenue] = await Promise.all([
-      Expense.aggregate(expensePipeline),
+      Expense.aggregate(expensePipeline as any),
       PaymentLog.aggregate(revenuePipeline as any)
     ]);
 
