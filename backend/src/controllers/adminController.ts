@@ -129,6 +129,14 @@ export const seedDemoData = async (_req: Request, res: Response, next: NextFunct
           const date = new Date();
           date.setDate(date.getDate() - Math.floor(Math.random() * 60)); // Spread over 60 days
 
+          // Update student status to 'paid' and extend expiry for demo
+          const newExpiry = new Date(date);
+          newExpiry.setMonth(newExpiry.getMonth() + 6);
+          await Student.findByIdAndUpdate(student._id, {
+            paymentStatus: 'paid',
+            expiryDate: newExpiry
+          });
+
           paymentRecords.push({
             collegeId: college._id,
             studentId: student._id,

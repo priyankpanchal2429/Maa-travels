@@ -14,12 +14,15 @@ import {
   IndianRupee,
   Eye,
   MessageSquare,
-  Smartphone
+  Smartphone,
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 import { Student } from '@/services/studentService';
 import paymentService from '@/services/paymentService';
 import collegeService, { College } from '@/services/collegeService';
+import adminService from '@/services/adminService';
 import Spinner from '@/components/ui/Spinner/Spinner';
 import styles from './page.module.css';
 
@@ -36,6 +39,7 @@ export default function PaymentsPage() {
   const [collegeFilter, setCollegeFilter] = useState('all');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
+  const [isSeeding, setIsSeeding] = useState(false);
   
   // History Modal State
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -96,6 +100,20 @@ export default function PaymentsPage() {
       fetchData();
     } catch {
       showToast('Failed to update payment status', 'error');
+    }
+  };
+
+  /** Seed demo data across all colleges */
+  const handleSeedDemo = async () => {
+    setIsSeeding(true);
+    try {
+      const res = await adminService.seedDemoData();
+      showToast(res.data.message, 'success');
+      fetchData();
+    } catch (err) {
+      showToast('Seeding failed', 'error');
+    } finally {
+      setIsSeeding(false);
     }
   };
 
@@ -173,6 +191,12 @@ export default function PaymentsPage() {
           <p className={styles.subtitle}>
             {filteredStudents.length} {filteredStudents.length === 1 ? 'record' : 'records'} found
           </p>
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.seedBtn} onClick={handleSeedDemo} disabled={isSeeding}>
+            {isSeeding ? <RefreshCw className="spin" size={14} /> : <Activity size={14} />}
+            Seed Demo Data
+          </button>
         </div>
       </header>
 
