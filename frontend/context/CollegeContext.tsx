@@ -14,6 +14,13 @@ interface CollegeContextValue {
 
 const CollegeContext = createContext<CollegeContextValue | undefined>(undefined);
 
+const STORAGE_KEY = 'maa-travels-active-college';
+
+export const CollegeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [activeCollegeId, setActiveCollegeId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const COLLEGES_CACHE_KEY = 'maa-travels-colleges-list';
 
   const refreshColleges = useCallback(async () => {
