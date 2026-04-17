@@ -150,14 +150,9 @@
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
-  transition: var(--transition);
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-md), inset 0 1px 0 var(--glass-border);
-}
-
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .cardHeader {
